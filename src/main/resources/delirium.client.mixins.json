@@ -1,0 +1,15 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "net.lmvdz.delirium.client.mixin",
+    "compatibilityLevel": "JAVA_8",
+    "mixins": [
+    ],
+    "client": [
+      "ItemStackMixin"
+    ],
+    "injectors": {
+      "defaultRequire": 1
+    }
+  }
+  

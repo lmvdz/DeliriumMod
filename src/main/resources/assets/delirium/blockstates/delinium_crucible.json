@@ -1,0 +1,36 @@
+{
+    "multipart": [
+        {
+            "when": { "melting": "true", "facing": "north" },
+            "apply": { "model": "delirium:block/delinium_crucible_melting" }
+        },
+        {
+            "when": { "melting": "true", "facing": "east" },
+            "apply": { "model": "delirium:block/delinium_crucible_melting", "y":  90 }
+        },
+        {
+            "when": { "melting": "true", "facing": "south" },
+            "apply": { "model": "delirium:block/delinium_crucible_melting", "y":  180 }
+        },
+        {
+            "when": { "melting": "true", "facing": "west" },
+            "apply": { "model": "delirium:block/delinium_crucible_melting", "y":  270 }
+        },
+        {
+            "when": { "melting": "false", "facing": "north" },
+            "apply": { "model": "delirium:block/delinium_crucible" }
+        },
+        {
+            "when": { "melting": "false", "facing": "east" },
+            "apply": { "model": "delirium:block/delinium_crucible", "y":  90 }
+        },
+        {
+            "when": { "melting": "false", "facing": "south" },
+            "apply": { "model": "delirium:block/delinium_crucible", "y":  180 }
+        },
+        {
+            "when": { "melting": "false", "facing": "west" },
+            "apply": { "model": "delirium:block/delinium_crucible", "y":  270 }
+        }
+    ]
+}

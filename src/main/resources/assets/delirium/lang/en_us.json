@@ -1,0 +1,8 @@
+{
+    "itemGroup.delirium.items": "Delirium",
+    "item.delirium.delinium": "§{GOLD}Delinium§{RESET}",
+    "item.delirium.delinium_sword": "§{GOLD}Delinium §{DARK_CYAN}Sword§{RESET}",
+    "block.delirium.delinium_crucible": "§{GOLD}Delinium §{DARK_CYAN}Crucible§{RESET}",
+    "item.delirium.delinium_crucible_block_item": "§{GOLD}Delinium §{DARK_CYAN}Crucible§{RESET}",
+    "container.delirium.delinium_crucible": "§{GOLD}Delinium §{DARK_CYAN}Crucible§{RESET}"
+}

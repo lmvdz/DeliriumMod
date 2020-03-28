@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "id": "delirium",
+  "version": "${version}",
+
+  "name": "DeliriumMod - Depths of Dispair",
+  "description": "In this modpack you will be put through hell.",
+  "authors": [
+    "lmvdz"
+  ],
+  "contact": {
+    "homepage": "https://mc-delirium.com",
+    "sources": "https://github.com/lmvdz/mc-delirium"
+  },
+
+  "license": "CC0-1.0",
+  "icon": "assets/delirium/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.lmvdz.delirium.DeliriumMod"
+    ],
+    "client": [
+      "net.lmvdz.delirium.client.DeliriumClientMod"
+    ]
+  },
+  "mixins": [
+    "delirium.mixins.json",
+    {
+      "config": "delirium.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.7.4",
+    "fabric": "*",
+    "minecraft": "1.15.x"
+  },
+  "suggests": {
+    "flamingo": "*"
+  }
+}
