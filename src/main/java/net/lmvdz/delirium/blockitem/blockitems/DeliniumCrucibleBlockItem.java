@@ -1,6 +1,6 @@
 package net.lmvdz.delirium.blockitem.blockitems;
 
-import net.lmvdz.delirium.block.blocks.DeliniumCrucible;
+import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucible;
 import net.lmvdz.delirium.blockitem.DeliriumBlockItem;
 import net.minecraft.item.Item;
 

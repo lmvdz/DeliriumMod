@@ -53,7 +53,7 @@ public class DeliriumItemTooltip {
                 } else if (percentage < .25) {
                         durabitlityColor = "RED";
                 }
-                String durabitlityFormatted = "§{GRAY}Durability: §{" + durabitlityColor + "}" +((int)(percentage * 100)) + "§{RESET}%";
+                String durabitlityFormatted = "§{" + durabitlityColor + "}Durability: §{GRAY}" + durability + "/" + maxDurability + "§{RESET}";
                 tooltipTextList.add(
                                 new LiteralText(FormattingEngine.replaceColorCodeEnumInString(durabitlityFormatted)));
                 return tooltipTextList;

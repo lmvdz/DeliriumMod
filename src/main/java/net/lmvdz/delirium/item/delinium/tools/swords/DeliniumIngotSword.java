@@ -1,4 +1,4 @@
-package net.lmvdz.delirium.item.delinium.swords;
+package net.lmvdz.delirium.item.delinium.tools.swords;
 
 import net.lmvdz.delirium.item.DeliriumSwordItem;
 import net.lmvdz.delirium.item.delinium.items.DeliniumIngot;

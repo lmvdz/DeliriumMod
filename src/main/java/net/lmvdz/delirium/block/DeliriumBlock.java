@@ -18,11 +18,11 @@ public class DeliriumBlock extends Block {
     private String name = "";
     private Identifier identifier;
 
+
     public DeliriumBlock(Block.Settings settings, RenderLayer renderLayer) {
         super(settings);
         BlockRenderLayerMap.INSTANCE.putBlock(this, renderLayer);
     }
-
 
     public static void registerDeliriumBlock(DeliriumBlock block) {
         setBlockName(block, CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE,

@@ -1,7 +1,7 @@
 package net.lmvdz.delirium;
 
 
-import net.lmvdz.delirium.block.blocks.DeliniumCrucible;
+import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucible;
 import net.lmvdz.delirium.blockitem.blockitems.DeliniumCrucibleBlockItem;
 import net.lmvdz.delirium.item.delinium.items.Delinium;
 import net.lmvdz.delirium.item.delinium.items.DeliniumIngot;
@@ -16,7 +16,7 @@ import net.lmvdz.delirium.item.delinium.tools.pickaxe.DeliniumPickaxe;
 import net.lmvdz.delirium.item.delinium.tools.shovel.DeliniumIngotShovel;
 import net.lmvdz.delirium.item.delinium.tools.shovel.DeliniumShovel;
 import net.lmvdz.delirium.warp.WarpManager;
-import nerdhub.foml.obj.OBJLoader;
+// import nerdhub.foml.obj.OBJLoader;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.minecraft.item.ItemGroup;
@@ -37,7 +37,7 @@ public class DeliriumMod implements ModInitializer {
 
 		// .obj model - FOML - nerdhub.foml.obj.OBJLoader
 		// https://github.com/OnyxStudios/FOML
-		OBJLoader.INSTANCE.registerDomain(MODID);
+		// OBJLoader.INSTANCE.registerDomain(MODID); --- is not working
 
 		// create delinium items
 		
