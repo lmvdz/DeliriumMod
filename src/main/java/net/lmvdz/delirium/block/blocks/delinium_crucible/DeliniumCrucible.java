@@ -107,9 +107,7 @@ public class DeliniumCrucible extends DeliriumBlock implements BlockEntityProvid
 
     @Override
     public void appendProperties(final StateManager.Builder<Block, BlockState> stateManager) {
-        stateManager.add(MELTING);
-        stateManager.add(Properties.HORIZONTAL_FACING);
-        stateManager.add(PERCENTAGE);
+        stateManager.add(MELTING, Properties.HORIZONTAL_FACING, PERCENTAGE);
     }
 
     public static boolean getMeltingFromBlockState(final BlockState blockState) {
