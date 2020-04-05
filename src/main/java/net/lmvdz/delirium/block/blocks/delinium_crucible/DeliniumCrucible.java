@@ -75,7 +75,7 @@ public class DeliniumCrucible extends DeliriumBlock implements BlockEntityProvid
     public DeliniumCrucible() {
         // setup material and render layer
         super(FabricBlockSettings.of(Delinium.MAP_MATERIAL).nonOpaque().build(),
-                RenderLayer.getCutout());
+                RenderLayer.getSolid());
 
         if (DELINIUM_CRUCIBLE_BLOCK == null) {
 

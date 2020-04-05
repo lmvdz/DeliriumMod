@@ -13,7 +13,7 @@ public class DeliniumCrucibleModel extends Model {
     private final ModelPart bone2;
     private final MatrixStack bone2Rotation;
     private final ModelPart bone;
-    public static DeliniumCrucibleModel MODEL;
+    public static DeliniumCrucibleModel MODEL = new DeliniumCrucibleModel();
 
     public DeliniumCrucibleModel() {
         super(RenderLayer::getEntitySolid);
@@ -248,6 +248,6 @@ public class DeliniumCrucibleModel extends Model {
     @Override
     public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay,
             float red, float green, float blue, float alpha) {
-        bone2.render(matrices, vertexConsumer, light, overlay);
+        bone2.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
     }
 }
