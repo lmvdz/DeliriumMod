@@ -63,9 +63,7 @@ public class DeliniumCrucibleLootableContainerBlockEntity extends LootableContai
         super.fromTag(tag);
         rank = tag.getInt("rank");
         this.world.setBlockState(this.getPos(), this.world.getBlockState(this.getPos())
-                .with(DeliniumCrucible.MELTING, tag.getBoolean("isSmelting")));
-        this.world.setBlockState(this.getPos(), this.world.getBlockState(this.getPos())
-                .with(DeliniumCrucible.PERCENTAGE, tag.getInt("percentage")));
+                .with(DeliniumCrucible.MELTING, tag.getBoolean("isSmelting")).with(DeliniumCrucible.PERCENTAGE, tag.getInt("percentage")));
         this.deserializeInventory(tag);
     }
 
@@ -187,9 +185,9 @@ public class DeliniumCrucibleLootableContainerBlockEntity extends LootableContai
                 this.ticks++;
                 if (this.ticks <= 1280) {
                     this.world.setBlockState(this.getPos(), this.world.getBlockState(this.getPos())
-                            .with(DeliniumCrucible.PERCENTAGE, (this.ticks / 128) * 10));
+                            .with(DeliniumCrucible.PERCENTAGE, (this.ticks / 128)));
                 }
-                if (DeliniumCrucible.getPercentageFromBlockState(this.world.getBlockState(this.getPos())) >= 100) {
+                if (DeliniumCrucible.getPercentageFromBlockState(this.world.getBlockState(this.getPos())) >= 10) {
                     this.ticks = 0;
                     this.finishSmelt();
                 }
