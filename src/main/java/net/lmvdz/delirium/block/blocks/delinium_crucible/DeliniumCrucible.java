@@ -36,7 +36,8 @@ import net.minecraft.world.World;
  * 
  * Used to melt Delinium
  */
-// public class DeliniumCrucible extends DeliriumBlock implements BlockEntityProvider, ModelVariantProvider {
+// public class DeliniumCrucible extends DeliriumBlock implements BlockEntityProvider,
+// ModelVariantProvider {
 public class DeliniumCrucible extends DeliriumBlock implements BlockEntityProvider {
     public static DeliniumCrucible DELINIUM_CRUCIBLE_BLOCK;
     public static String DELINIUM_CRUCIBLE_CONTAINER_TRANSLATION_KEY;
@@ -44,34 +45,37 @@ public class DeliniumCrucible extends DeliriumBlock implements BlockEntityProvid
     public static BlockEntityType<DeliniumCrucibleLootableContainerBlockEntity> DELINIUM_CRUCIBLE_BLOCK_ENTITY_TYPE;
     public static BooleanProperty MELTING = BooleanProperty.of("melting");
     public static IntProperty PERCENTAGE = IntProperty.of("percentage", 0, 10);
-    
+
     // private final HashMap<ModelIdentifier, UnbakedModel> variants = new HashMap<>();
-    
+
 
 
     // @Override
     // public UnbakedModel loadModelVariant(ModelIdentifier modelId, ModelProviderContext context)
-    //         throws ModelProviderException {
-    //             if (modelId.getNamespace().equals("delirium") && modelId.getPath().equals("delinium_crucible")) {
-    //                 UnbakedModel m = variants.get(modelId);
-    //                 return m;
-    //             } else{
-    //                 return null;
-    //             }
-                
-    // }        
+    // throws ModelProviderException {
+    // if (modelId.getNamespace().equals("delirium") &&
+    // modelId.getPath().equals("delinium_crucible")) {
+    // UnbakedModel m = variants.get(modelId);
+    // return m;
+    // } else{
+    // return null;
+    // }
+
+    // }
     // public void registerModels(Function<BlockState, DeliniumCrucibleModel> model) {
-    //     for (BlockState state : DELINIUM_CRUCIBLE_BLOCK.getStateManager().getStates()) {
-    //         ModelIdentifier modelId = BlockModels.getModelId(state);
-    //         variants.put(modelId, (DeliriumUnbakedModel)() -> model.apply(state));
-    //     }
-    //     variants.put(new ModelIdentifier(Registry.ITEM.getId(DELINIUM_CRUCIBLE_BLOCK.asItem()), "inventory"), (DeliriumUnbakedModel)() -> model.apply(DELINIUM_CRUCIBLE_BLOCK.getDefaultState()));
+    // for (BlockState state : DELINIUM_CRUCIBLE_BLOCK.getStateManager().getStates()) {
+    // ModelIdentifier modelId = BlockModels.getModelId(state);
+    // variants.put(modelId, (DeliriumUnbakedModel)() -> model.apply(state));
+    // }
+    // variants.put(new ModelIdentifier(Registry.ITEM.getId(DELINIUM_CRUCIBLE_BLOCK.asItem()),
+    // "inventory"), (DeliriumUnbakedModel)() ->
+    // model.apply(DELINIUM_CRUCIBLE_BLOCK.getDefaultState()));
     // }
 
     public DeliniumCrucible() {
         // setup material and render layer
         super(FabricBlockSettings.of(Delinium.MAP_MATERIAL).nonOpaque().build(),
-                RenderLayer.getSolid());
+                RenderLayer.getCutout());
 
         if (DELINIUM_CRUCIBLE_BLOCK == null) {
 
@@ -83,12 +87,12 @@ public class DeliniumCrucible extends DeliriumBlock implements BlockEntityProvid
             registerDeliriumBlock(DELINIUM_CRUCIBLE_BLOCK);
 
             ContainerProviderRegistry.INSTANCE.registerFactory(
-                getIdentifier(DELINIUM_CRUCIBLE_BLOCK), (syncId, identifier, player, buf) -> {
-                    final BlockEntity blockEntity =
-                            player.world.getBlockEntity(buf.readBlockPos());
-                    return ((DeliniumCrucibleLootableContainerBlockEntity) blockEntity)
-                            .createContainer(syncId, player.inventory);
-                });
+                    getIdentifier(DELINIUM_CRUCIBLE_BLOCK), (syncId, identifier, player, buf) -> {
+                        final BlockEntity blockEntity =
+                                player.world.getBlockEntity(buf.readBlockPos());
+                        return ((DeliniumCrucibleLootableContainerBlockEntity) blockEntity)
+                                .createContainer(syncId, player.inventory);
+                    });
 
             DELINIUM_CRUCIBLE_CONTAINER_TRANSLATION_KEY =
                     Util.createTranslationKey("container", getIdentifier(DELINIUM_CRUCIBLE_BLOCK));
