@@ -54,7 +54,17 @@ public class DeliniumCrucibleInventory implements SidedInventory {
         }
         return true;
     }
-
+    
+    public int getFirstEmptySlot() {
+        for (int i = 0; i < getInvSize(); i++) {
+            final ItemStack stack = getInvStack(i);
+            if (stack.isEmpty()) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    
     @Override
     public ItemStack getInvStack(final int slot) {
         return getItems().get(slot);

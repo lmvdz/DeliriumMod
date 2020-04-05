@@ -37,7 +37,7 @@ public class DeliniumCrucibleContainer extends Container {
                 this.addSlot(new Slot(playerInventory, o * 9 + n + 9, 8 + n * 18, 18 + o * 18 + 103 + 18));
             }
         }
-
+        // hotbar
         for (o = 0; o < 9; ++o) {
             this.addSlot(new Slot(playerInventory, o, 8 + o * 18, 18 + 161 + 18));
         }

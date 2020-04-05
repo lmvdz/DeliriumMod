@@ -1,8 +1,6 @@
 package net.lmvdz.delirium.block.blocks.delinium_crucible;
 
 import net.lmvdz.delirium.DeliriumMod;
-import net.lmvdz.delirium.item.delinium.items.Delinium;
-import net.lmvdz.delirium.item.delinium.items.DeliniumIngot;
 import net.lmvdz.delirium.util.FormattingEngine;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
@@ -11,7 +9,6 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -23,11 +20,8 @@ import net.minecraft.util.Tickable;
  */
 public class DeliniumCrucibleLootableContainerBlockEntity extends LootableContainerBlockEntity implements Tickable {
     private int ticks = 0;
-    private int smeltableStackIndex = -1;
-    private int lavaBucketStackIndex = -1;
-    private final int conversion = 4;
+    public int smeltableStackIndex = -1;
     private int rank = 1;
-
 
 
     public DeliniumCrucibleInventory inventory;
@@ -45,7 +39,8 @@ public class DeliniumCrucibleLootableContainerBlockEntity extends LootableContai
         // Save the current value of the number to the tag
         tag.putInt("rank", rank);
         BlockState state = this.world.getBlockState(this.getPos());
-        tag.putBoolean("isSmelting", DeliniumCrucible.getMeltingFromBlockState(state));
+        tag.putBoolean("melting", DeliniumCrucible.getMeltingFromBlockState(state));
+        tag.putBoolean("primed", DeliniumCrucible.getCanMeltFromBlockState(state));
         tag.putInt("percentage", DeliniumCrucible.getPercentageFromBlockState(state));
         return this.serializeInventory(tag);
     }
@@ -62,8 +57,7 @@ public class DeliniumCrucibleLootableContainerBlockEntity extends LootableContai
     public void fromTag(final CompoundTag tag) {
         super.fromTag(tag);
         rank = tag.getInt("rank");
-        this.world.setBlockState(this.getPos(), this.world.getBlockState(this.getPos())
-                .with(DeliniumCrucible.MELTING, tag.getBoolean("isSmelting")).with(DeliniumCrucible.PERCENTAGE, tag.getInt("percentage")));
+        this.world.setBlockState(this.getPos(), this.world.getBlockState(this.getPos()).with(DeliniumCrucible.MELTING, tag.getBoolean("melting")).with(DeliniumCrucible.PERCENTAGE, tag.getInt("percentage")).with(DeliniumCrucible.PRIMED, tag.getBoolean("primed")));
         this.deserializeInventory(tag);
     }
 
@@ -71,7 +65,6 @@ public class DeliniumCrucibleLootableContainerBlockEntity extends LootableContai
         this.inventory = new DeliniumCrucibleInventory();
         if (!this.deserializeLootTable(tag)) {
             Inventories.fromTag(tag, inventory.getItems());
-            
         }
     }
 
@@ -121,73 +114,63 @@ public class DeliniumCrucibleLootableContainerBlockEntity extends LootableContai
     public void tryToSmelt() {
         if (!this.isInvEmpty()) {
             this.smeltableStackIndex = -1;
-            this.lavaBucketStackIndex = -1;
-            for (int i = 0; i < this.getInvSize(); i++) {
+            DeliniumCrucibleConversion conversion = null;
+            findSmeltableStack: for (int i = 0; i < this.getInvSize(); i++) {
                 ItemStack stack = this.getInvStack(i);
                 if (!stack.isEmpty()) {
-                    if (stack.getItem().equals(Delinium.DELINIUM)) {
+                    conversion = DeliniumCrucible.smeltConversions.get(stack.getItem());
+                    System.out.println(conversion.product.toString());
+                    if (conversion != null) {
                         this.smeltableStackIndex = i;
-                    } else if (stack.getItem().equals(Items.LAVA_BUCKET)) {
-                        this.lavaBucketStackIndex = i;
+                        break findSmeltableStack;
                     }
                 }
             }
-            if (this.smeltableStackIndex != -1 && this.lavaBucketStackIndex != -1) {
-                ItemStack deliniumStack = getInvStack(this.smeltableStackIndex);
-                if (deliniumStack.getCount() >= (int) (conversion / rank)) {
-                    this.world.setBlockState(this.getPos(),
-                            this.world.getBlockState(this.getPos()).with(DeliniumCrucible.MELTING, true));
+            if (this.smeltableStackIndex != -1 && conversion != null) {
+                ItemStack smeltableStack = getInvStack(this.smeltableStackIndex);
+                if (smeltableStack.getCount() >= (int) (conversion.per / rank)) {
+                    this.ticks = 0;
+                    this.world.setBlockState(this.getPos(), this.world.getBlockState(this.getPos()).with(DeliniumCrucible.MELTING, true).with(DeliniumCrucible.PRIMED, false));
                 }
             }
         }
     }
 
     public void finishSmelt() {
-        ItemStack deliniumStack = getInvStack(this.smeltableStackIndex);
-        int numberOfIngots = (int) Math.floor((deliniumStack.getCount() / (conversion / rank)));
+        ItemStack smeltableStack = getInvStack(this.smeltableStackIndex);
+        DeliniumCrucibleConversion conversion = DeliniumCrucible.smeltConversions.get(smeltableStack.getItem());
+        int numberOfProducts = (int) Math.floor((smeltableStack.getCount() / (conversion.per / rank)));
         // create converted delinium stack
-        ItemStack deliniumIngots = new ItemStack(DeliniumIngot.DELINIUM_INGOT, numberOfIngots);
+        ItemStack productStack = new ItemStack(conversion.product, numberOfProducts);
         // remove (conversion / rank) amount of delinium
-        takeInvStack(smeltableStackIndex, numberOfIngots * (int) (conversion / rank));
+        takeInvStack(smeltableStackIndex, numberOfProducts * (int) (conversion.per / rank));
         if (getInvStack(smeltableStackIndex).isEmpty()
-                || getInvStack(smeltableStackIndex).getCount() < (int) (conversion / rank)) {
+                || getInvStack(smeltableStackIndex).getCount() < (int) (conversion.per / rank)) {
             smeltableStackIndex = -1;
         }
-        // remove 1 lavabucket from the stack
-        takeInvStack(lavaBucketStackIndex, 1);
-        // create empty bucket
-        ItemStack emptyBucket = new ItemStack(Items.BUCKET, 1);
-        // if the stack of lava buckets is empty replace with an empty bucket, and remove index from
-        // usable lava bucket stacks array
-        // or check if there is a stack with space, otherwise drop an empty bucket to the ground
-        if (getInvStack(lavaBucketStackIndex).isEmpty()) {
-            setInvStack(lavaBucketStackIndex, emptyBucket);
-            lavaBucketStackIndex = -1;
-        } else {
-            addToInvOrDrop(emptyBucket);
-        }
         // place ingots into crucible or drop it to the ground
-        addToInvOrDrop(deliniumIngots);
+        addToInvOrDrop(productStack);
         this.markDirty();
         this.world.setBlockState(this.getPos(),
                 this.world.getBlockState(this.getPos()).with(DeliniumCrucible.MELTING, false));
         this.world.setBlockState(this.getPos(),
                 this.world.getBlockState(this.getPos()).with(DeliniumCrucible.PERCENTAGE, 0));
-
     }
 
     @Override
     public void tick() {
         if (this.world.isChunkLoaded(this.getPos())) {
-            if (!DeliniumCrucible.getMeltingFromBlockState(this.world.getBlockState(this.getPos()))) {
-                this.tryToSmelt();
+            BlockState state = this.world.getBlockState(this.getPos());
+            if (!DeliniumCrucible.getMeltingFromBlockState(state)) {
+                if (DeliniumCrucible.getCanMeltFromBlockState(state)) {
+                    this.tryToSmelt();
+                }
             } else {
                 this.ticks++;
                 if (this.ticks <= 1280) {
-                    this.world.setBlockState(this.getPos(), this.world.getBlockState(this.getPos())
-                            .with(DeliniumCrucible.PERCENTAGE, (this.ticks / 128)));
+                    this.world.setBlockState(this.getPos(), state.with(DeliniumCrucible.PERCENTAGE, (this.ticks / 128)));
                 }
-                if (DeliniumCrucible.getPercentageFromBlockState(this.world.getBlockState(this.getPos())) >= 10) {
+                if (DeliniumCrucible.getPercentageFromBlockState(state) >= 10) {
                     this.ticks = 0;
                     this.finishSmelt();
                 }

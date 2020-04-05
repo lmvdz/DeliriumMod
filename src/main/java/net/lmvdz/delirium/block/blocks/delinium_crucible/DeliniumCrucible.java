@@ -1,10 +1,13 @@
 package net.lmvdz.delirium.block.blocks.delinium_crucible;
 
+import java.util.HashMap;
+
 import net.fabricmc.fabric.api.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.container.ContainerProviderRegistry;
 import net.lmvdz.delirium.DeliriumMod;
 import net.lmvdz.delirium.block.DeliriumBlock;
 import net.lmvdz.delirium.item.delinium.items.Delinium;
+import net.lmvdz.delirium.item.delinium.items.DeliniumIngot;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
@@ -13,7 +16,10 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
@@ -44,7 +50,14 @@ public class DeliniumCrucible extends DeliriumBlock implements BlockEntityProvid
     public static Identifier DELINIUM_CRUCIBLE_BLOCK_ENTITY;
     public static BlockEntityType<DeliniumCrucibleLootableContainerBlockEntity> DELINIUM_CRUCIBLE_BLOCK_ENTITY_TYPE;
     public static BooleanProperty MELTING = BooleanProperty.of("melting");
+    public static BooleanProperty PRIMED = BooleanProperty.of("primed");
     public static IntProperty PERCENTAGE = IntProperty.of("percentage", 0, 10);
+
+    public static HashMap<Item, DeliniumCrucibleConversion> smeltConversions = new HashMap<>();
+
+    public static void registerSmeltConversion(Item from, int fromCount, Item product, int productCount) {
+        smeltConversions.put(from, new DeliniumCrucibleConversion(product, productCount, fromCount));
+    }
 
     // private final HashMap<ModelIdentifier, UnbakedModel> variants = new HashMap<>();
 
@@ -81,7 +94,7 @@ public class DeliniumCrucible extends DeliriumBlock implements BlockEntityProvid
 
             DELINIUM_CRUCIBLE_BLOCK = this;
 
-            setDefaultState(getStateManager().getDefaultState().with(MELTING, false)
+            setDefaultState(getStateManager().getDefaultState().with(MELTING, false).with(PRIMED, false)
                     .with(Properties.HORIZONTAL_FACING, Direction.NORTH).with(PERCENTAGE, 0));
 
             registerDeliriumBlock(DELINIUM_CRUCIBLE_BLOCK);
@@ -106,19 +119,26 @@ public class DeliniumCrucible extends DeliriumBlock implements BlockEntityProvid
                                     .create(DeliniumCrucibleLootableContainerBlockEntity::new,
                                             DELINIUM_CRUCIBLE_BLOCK)
                                     .build(null));
+            registerSmeltConversion(Delinium.DELINIUM, 4, DeliniumIngot.DELINIUM_INGOT, 1);
+            registerSmeltConversion(Items.IRON_ORE, 1, Items.IRON_INGOT, 1);
+            registerSmeltConversion(Items.GOLD_ORE, 1, Items.GOLD_INGOT, 1);
         }
     }
 
     @Override
-    public void appendProperties(final StateManager.Builder<Block, BlockState> stateManager) {
-        stateManager.add(MELTING, Properties.HORIZONTAL_FACING, PERCENTAGE);
+    public void appendProperties(StateManager.Builder<Block, BlockState> stateManager) {
+        stateManager.add(MELTING, PRIMED, Properties.HORIZONTAL_FACING, PERCENTAGE);
     }
 
-    public static boolean getMeltingFromBlockState(final BlockState blockState) {
+    public static boolean getMeltingFromBlockState(BlockState blockState) {
         return blockState.get(MELTING);
     }
 
-    public static int getPercentageFromBlockState(final BlockState blockState) {
+    public static boolean getCanMeltFromBlockState(BlockState blockState) {
+        return blockState.get(PRIMED);
+    }
+
+    public static int getPercentageFromBlockState(BlockState blockState) {
         return blockState.get(PERCENTAGE);
     }
 
@@ -138,9 +158,36 @@ public class DeliniumCrucible extends DeliriumBlock implements BlockEntityProvid
             Hand hand, BlockHitResult hit) {
         if (!world.isClient) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
+            
             if (blockEntity instanceof DeliniumCrucibleLootableContainerBlockEntity) {
-                ContainerProviderRegistry.INSTANCE.openContainer(getIdentifier(this), player,
+                blockEntity = (DeliniumCrucibleLootableContainerBlockEntity) blockEntity;
+                boolean usedItemOnCrucible = false;
+                System.out.println(getPercentageFromBlockState(state));
+                System.out.println(getCanMeltFromBlockState(state));
+                System.out.println(getMeltingFromBlockState(state));
+                for(ItemStack itemStack : player.getItemsHand()) {
+                    Item inHand = itemStack.getItem();
+                    if (inHand == Items.LAVA_BUCKET && !getCanMeltFromBlockState(state)) {
+                        if (itemStack.getCount() == 1) {
+                            player.inventory.setInvStack(player.inventory.getSlotWithStack(itemStack), new ItemStack(Items.BUCKET, 1));
+                        } else {
+                            player.inventory.setInvStack(player.inventory.getSlotWithStack(itemStack), new ItemStack(Items.LAVA_BUCKET, itemStack.getCount()-1));
+                            player.inventory.offerOrDrop(world, new ItemStack(Items.BUCKET, 1));
+                        }
+                        world.setBlockState(pos, state.with(PRIMED, true));
+                        usedItemOnCrucible = true;
+                    } else if (smeltConversions.get(inHand) != null && !getMeltingFromBlockState(state)) {
+                        int emptySlot = ((DeliniumCrucibleLootableContainerBlockEntity)blockEntity).inventory.getFirstEmptySlot();
+                        if (emptySlot != -1) {  
+                            ((DeliniumCrucibleLootableContainerBlockEntity)blockEntity).inventory.setInvStack(emptySlot, player.inventory.takeInvStack(player.inventory.getSlotWithStack(itemStack), itemStack.getCount()));
+                            usedItemOnCrucible = true;
+                        }
+                    }
+                }
+                if (!usedItemOnCrucible && !getMeltingFromBlockState(state)) {
+                    ContainerProviderRegistry.INSTANCE.openContainer(getIdentifier(this), player,
                         buf -> buf.writeBlockPos(pos));
+                }
             }
         }
         return ActionResult.SUCCESS;

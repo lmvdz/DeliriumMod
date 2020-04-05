@@ -53,7 +53,7 @@ public class DeliriumClientMod implements ClientModInitializer {
             (DeliniumCrucible.getIdentifier(DeliniumCrucible.DELINIUM_CRUCIBLE_BLOCK), 
             (container) -> new DeliniumCrucibleScreen(
                 container, 
-                MinecraftClient.getInstance().player.inventory, 
+                MinecraftClient.getInstance().player, 
                 FormattingEngine.replaceColorCodeInTranslatableText(
                     new TranslatableText(
                         DeliniumCrucible.DELINIUM_CRUCIBLE_CONTAINER_TRANSLATION_KEY

@@ -1,6 +1,13 @@
 package net.lmvdz.delirium.block.blocks.delinium_crucible;
 
 import java.util.List;
+
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
+
+import org.w3c.dom.css.RGBColor;
+
+import net.fabricmc.fabric.api.renderer.v1.Renderer;
 import net.fabricmc.fabric.api.renderer.v1.material.BlendMode;
 import net.fabricmc.fabric.api.renderer.v1.mesh.Mesh;
 import net.fabricmc.fabric.api.renderer.v1.mesh.MeshBuilder;
@@ -22,12 +29,11 @@ import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.entity.boss.BossBar.Color;
 import net.minecraft.item.ItemStack;
 
 public class DeliniumCrucibleLootableContainerBlockEntityRenderer
         extends BlockEntityRenderer<DeliniumCrucibleLootableContainerBlockEntity> {
-    // A jukebox itemstack
-    private static ItemStack stack = new ItemStack(Delinium.DELINIUM, 1);
 
     public DeliniumCrucibleLootableContainerBlockEntityRenderer(
             BlockEntityRenderDispatcher dispatcher) {
@@ -46,104 +52,111 @@ public class DeliniumCrucibleLootableContainerBlockEntityRenderer
     @Override
     public void render(DeliniumCrucibleLootableContainerBlockEntity blockEntity, float tickDelta,
             MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-
+        
         boolean melting = DeliniumCrucible.getMeltingFromBlockState(blockEntity.getCachedState());
         int percentage = DeliniumCrucible.getPercentageFromBlockState(blockEntity.getCachedState());
-        
-        matrices.push();
-        // // RENDER ITEM ABOVE BLOCK // //
+        MinecraftClient client = MinecraftClient.getInstance();
+        Renderer renderer = RendererAccessImpl.INSTANCE.getRenderer();
 
-        // Calculate the current offset in the y value
-        double offset =
-                Math.abs(Math.sin((blockEntity.getWorld().getTime() + tickDelta) / 8.0) / 16.0);
-        // Move the item
-        matrices.translate(.5, 1.1 + offset, .5);
-        // Rotate the item
-        matrices.multiply(Vector3f.POSITIVE_Y
-                .getDegreesQuaternion((blockEntity.getWorld().getTime() + tickDelta) * 4));
+        if (melting && blockEntity.smeltableStackIndex != -1) {
+            ItemStack stack = blockEntity.getInvStack(blockEntity.smeltableStackIndex);
+            matrices.push();
+            // // RENDER ITEM ABOVE BLOCK // //
 
-        // get the correct light above the block
-        int lightAbove = WorldRenderer.getLightmapCoordinates(blockEntity.getWorld(),
-                blockEntity.getPos().up());
+            // Calculate the current offset in the y value
+            double offset =
+                    Math.abs(Math.sin((blockEntity.getWorld().getTime() + tickDelta) / 8.0) / 16.0);
+            // Move the item
+            matrices.translate(.5, 1.1 + offset, .5);
+            // Rotate the item
+            matrices.multiply(Vector3f.POSITIVE_Y
+                    .getDegreesQuaternion((blockEntity.getWorld().getTime() + tickDelta) * 4));
 
-        // render stack above
-        MinecraftClient.getInstance().getItemRenderer().renderItem(stack,
-                ModelTransformation.Mode.GROUND, lightAbove, OverlayTexture.DEFAULT_UV, matrices,
-                vertexConsumers);
-        matrices.pop();
+            // get the correct light above the block
+            int lightAbove = WorldRenderer.getLightmapCoordinates(blockEntity.getWorld(),
+                    blockEntity.getPos().up());
 
-        matrices.push();
-        // // END RENDER ITEM ABOVE BLOCK // //
-        // matrices.pop();
+            // render stack above
+            client.getItemRenderer().renderItem(stack,
+                    ModelTransformation.Mode.GROUND, lightAbove, OverlayTexture.DEFAULT_UV, matrices,
+                    vertexConsumers);
+            
+            matrices.pop();
+
+            matrices.push();
+            // // END RENDER ITEM ABOVE BLOCK // //
+            // matrices.pop();
 
 
-        // matrices.push();
-        // render lava based on blockEntity state?
+            // matrices.push();
+            // render lava based on blockEntity state?
 
 
-        // System.out.println(percentage);
-        matrices.translate(.5, ((.005 + offset/2) * percentage/100), .5);
-        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion((blockEntity.getWorld().getTime()
-        + tickDelta) * 4));
-        // get vertex consumer from buffer builders
-        VertexConsumer vc = vertexConsumers.getBuffer(RenderLayer.getSolid());
+            // System.out.println(percentage);
+            matrices.translate(.5, ((.005 + offset/2) * percentage/100), .5);
+            matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion((blockEntity.getWorld().getTime()
+            + tickDelta) * 4));
+            // get vertex consumer from buffer builders
+            VertexConsumer vc = vertexConsumers.getBuffer(RenderLayer.getSolid());
 
-        // create new mesh for lava
-        MeshBuilder meshBuilder = RendererAccessImpl.INSTANCE.getRenderer().meshBuilder();
-        QuadEmitter emitter = meshBuilder.getEmitter();
+            // create new mesh for lava
+            MeshBuilder meshBuilder = renderer.meshBuilder();
+            QuadEmitter emitter = meshBuilder.getEmitter();
 
-        float cosx, sinx, height = 0F;
-        float radius = 2.9f;
-        for (int x = 0; x < 360; x++) {
-            // draw cylinder;
-            cosx = cosAngle(x)/radius;
-            sinx = sinAngle(x)/radius;
-            emitter.material(RendererAccessImpl.INSTANCE.getRenderer().materialFinder()
-                    .blendMode(0,
-                            BlendMode.fromRenderLayer(
-                                    RenderLayers.getBlockLayer(blockEntity.getCachedState())))
-                    .find());
-            emitter.spriteColor(0, -1, -1, -1, -1);
-            emitter.colorIndex(0);
-            emitter.pos(0, cosx, height, sinx);
-            emitter.pos(1, cosx, (float) (height + (.1 + (.1 * percentage))), sinx);
-            x++;
-            cosx = cosAngle(x)/radius;
-            sinx = sinAngle(x)/radius;
-            emitter.pos(2, cosx, (float) (height + (.1 + (.1 * percentage))), sinx);
-            emitter.pos(3, cosx, height, sinx);
-            x--;
-            emitter.emit();
+            float cosx, sinx, height = 0F;
+            float radius = 2.89f;
+            for (int x = 0; x < 360; x++) {
+                // draw cylinder;
+                cosx = cosAngle(x)/radius;
+                sinx = sinAngle(x)/radius;
+                emitter.material(renderer.materialFinder()
+                        .blendMode(0,
+                                BlendMode.fromRenderLayer(
+                                        RenderLayers.getBlockLayer(blockEntity.getCachedState())))
+                        .find());
+                emitter.spriteColor(0, 0xffffff, 0xffffff, 0xffffff, 0xffffff);
+                emitter.colorIndex(0);
+                emitter.pos(0, cosx, height, sinx);
+                emitter.pos(1, cosx, (float) (height + (.1 + (.05 * percentage))), sinx);
+                x++;
+                cosx = cosAngle(x)/radius;
+                sinx = sinAngle(x)/radius;
+                emitter.pos(2, cosx, (float) (height + (.1 + (.05 * percentage))), sinx);
+                emitter.pos(3, cosx, height, sinx);
+                x--;
+                emitter.emit();
 
-            // draw bottom
-            cosx = cosAngle(x)/radius;
-            sinx = sinAngle(x)/radius;
-            emitter.spriteColor(0, -1, -1, -1, -1);
-            emitter.colorIndex(0);
-            emitter.pos(0, cosx, height, sinx);
-            emitter.pos(1, -cosx, height, sinx);
-            emitter.pos(2, -cosx, height, -sinx);
-            emitter.pos(3, cosx, height, -sinx);
-            emitter.emit();
+                // draw bottom
+                cosx = cosAngle(x)/radius;
+                sinx = sinAngle(x)/radius;
+                emitter.spriteColor(0, 0xffffff, 0xffffff, 0xffffff, 0xffffff);
+                emitter.colorIndex(0);
+                emitter.pos(0, cosx, height, sinx);
+                emitter.pos(1, -cosx, height, sinx);
+                emitter.pos(2, -cosx, height, -sinx);
+                emitter.pos(3, cosx, height, -sinx);
+                emitter.emit();
 
-            // draw top
-            emitter.spriteColor(0, -1, -1, -1, -1);
-            emitter.colorIndex(0);
-            emitter.pos(0, cosx, (float) (height + (.1 + (.1 * percentage))), sinx);
-            emitter.pos(1, -cosx, (float) (height + (.1 + (.1 * percentage))), sinx);
-            emitter.pos(2, -cosx, (float) (height + (.1 + (.1 * percentage))), -sinx);
-            emitter.pos(3, cosx, (float) (height + (.1 + (.1 * percentage))), -sinx);
-            emitter.emit();
-        }
-        Mesh m = meshBuilder.build();
-        List<BakedQuad>[] quadList = ModelHelper.toQuadLists(m);
-        // System.out.println(quadList.length);
-        for (int x = 0; x < quadList.length; x++) {
-            for (BakedQuad bq : quadList[x]) {
-                vc.quad(matrices.peek(), bq, 1f, 1f, 1f, lightAbove, OverlayTexture.DEFAULT_UV);
+                // draw top
+                emitter.spriteColor(0, 0xffffff, 0xffffff, 0xffffff, 0xffffff);
+                emitter.colorIndex(0);
+                emitter.pos(0, cosx, (float) (height + (.1 + (.05 * percentage))), sinx);
+                emitter.pos(1, -cosx, (float) (height + (.1 + (.05 * percentage))), sinx);
+                emitter.pos(2, -cosx, (float) (height + (.1 + (.05 * percentage))), -sinx);
+                emitter.pos(3, cosx, (float) (height + (.1 + (.05 * percentage))), -sinx);
+                emitter.emit();
             }
+            Mesh m = meshBuilder.build();
+            List<BakedQuad>[] quadList = ModelHelper.toQuadLists(m);
+            // System.out.println(quadList.length);
+            for (int x = 0; x < quadList.length; x++) {
+                for (BakedQuad bq : quadList[x]) {
+                    vc.texture(16, 0).quad(matrices.peek(), bq, 1f, 1f, 1f, lightAbove, OverlayTexture.DEFAULT_UV);
+                }
+            }
+            matrices.pop();
         }
-        matrices.pop();
+        
     }
 
 }
