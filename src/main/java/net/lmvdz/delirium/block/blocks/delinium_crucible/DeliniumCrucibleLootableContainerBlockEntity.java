@@ -114,23 +114,18 @@ public class DeliniumCrucibleLootableContainerBlockEntity extends LootableContai
     public void tryToSmelt() {
         if (!this.isInvEmpty()) {
             this.smeltableStackIndex = -1;
-            DeliniumCrucibleConversion conversion = null;
-            findSmeltableStack: for (int i = 0; i < this.getInvSize(); i++) {
+            for (int i = 0; i < this.getInvSize(); i++) {
                 ItemStack stack = this.getInvStack(i);
-                if (!stack.isEmpty()) {
-                    conversion = DeliniumCrucible.smeltConversions.get(stack.getItem());
-                    System.out.println(conversion.product.toString());
+                if (!stack.isEmpty() && this.smeltableStackIndex == -1) {
+                    DeliniumCrucibleConversion conversion = DeliniumCrucible.smeltConversions.get(stack.getItem());
                     if (conversion != null) {
-                        this.smeltableStackIndex = i;
-                        break findSmeltableStack;
+                        if (stack.getCount() >= (int) (conversion.per / rank)) {
+                            this.smeltableStackIndex = i;
+                            this.ticks = 0;
+                            this.world.setBlockState(this.getPos(), this.world.getBlockState(this.getPos()).with(DeliniumCrucible.MELTING, true).with(DeliniumCrucible.PRIMED, false));
+                            break;
+                        }
                     }
-                }
-            }
-            if (this.smeltableStackIndex != -1 && conversion != null) {
-                ItemStack smeltableStack = getInvStack(this.smeltableStackIndex);
-                if (smeltableStack.getCount() >= (int) (conversion.per / rank)) {
-                    this.ticks = 0;
-                    this.world.setBlockState(this.getPos(), this.world.getBlockState(this.getPos()).with(DeliniumCrucible.MELTING, true).with(DeliniumCrucible.PRIMED, false));
                 }
             }
         }
@@ -143,10 +138,10 @@ public class DeliniumCrucibleLootableContainerBlockEntity extends LootableContai
         // create converted delinium stack
         ItemStack productStack = new ItemStack(conversion.product, numberOfProducts);
         // remove (conversion / rank) amount of delinium
-        takeInvStack(smeltableStackIndex, numberOfProducts * (int) (conversion.per / rank));
-        if (getInvStack(smeltableStackIndex).isEmpty()
-                || getInvStack(smeltableStackIndex).getCount() < (int) (conversion.per / rank)) {
-            smeltableStackIndex = -1;
+        takeInvStack(this.smeltableStackIndex, numberOfProducts * (int) (conversion.per / rank));
+        if (getInvStack(this.smeltableStackIndex).isEmpty()
+                || getInvStack(this.smeltableStackIndex).getCount() < (int) (conversion.per / rank)) {
+                    this.smeltableStackIndex = -1;
         }
         // place ingots into crucible or drop it to the ground
         addToInvOrDrop(productStack);
