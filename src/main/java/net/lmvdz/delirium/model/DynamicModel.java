@@ -2,7 +2,10 @@ package net.lmvdz.delirium.model;
 
 import java.util.function.Function;
 import org.apache.commons.lang3.tuple.MutablePair;
+
+import it.unimi.dsi.fastutil.objects.ObjectList;
 import net.lmvdz.delirium.modelpart.DynamicModelPart;
+import net.lmvdz.delirium.modelpart.DynamicModelPart.DynamicPart;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -77,7 +80,10 @@ public class DynamicModel extends Model {
     }
     public DynamicModel addCuboids() {
         for(int i = 0; i < this.x.length; i++) {
-			this.main.addCuboid(this.x[i], this.y[i], this.z[i], this.sizeX[i], this.sizeY[i], this.sizeZ[i], this.extra[i], this.u[i], this.v[i]);
+            float x = this.x[i];
+            float y = this.y[i];
+            float z = this.z[i];            
+			this.main.addCuboid(x, y, z, this.sizeX[i], this.sizeY[i], this.sizeZ[i], this.extra[i], this.u[i], this.v[i]);
         }
         return this;
     }
