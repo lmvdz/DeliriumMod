@@ -19,6 +19,12 @@ public class DeliniumCrucibleScreen extends ContainerScreen<DeliniumCrucibleCont
     private final Identifier TEXTURE = new Identifier("textures/gui/container/generic_54.png");
 
     @Override
+    public void render(int mouseX, int mouseY, float delta) {
+        super.render(mouseX, mouseY, delta);
+        this.drawMouseoverTooltip(mouseX, mouseY);
+    }
+
+    @Override
     protected void drawForeground(int mouseX, int mouseY) {
         this.font.draw(this.title.asFormattedString(), 8.0F, 6.0F, 4210752);
         this.font.draw(this.player.getDisplayName().asFormattedString() + " " + this.playerInventory.getDisplayName().asFormattedString(), 8.0F, (float)(this.containerHeight - 96 + 2), 0xeeeeee);
@@ -32,6 +38,7 @@ public class DeliniumCrucibleScreen extends ContainerScreen<DeliniumCrucibleCont
         int j = (this.height - this.containerHeight) / 2;
         this.blit(i, j, 0, 0, this.containerWidth, 6 * 18 + 17);
         this.blit(i, j + 6 * 18 + 17, 0, 126, this.containerWidth, 96);
+        
     }
     
 }

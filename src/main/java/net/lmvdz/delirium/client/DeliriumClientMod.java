@@ -2,8 +2,10 @@ package net.lmvdz.delirium.client;
 
 import java.util.ArrayList;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.screen.ScreenProviderRegistry;
+import net.lmvdz.delirium.DeliriumMod;
 import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucible;
 import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucibleContainer;
 import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucibleLootableContainerBlockEntityRenderer;
@@ -12,6 +14,7 @@ import net.lmvdz.delirium.item.DeliriumItemTooltip;
 import net.lmvdz.delirium.item.DeliriumItemTooltipCallback;
 import net.lmvdz.delirium.util.FormattingEngine;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
@@ -48,6 +51,7 @@ public class DeliriumClientMod implements ClientModInitializer {
         
         // Register Block Entity Renderer - Delinium Crucible Block Entity Renderer
         BlockEntityRendererRegistry.INSTANCE.register(DeliniumCrucible.DELINIUM_CRUCIBLE_BLOCK_ENTITY_TYPE, DeliniumCrucibleLootableContainerBlockEntityRenderer::new);
+        // BlockRenderLayerMap.INSTANCE.putBlock(DeliniumCrucible.DELINIUM_CRUCIBLE_BLOCK, RenderLayer.getCutout());
         // Register Screen Provider - Delinium Crucible Screen
         ScreenProviderRegistry.INSTANCE.<DeliniumCrucibleContainer>registerFactory
             (DeliniumCrucible.getIdentifier(DeliniumCrucible.DELINIUM_CRUCIBLE_BLOCK), 

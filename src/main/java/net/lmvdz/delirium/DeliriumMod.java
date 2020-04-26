@@ -2,6 +2,7 @@ package net.lmvdz.delirium;
 
 
 import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucible;
+import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucibleLava;
 import net.lmvdz.delirium.blockitem.blockitems.DeliniumCrucibleBlockItem;
 import net.lmvdz.delirium.item.delinium.items.Delinium;
 import net.lmvdz.delirium.item.delinium.items.DeliniumIngot;
@@ -22,8 +23,14 @@ import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.gen.GenerationStep;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.gen.feature.FeatureConfig;
+import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.util.Identifier;
 
+// world seed -334447148958399075
+// world spawn point 185, 80, 164
 public class DeliriumMod implements ModInitializer {
 
 	public final static String MODID = "delirium";
@@ -65,6 +72,7 @@ public class DeliriumMod implements ModInitializer {
 		
 		// -- blocks
 		new DeliniumCrucible(); // DeliriumBlock + BlockEntityProvider
+		new DeliniumCrucibleLava();
 		
 		// -- block items
 		new DeliniumCrucibleBlockItem(); //DeliriumBlockItem

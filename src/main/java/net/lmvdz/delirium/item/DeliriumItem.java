@@ -10,7 +10,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
@@ -50,7 +49,7 @@ public class DeliriumItem extends Item {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
-        return new TypedActionResult<>(ActionResult.SUCCESS, playerEntity.getStackInHand(hand));
+        return super.use(world, playerEntity, hand);
     }
 
     @Override

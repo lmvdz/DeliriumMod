@@ -17,7 +17,7 @@ public class Delinium extends DeliriumItemToolMaterial {
     
     public Delinium() {
         // attackDamage, durability, enchantability, mining level, miningSpeed
-        super(new Item.Settings(), 2.5f, 1000, 25, 1, 5f);
+        super((new Item.Settings()), 2.5f, 1000, 25, 1, 5f);
         if (DELINIUM == null) {
             DELINIUM = this;
             registerItem(DELINIUM);
