@@ -157,7 +157,7 @@ public class DeliniumCrucibleLootableContainerBlockEntityRenderer
         int lightAbove = WorldRenderer.getLightmapCoordinates(blockEntity.getWorld(), blockEntity.getPos().up());
         double distanceToCamera = client.cameraEntity.getPos().squaredDistanceTo(new Vec3d(blockEntity.getPos().getX()+.5f, blockEntity.getPos().getY()+.5f, blockEntity.getPos().getZ()+.5f));
         double renderDistance = 4000D;
-        boolean inRenderRange = distanceToCamera < 4000D;
+        boolean inRenderRange = distanceToCamera < renderDistance;
         boolean renderDynamic = (!client.isPaused() && inRenderRange); 
         // renderCube(matrices, vertexConsumers, new Vector3f(.1F, .1F, .1F), new Vector3f(.5f, 1.1f, .5f), null);
         // renderFluid(blockEntity.getPos().up(), (BlockRenderView)client.world, vertexConsumers.getBuffer(RenderLayers.getFluidLayer(Fluids.FLOWING_LAVA.getDefaultState().with(LavaFluid.LEVEL, 8))), Fluids.FLOWING_LAVA.getDefaultState().with(LavaFluid.LEVEL, 8));
