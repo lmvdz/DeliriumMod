@@ -178,7 +178,9 @@ public class DeliniumCrucibleLootableContainerBlockEntityRenderer
                 blockEntity.ticks,
                 matrices, // matrix
                 LAVA_MODEL_SPRITE_IDENTIFIER.getVertexConsumer(vertexConsumers, RenderLayer::getEntityTranslucent), 
-                15728880, 
+                // lightAbove, 
+                // 15728880, //// -- max light  
+                0xF000F0, //// -- emissive
                 OverlayTexture.DEFAULT_UV, 
                 1.0F, 
                 1.0F,
