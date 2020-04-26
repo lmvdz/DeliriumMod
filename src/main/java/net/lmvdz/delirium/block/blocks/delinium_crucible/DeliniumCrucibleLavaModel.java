@@ -21,10 +21,5 @@ public class DeliniumCrucibleLavaModel extends DynamicModel {
     public DeliniumCrucibleLavaModel() {
         super(RenderLayer::getEntityTranslucent, x, y, z, sizeX, sizeY, sizeZ, extra, u, v);
 	}
-
-	@Override
-	public void setDynamics() {
-
-	}
 	
 }

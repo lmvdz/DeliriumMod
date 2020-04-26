@@ -19,6 +19,7 @@ repositories {
         name = 'CottonMC'
         url = 'https://server.bbkr.space/artifactory/libs-release'
     }
+	maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -34,6 +35,11 @@ dependencies {
 	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
 	// You may need to force-disable transitiveness on them.
 	modCompile "com.github.OnyxStudios:FOML:${foml_version}"
+
+	//
+	modCompile 'com.github.modmuss50:OptiFabric:1.0.0-beta8'
+    //Deps required for optifabric
+    compile 'org.zeroturnaround:zt-zip:1.14'
 }
 
 processResources {

@@ -13,7 +13,7 @@ public class Delinium extends DeliriumItemToolMaterial {
     
     public static Delinium DELINIUM;
 
-    public final static Material MAP_MATERIAL = new FabricMaterialBuilder(MaterialColor.GREEN).build();
+    public final static Material MAP_MATERIAL = new FabricMaterialBuilder(MaterialColor.GREEN).allowsMovement().build();
     
     public Delinium() {
         // attackDamage, durability, enchantability, mining level, miningSpeed

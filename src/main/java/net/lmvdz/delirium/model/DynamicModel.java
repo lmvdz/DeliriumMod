@@ -1,8 +1,7 @@
 package net.lmvdz.delirium.model;
 
 import java.util.function.Function;
-import org.apache.commons.lang3.tuple.MutablePair;
-
+import org.apache.commons.lang3.tuple.MutableTriple;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import net.lmvdz.delirium.modelpart.DynamicModelPart;
 import net.lmvdz.delirium.modelpart.DynamicModelPart.DynamicPart;
@@ -16,7 +15,7 @@ public class DynamicModel extends Model {
 
     public DynamicModelPart main;
     public MatrixStack mainRotation;
-
+    public boolean UV_SHIFTABLE;
     public float[] x;
 	public float[] y;
 	public float[] z;
@@ -45,6 +44,7 @@ public class DynamicModel extends Model {
         this.extra = extra;
         this.u = u;
         this.v = v;
+        this.UV_SHIFTABLE = true;
         build();
     }
 
@@ -60,6 +60,7 @@ public class DynamicModel extends Model {
         this.u = u;
         this.v = v;
         this.rotation = new float[] {xRotation, yRotation, zRotation};
+        this.UV_SHIFTABLE = true;
         build();
     }
 
@@ -80,16 +81,13 @@ public class DynamicModel extends Model {
     }
     public DynamicModel addCuboids() {
         for(int i = 0; i < this.x.length; i++) {
-            float x = this.x[i];
-            float y = this.y[i];
-            float z = this.z[i];            
-			this.main.addCuboid(x, y, z, this.sizeX[i], this.sizeY[i], this.sizeZ[i], this.extra[i], this.u[i], this.v[i]);
+			this.main.addCuboid(this.x[i], this.y[i], this.z[i], this.sizeX[i], this.sizeY[i], this.sizeZ[i], this.extra[i], this.u[i], this.v[i]);
         }
         return this;
     }
 
 	public DynamicModel rebuild() {
-        this.set(new DynamicModelPart(this, this.main.getDynamicCuboidParts())).rotate(this.rotation).addCuboids();
+        this.set(new DynamicModelPart(this, this.main.getDynamicCuboidParts(), this.main.getChildren())).rotate(this.rotation).addCuboids();
         return this;
 	}
 
@@ -121,8 +119,8 @@ public class DynamicModel extends Model {
 		return array;
 	}
 
-    public void setDynamics() {
-
+    public void setDynamics(ObjectList<DynamicPart[]> dynamicParts) {
+        this.main.setDynamicCuboidParts(dynamicParts);
     }
 
     @Override
@@ -130,8 +128,8 @@ public class DynamicModel extends Model {
         main.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
     }
 
-    public void renderDynamic(MutablePair<Boolean, Integer> shiftUV, int tick, int updatePerTicks, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
-		main.renderDynamic(shiftUV, tick, updatePerTicks, matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+    public void renderDynamic(boolean syncDynamicWithUVShiftTicks, MutableTriple<Boolean, Integer, Integer> shiftUV, int tick, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
+		main.renderDynamic(syncDynamicWithUVShiftTicks, shiftUV, tick, matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
 	}
 
 }

@@ -1,7 +1,7 @@
 package net.lmvdz.delirium.modelpart;
 
 import java.util.Random;
-import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.MutableTriple;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.fastutil.objects.ObjectListIterator;
@@ -23,10 +23,11 @@ public class DynamicModelPart extends ModelPart {
     private float textureHeight;
     private int textureOffsetU;
     private int textureOffsetV;
-    private final ObjectList<DynamicModelPart.DynamicCuboid> cuboids;
-    private final ObjectList<DynamicModelPart.DynamicPart[]> dynamicCuboidParts;
-    private final ObjectList<DynamicModelPart> children;
+    private ObjectList<DynamicModelPart.DynamicCuboid> cuboids;
+    private ObjectList<DynamicModelPart.DynamicPart[]> dynamicCuboidParts;
+    private ObjectList<DynamicModelPart> children;
     private DynamicModel dynamicModel;
+    private int lastShiftTick = 0;
 
 
     public DynamicModelPart(DynamicModel dynamicModel) {
@@ -37,12 +38,15 @@ public class DynamicModelPart extends ModelPart {
         this.dynamicModel = dynamicModel;
     }
 
-    public DynamicModelPart(DynamicModel dynamicModel, ObjectList<DynamicModelPart.DynamicPart[]> dynamicCuboidParts) {
+    public DynamicModelPart(DynamicModel dynamicModel, ObjectList<DynamicModelPart.DynamicPart[]> dynamicCuboidParts, ObjectList<DynamicModelPart> dynamicModelPartChildren) {
         super(dynamicModel);
         this.cuboids = new ObjectArrayList<DynamicModelPart.DynamicCuboid>();
         this.dynamicCuboidParts = new ObjectArrayList<DynamicModelPart.DynamicPart[]>();
         this.dynamicCuboidParts.addAll(dynamicCuboidParts);
+        dynamicCuboidParts = null;
         this.children = new ObjectArrayList<DynamicModelPart>();
+        this.children.addAll(dynamicModelPartChildren);
+        dynamicModelPartChildren = null;
         this.dynamicModel = dynamicModel;
     }
 
@@ -73,14 +77,16 @@ public class DynamicModelPart extends ModelPart {
         RED,
         GREEN,
         BLUE,
-        ALPHA
+        ALPHA,
+        LIGHT
     }
 
     private static final int DYNAMIC_ENUM_LENGTH = DYNAMIC_ENUM.values().length;
-
+    private static final float[] DEFAULT_DYNAMIC_MAX = new float[] {.5F, .5F, .5F, .00001F, .00001F, .00001F, -10F, Integer.MAX_VALUE/10000000};
+    private static final float[] DEFAULT_DYNAMIC_MIN = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F, Integer.MAX_VALUE/100000000};
     @Environment(EnvType.CLIENT)
     public class DynamicPart {
-        private final float[] dynamicsMaxDefault = new float[] {.5F, .5F, .5F, .00001F, .00001F, .00001F, -10F};
+        
         
         public DYNAMIC_ENUM dynamic;
         public boolean state;
@@ -88,26 +94,23 @@ public class DynamicModelPart extends ModelPart {
         public float min;
         public float max;
         public float defaultMax;
+        public float updatePerTicks;
 
         public DynamicPart(DYNAMIC_ENUM dynamic) {
-            this.dynamic(dynamic, false, 0F, dynamicsMaxDefault[dynamic.ordinal()], 0F);
+            this.dynamic(dynamic, false, DEFAULT_DYNAMIC_MIN[dynamic.ordinal()], DEFAULT_DYNAMIC_MAX[dynamic.ordinal()], 0F, 50).apply();
         }
 
         public DynamicPart(DYNAMIC_ENUM dynamic, boolean state) {
-            this.dynamic(dynamic, state, 0F, dynamicsMaxDefault[dynamic.ordinal()], 0F);
+            this.dynamic(dynamic, state, DEFAULT_DYNAMIC_MIN[dynamic.ordinal()], DEFAULT_DYNAMIC_MAX[dynamic.ordinal()], 0F, 50).apply();
         }
 
-        public DynamicPart(DYNAMIC_ENUM dynamic, boolean state, float min, float max, float value) {
-            this.dynamic(dynamic, state, min, max, value);
+        public DynamicPart(DYNAMIC_ENUM dynamic, boolean state, float min, float max, float value, int updatePerTicks) {
+            this.dynamic(dynamic, state, min, max, value, updatePerTicks).apply();
         }
 
 
-        public DynamicPart dynamic(DYNAMIC_ENUM dEnum, boolean state, float min, float max, float value) {
-            return this.state(dEnum, state).minMax(dEnum, min, max).value(dEnum, value);
-        }
-
-        public DynamicPart dynamic(DYNAMIC_ENUM dEnum, boolean state, float min, float max) {
-            return this.state(dEnum, state).minMax(dEnum, min, max);
+        public DynamicPart dynamic(DYNAMIC_ENUM dEnum, boolean state, float min, float max, float value, int updatePerTicks) {
+            return this.state(dEnum, state).minMax(dEnum, min, max).value(dEnum, value).updatePerTicks(dEnum, updatePerTicks);
         }
 
         public DynamicPart minMax(DYNAMIC_ENUM dEnum, float min, float max) {
@@ -144,7 +147,13 @@ public class DynamicModelPart extends ModelPart {
             return this;
         }
 
+        public DynamicPart updatePerTicks(DYNAMIC_ENUM dEnum, int updatePerTicks) {
+            this.updatePerTicks = updatePerTicks;
+            return this;
+        }
 
+        
+        
         public DynamicPart apply() {
             if (this.state) {
                 float r = (float)(Math.random()  * .015F);
@@ -324,29 +333,29 @@ public class DynamicModelPart extends ModelPart {
 
     @Override
     public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay) {
-        this.renderDynamic(new MutablePair<Boolean, Integer>(false, 0), 0, 200, matrices, vertexConsumer, light, overlay);
+        this.renderDynamic(false, new MutableTriple<Boolean, Integer, Integer>(false, 0, 0),0, matrices, vertexConsumer, light, overlay);
     }
 
-    public void renderDynamic(MutablePair<Boolean, Integer> shiftUV, int tick, int updatePerTicks, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay) {
-        this.renderDynamic(shiftUV, tick, updatePerTicks, matrices, vertexConsumer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
+    public void renderDynamic(boolean syncDynamicWithUVShiftTicks, MutableTriple<Boolean, Integer, Integer> shiftUV, int tick, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay) {
+        this.renderDynamic(syncDynamicWithUVShiftTicks, shiftUV, tick, matrices, vertexConsumer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
     }
     
     @Override
     public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
-        this.renderDynamic(new MutablePair<Boolean, Integer>(false, 0), 0, 200, matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        this.renderDynamic(false, new MutableTriple<Boolean, Integer, Integer>(false, 0, 0), 0, matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
     }
 
-    public void renderDynamic(MutablePair<Boolean, Integer> shiftUV, int tick, int updatePerTicks, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
+    public void renderDynamic(boolean syncDynamicWithUVShiftTicks, MutableTriple<Boolean, Integer, Integer> shiftUV, int tick, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
         if (this.visible) {
             if (!this.cuboids.isEmpty() || !this.children.isEmpty()) {
                 matrices.push();
                 this.rotate(matrices);
-                this.renderCuboidsDynamic(shiftUV, tick, updatePerTicks, matrices.peek(), vertexConsumer, light, overlay, red, green, blue, alpha);
+                this.renderCuboidsDynamic(syncDynamicWithUVShiftTicks, shiftUV, tick, matrices.peek(), vertexConsumer, light, overlay, red, green, blue, alpha);
                 ObjectListIterator<DynamicModelPart> var9 = this.children.iterator();
 
                 while(var9.hasNext()) {
                     DynamicModelPart modelPart = (DynamicModelPart)var9.next();
-                    modelPart.renderDynamic(shiftUV, tick, updatePerTicks, matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+                    modelPart.renderDynamic(syncDynamicWithUVShiftTicks, shiftUV, tick, matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
                 }
 
                 matrices.pop();
@@ -355,26 +364,31 @@ public class DynamicModelPart extends ModelPart {
     }
 
     
-    private void renderCuboidsDynamic(MutablePair<Boolean, Integer> shiftUV, int tick, int updatePerTicks, MatrixStack.Entry matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
-        boolean updateDynamicCuboidParts = ((tick % updatePerTicks) == 0);
-        
-        if (updateDynamicCuboidParts) {
-            if (shiftUV.getLeft()) {
-                dynamicModel.shiftUV(shiftUV.getRight()).rebuild();;
-            }
+    private void renderCuboidsDynamic(boolean syncDynamicWithUVShiftTicks, MutableTriple<Boolean, Integer, Integer> shiftUV, int tick, MatrixStack.Entry matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {        
+        int shiftOnTick = shiftUV.getMiddle();
+        boolean shiftingUV = (tick % shiftOnTick == 0);
+        if (shiftUV.getLeft() && shiftingUV && lastShiftTick != tick) {
+            lastShiftTick = tick;
+            dynamicModel.shiftUV(shiftUV.getRight()).rebuild();
         }
-        
+
         Matrix4f matrix4f = matrices.getModel();
         Matrix3f matrix3f = matrices.getNormal();
         ObjectListIterator<DynamicModelPart.DynamicCuboid> cubiodsIterator = this.cuboids.iterator();
         while(cubiodsIterator.hasNext()) {
+
             int index = cubiodsIterator.nextIndex();
-            DynamicModelPart.DynamicCuboid cuboid = (DynamicModelPart.DynamicCuboid)cubiodsIterator.next();
-            DynamicModelPart.DynamicQuad[] cuboidSidesQuadArray = cuboid.sides;
-            int cuboidSidesLength = cuboidSidesQuadArray.length;
+            float dx = 0;
+            float dy = 0;
+            float dz = 0;
+            float dRed = 0;
+            float dGreen = 0;
+            float dBlue = 0;
+            float dAlpha = 0;
+            float dLight = 0;
 
             DynamicPart[] parts = dynamicCuboidParts.get(index);
-            
+    
             DynamicPart dxPart = parts[DYNAMIC_ENUM.X.ordinal()];
             DynamicPart dyPart = parts[DYNAMIC_ENUM.Y.ordinal()];
             DynamicPart dzPart = parts[DYNAMIC_ENUM.Z.ordinal()];
@@ -382,15 +396,21 @@ public class DynamicModelPart extends ModelPart {
             DynamicPart dGreenPart = parts[DYNAMIC_ENUM.GREEN.ordinal()];
             DynamicPart dBluePart = parts[DYNAMIC_ENUM.BLUE.ordinal()];
             DynamicPart dAlphaPart = parts[DYNAMIC_ENUM.ALPHA.ordinal()];
-            
-            float dx = (dxPart != null && dxPart.state) ? updateDynamicCuboidParts ? dxPart.apply().value : dxPart.value : 0F;
-            float dy = (dyPart != null && dyPart.state) ? updateDynamicCuboidParts ? dyPart.apply().value : dyPart.value : 0F;
-            float dz = (dzPart != null && dzPart.state) ? updateDynamicCuboidParts ? dzPart.apply().value : dzPart.value : 0F;
-            float dRed = (dRedPart != null && dRedPart.state) ? updateDynamicCuboidParts ?dRedPart.apply().value : dRedPart.value : 0F;
-            float dGreen = (dGreenPart != null && dGreenPart.state) ? updateDynamicCuboidParts ? dGreenPart.apply().value : dGreenPart.value : 0F;
-            float dBlue = (dBluePart != null && dBluePart.state) ? updateDynamicCuboidParts ?dBluePart.apply().value : dBluePart.value : 0F;
-            float dAlpha = (dAlphaPart != null && dAlphaPart.state) ? updateDynamicCuboidParts ? dAlphaPart.apply().value : dAlphaPart.value : 0F;
-            
+            DynamicPart dLightPart = parts[DYNAMIC_ENUM.ALPHA.ordinal()];
+
+            dx = (dxPart != null && dxPart.state) ? ((syncDynamicWithUVShiftTicks && shiftingUV) || tick % dxPart.updatePerTicks == 0) ? dxPart.apply().value : dxPart.value : 0F;
+            dy = (dyPart != null && dyPart.state) ? ((syncDynamicWithUVShiftTicks && shiftingUV) || tick % dyPart.updatePerTicks == 0) ? dyPart.apply().value : dyPart.value : 0F;
+            dz = (dzPart != null && dzPart.state) ? ((syncDynamicWithUVShiftTicks && shiftingUV) || tick % dzPart.updatePerTicks == 0) ? dzPart.apply().value : dzPart.value : 0F;
+            dRed = (dRedPart != null && dRedPart.state) ? ((syncDynamicWithUVShiftTicks && shiftingUV) || tick % dRedPart.updatePerTicks == 0) ? dRedPart.apply().value : dRedPart.value : 0F;
+            dGreen = (dGreenPart != null && dGreenPart.state) ? ((syncDynamicWithUVShiftTicks && shiftingUV) || tick % dGreenPart.updatePerTicks == 0) ? dGreenPart.apply().value : dGreenPart.value : 0F;
+            dBlue = (dBluePart != null && dBluePart.state) ? ((syncDynamicWithUVShiftTicks && shiftingUV) || tick % dBluePart.updatePerTicks == 0) ? dBluePart.apply().value : dBluePart.value : 0F;
+            dAlpha = (dAlphaPart != null && dAlphaPart.state) ? ((syncDynamicWithUVShiftTicks && shiftingUV) || tick % dAlphaPart.updatePerTicks == 0) ? dAlphaPart.apply().value : dAlphaPart.value : 0F;
+            dLight = (dLightPart != null && dLightPart.state) ? ((syncDynamicWithUVShiftTicks && shiftingUV) || tick % dLightPart.updatePerTicks == 0) ? dLightPart.apply().value : dLightPart.value : 0F;
+
+
+            DynamicModelPart.DynamicCuboid cuboid = (DynamicModelPart.DynamicCuboid)cubiodsIterator.next();
+            DynamicModelPart.DynamicQuad[] cuboidSidesQuadArray = cuboid.sides;
+            int cuboidSidesLength = cuboidSidesQuadArray.length;
 
             for(int x = 0; x < cuboidSidesLength; ++x) {
                 DynamicModelPart.DynamicQuad quad = cuboidSidesQuadArray[x];
@@ -409,15 +429,12 @@ public class DynamicModelPart extends ModelPart {
                     
                     Vector4f vector4f = new Vector4f(j, k, l, 1.0F);
                     vector4f.transform(matrix4f);
-                    vertexConsumer.vertex(vector4f.getX()+dx, vector4f.getY()+dy, vector4f.getZ()+dz, red+dRed, green+dGreen, blue+dBlue, alpha+dAlpha, vertex.u, vertex.v, overlay, light, normalX, normalY, normalZ);
+                    // vertexConsumer.vertex(vector4f.getX()+dx, vector4f.getY()+dy, vector4f.getZ()+dz, red+dRed, green+dGreen, blue+dBlue, alpha+dAlpha, vertex.u, vertex.v, overlay, light, normalX, normalY, normalZ);
+                    vertexConsumer.vertex(vector4f.getX()+dx, vector4f.getY()+dy, vector4f.getZ()+dz, red+dRed, green+dGreen, blue+dBlue, alpha+dAlpha, vertex.u, vertex.v, overlay, 0xF000F0, normalX, normalY, normalZ);
                 }
             }
         }
     }
-
-    // private void renderCuboids(MatrixStack.Entry matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
-    //     this.renderCuboidsDynamic(false, matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
-    // }
 
     public void addChild(DynamicModelPart part) {
         this.children.add(part);
@@ -484,5 +501,19 @@ public class DynamicModelPart extends ModelPart {
     public void addDynamicCuboid(DynamicModelPart parent, int u, int v, float x, float y, float z, float sizeX, float sizeY, float sizeZ, float extraX, float extraY, float extraZ, boolean mirror, boolean bl) {
         // System.out.println(this.cuboids.size());
         this.cuboids.add(new DynamicCuboid(parent, u, v, x, y, z, sizeX, sizeY, sizeZ, extraX, extraY, extraZ, mirror, this.textureWidth, this.textureHeight));
+    }
+
+    public void setDynamicCuboidParts(ObjectList<DynamicPart[]> dynamicParts) {
+        this.dynamicCuboidParts = new ObjectArrayList<DynamicPart[]>();
+        this.dynamicCuboidParts.addAll(dynamicParts);
+    }
+
+    public ObjectList<DynamicModelPart> getChildren() {
+      return this.children;
+    }
+
+    public void setChildren(ObjectList<DynamicModelPart> children) {
+        this.children = new ObjectArrayList<>();
+        this.children.addAll(children);
     }
 }

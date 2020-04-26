@@ -2,6 +2,7 @@ package net.lmvdz.delirium.block.blocks.delinium_crucible;
 
 import java.util.List;
 import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.MutableTriple;
 import net.fabricmc.fabric.api.renderer.v1.Renderer;
 import net.fabricmc.fabric.api.renderer.v1.mesh.Mesh;
 import net.fabricmc.fabric.api.renderer.v1.mesh.MeshBuilder;
@@ -164,15 +165,17 @@ public class DeliniumCrucibleLootableContainerBlockEntityRenderer
             matrices.push();
             matrices.translate(0f, .5f, 1f);
             matrices.scale(1f, -1f, 1f);
-            int updatePerTicks = (int)(128 / ((Math.random() * 12) + 8) / ((percentage * .28) + 1));
+            int shiftUVTicks = (int)(128 / ((Math.random() * 12) + 8) / ((percentage * .28) + 1));
+            boolean syncDynamicWithUVShiftTicks = true;
             // System.out.println(percentage);
             // if (blockEntity.ticks % updatePerTicks == 0) {
             //     System.out.println("blockentiy ticks " +blockEntity.ticks + " " + updatePerTicks);
             // }
-            blockEntity.getLavaModel().renderDynamic(
-                new MutablePair<Boolean, Integer>(true, 1), // ShiftUV(on/off, shiftIndex)
+            DeliniumCrucibleLavaModel lavaModel = blockEntity.getLavaModel();
+            lavaModel.renderDynamic(
+                syncDynamicWithUVShiftTicks, //apply dynamics per x amount of ticks
+                new MutableTriple<Boolean, Integer, Integer>(lavaModel.UV_SHIFTABLE, shiftUVTicks, 1), // ShiftUV(on/off, shiftIndex)
                 blockEntity.ticks,
-                updatePerTicks, //apply dynamics per x amount of ticks
                 matrices, // matrix
                 LAVA_MODEL_SPRITE_IDENTIFIER.getVertexConsumer(vertexConsumers, RenderLayer::getEntityTranslucent), 
                 15728880, 
