@@ -1,6 +1,8 @@
 package net.lmvdz.delirium.model;
 
 import java.util.function.Function;
+
+import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.MutableTriple;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import net.lmvdz.delirium.modelpart.DynamicModelPart;
@@ -110,8 +112,14 @@ public class DynamicModel extends Model {
         buildUsingSeeds();
     }
 
-    public DynamicModel set(DynamicModelPart main) {
+    public DynamicModel setMainDynamicModelPart(DynamicModelPart main) {
         this.main = main;
+        return this;
+    }
+
+
+    public DynamicModel seeds(ObjectList<DynamicPart[]> seeds) {
+        this.seeds = seeds;
         return this;
     }
 
@@ -123,11 +131,11 @@ public class DynamicModel extends Model {
     }
 
     public DynamicModel build() {
-        return this.set(new DynamicModelPart(this)).rotate(this.rotation).addCuboids();
+        return this.setMainDynamicModelPart(new DynamicModelPart(this)).rotate(this.rotation).addCuboids();
     }
 
     public DynamicModel buildUsingSeeds() {
-        return this.set(new DynamicModelPart(this)).rotate(this.rotation).addCuboidsUsingSeeds();
+        return this.setMainDynamicModelPart(new DynamicModelPart(this)).rotate(this.rotation).addCuboidsUsingSeeds();
     }
 
     public DynamicModel addCuboids() {
@@ -138,14 +146,13 @@ public class DynamicModel extends Model {
     }
     public DynamicModel addCuboidsUsingSeeds() {
         for(int i = 0; i < this.x.length; i++) {
-			this.main.addCuboid(this.x[i], this.y[i], this.z[i], this.sizeX[i], this.sizeY[i], this.sizeZ[i], this.extra[i], this.u[i], this.v[i], seeds.get(i));
+			this.main.addCuboid(this.x[i], this.y[i], this.z[i], this.sizeX[i], this.sizeY[i], this.sizeZ[i], this.extra[i], this.u[i], this.v[i], this.seeds.get(i));
         }
         return this;
     }
 
 	public DynamicModel rebuild() {
-        this.set(new DynamicModelPart(this, this.main)).rotate(this.rotation).addCuboids();
-        return this;
+        return this.seeds(this.main.getSeeds()).buildUsingSeeds();
     }
 
 
@@ -187,8 +194,8 @@ public class DynamicModel extends Model {
         main.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
     }
 
-    public void renderDynamic(boolean shouldApplyDynamics, boolean syncDynamicWithUVShiftTicks, MutableTriple<Boolean, Integer, Integer> shiftUV, int tick, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
-		main.renderDynamic(shouldApplyDynamics, syncDynamicWithUVShiftTicks, shiftUV, tick, matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+    public void renderDynamic(MutableTriple<MutablePair<Boolean,Boolean>, Integer, Integer> shiftUV, float tick, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
+		main.renderDynamic(shiftUV, tick, matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
 	}
 
 }

@@ -43,11 +43,11 @@ public class DeliniumCrucibleLavaModel extends DynamicModel {
 	private static final float[][] applyRandomMin = new float[][] {
 		new float[] { DynamicModelPart.DEFAULT_APPLY_RANDOM_MIN, DynamicModelPart.DEFAULT_APPLY_RANDOM_MIN, DynamicModelPart.DEFAULT_APPLY_RANDOM_MIN, DynamicModelPart.DEFAULT_APPLY_RANDOM_MIN, DynamicModelPart.DEFAULT_APPLY_RANDOM_MIN, DynamicModelPart.DEFAULT_APPLY_RANDOM_MIN, DynamicModelPart.DEFAULT_APPLY_RANDOM_MIN, DynamicModelPart.DEFAULT_APPLY_RANDOM_MIN  }
 	};
-	private static final int[][] applyRandomMultiplier = new int[][] { 
+	private static final float[][] applyRandomMultiplier = new float[][] { 
 		DynamicModelPart.DEFAULT_APPLY_RANDOM_MULTIPLIER.clone()
 	};
 
-	private static ObjectList<DynamicPart[]> seeds;
+	private static ObjectList<DynamicPart[]> SEEDS;
 
     public DeliniumCrucibleLavaModel() {
         super(RenderLayer::getEntityTranslucent, x, y, z, sizeX, sizeY, sizeZ, extra, u, v, rotation, getSeeds());
@@ -55,27 +55,28 @@ public class DeliniumCrucibleLavaModel extends DynamicModel {
 	}
 
 	private static ObjectList<DynamicPart[]> getSeeds() {
-		if (seeds == null) {
-			seeds = new ObjectArrayList<DynamicPart[]>();
+		if (SEEDS == null) {
+			SEEDS = new ObjectArrayList<DynamicPart[]>();
 			for(int index = 0; index < x.length; index++) {
+				DynamicPart[] parts = new DynamicPart[DynamicModelPart.DYNAMIC_ENUM_LENGTH];
 				for(int dEnumIndex = 0; dEnumIndex < DynamicModelPart.DYNAMIC_ENUM_LENGTH; dEnumIndex++) {
 					DYNAMIC_ENUM dEnum = DYNAMIC_ENUM.values()[dEnumIndex];
-					DynamicPart[] parts = new DynamicPart[DynamicModelPart.DYNAMIC_ENUM_LENGTH];
-					parts[dEnumIndex] = (DynamicModelPart.EMPTY).new DynamicPart(dEnum, 
-						(state.length-1 < index) ? state[state.length-1][dEnumIndex] : state[index][dEnumIndex], 
-						(min.length-1 < index) ? min[min.length-1][dEnumIndex] : min[index][dEnumIndex], 
-						(max.length-1 < index) ? max[max.length-1][dEnumIndex] : max[index][dEnumIndex], 
-						0F,
-						(lerpPercent.length-1 < index) ? lerpPercent[lerpPercent.length-1][dEnumIndex] : lerpPercent[index][dEnumIndex], 
-						(applyRandomMax.length-1 < index) ? applyRandomMax[applyRandomMax.length-1][dEnumIndex] : applyRandomMax[index][dEnumIndex], 
-						(applyRandomMin.length-1 < index) ? applyRandomMin[state.length-1][dEnumIndex] : applyRandomMin[index][dEnumIndex], 
-						(applyRandomMultiplier.length-1 < index) ? applyRandomMultiplier[applyRandomMultiplier.length-1][dEnumIndex] : applyRandomMultiplier[index][dEnumIndex]);
-					seeds.add(index, parts);
+					DynamicPart part = (DynamicModelPart.EMPTY).new DynamicPart(dEnum, 
+					(state.length-1 < index) ? state[state.length-1][dEnumIndex] : state[index][dEnumIndex], 
+					(min.length-1 < index) ? min[min.length-1][dEnumIndex] : min[index][dEnumIndex], 
+					(max.length-1 < index) ? max[max.length-1][dEnumIndex] : max[index][dEnumIndex], 
+					0F,
+					(lerpPercent.length-1 < index) ? lerpPercent[lerpPercent.length-1][dEnumIndex] : lerpPercent[index][dEnumIndex], 
+					(applyRandomMax.length-1 < index) ? applyRandomMax[applyRandomMax.length-1][dEnumIndex] : applyRandomMax[index][dEnumIndex], 
+					(applyRandomMin.length-1 < index) ? applyRandomMin[state.length-1][dEnumIndex] : applyRandomMin[index][dEnumIndex], 
+					(applyRandomMultiplier.length-1 < index) ? applyRandomMultiplier[applyRandomMultiplier.length-1][dEnumIndex] : applyRandomMultiplier[index][dEnumIndex]);
+					parts[dEnumIndex] = part;
 				}
+				SEEDS.add(index, parts);
 			}
-			System.out.println(seeds);
+			
 		}
-		return seeds;
+		return SEEDS;
 	}
 	
 }

@@ -145,10 +145,6 @@ public class DeliniumCrucibleLootableContainerBlockEntityRenderer
     public void render(DeliniumCrucibleLootableContainerBlockEntity blockEntity, float tickDelta,
             MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
 
-                // System.out.println(tickDelta);
-        boolean shouldApplyDynamics = (tick != (int)(blockEntity.ticks+tickDelta+.5f));
-        this.tick = blockEntity.ticks;
-
         MinecraftClient client = MinecraftClient.getInstance();
         BlockState state = blockEntity.getWorld().getBlockState(blockEntity.getPos());
         if (!state.getBlock().equals(DeliniumCrucible.DELINIUM_CRUCIBLE_BLOCK)) {
@@ -178,17 +174,15 @@ public class DeliniumCrucibleLootableContainerBlockEntityRenderer
             matrices.scale(1f, -1f, 1f);
             // int shiftUVTicks = (int)(640 / ((Math.random() * 12) + 10) / ((percentage * .28) + 1));
             int shiftUVTicks = 50;
-            boolean syncDynamicWithUVShiftTicks = false;
+            boolean syncApplyWithUVShift = false;
             // System.out.println(percentage);
             // System.out.println("blockentiy ticks " +blockEntity.ticks + " " + shiftUVTicks);
 
             DeliniumCrucibleLavaModel lavaModel = blockEntity.getLavaModel();
             
             lavaModel.renderDynamic(
-                shouldApplyDynamics,
-                syncDynamicWithUVShiftTicks, // sync dynamic apply with uv shift
-                new MutableTriple<Boolean, Integer, Integer>(lavaModel.UV_SHIFTABLE, shiftUVTicks, 1), // ShiftUV(on/off, apply uv shift evert x amount of ticks, shiftIndex)
-                tick,
+                new MutableTriple<MutablePair<Boolean, Boolean>, Integer, Integer>(new MutablePair<Boolean, Boolean>(syncApplyWithUVShift, lavaModel.UV_SHIFTABLE), shiftUVTicks, 1), // ShiftUV(on/off, apply uv shift evert x amount of ticks, shiftIndex)
+                blockEntity.ticks+tickDelta,
                 matrices, // matrix
                 LAVA_MODEL_SPRITE_IDENTIFIER.getVertexConsumer(vertexConsumers, RenderLayer::getEntityTranslucent), 
                 // lightAbove, 
