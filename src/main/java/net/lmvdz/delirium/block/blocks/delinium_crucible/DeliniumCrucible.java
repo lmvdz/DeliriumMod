@@ -156,11 +156,9 @@ public class DeliniumCrucible extends DeliriumBlock implements BlockEntityProvid
 
     // Open Container
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player,
-            Hand hand, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         // if (!world.isClient) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
-
             if (blockEntity instanceof DeliniumCrucibleLootableContainerBlockEntity) {
                 DeliniumCrucibleLootableContainerBlockEntity de_blockEntity = ((DeliniumCrucibleLootableContainerBlockEntity) blockEntity);
                 boolean usedItemOnCrucible = false;

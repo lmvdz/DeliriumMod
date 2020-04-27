@@ -146,18 +146,17 @@ public class DeliniumCrucibleLootableContainerBlockEntity extends LootableContai
                     }
                 }
             }
-            System.out.println(this.smeltableStackIndex);
             if (this.smeltableStackIndex == -2) {
                 this.smeltableStackIndex = -1;
             }
         }
     }
 
-    public void finishSmelt() {
+    public void finishSmelt(BlockState state) {
         if (this.smeltableStackIndex > -1 && this.smeltableStackIndex < inventory.getInvSize()) {
             ItemStack smeltableStack = getInvStack(this.smeltableStackIndex);
             DeliniumCrucibleConversion conversion = DeliniumCrucible.smeltConversions.get(smeltableStack.getItem());
-            if (smeltableStack != null && conversion != null) {
+            if (smeltableStack != null && conversion != null && rank != 0 && conversion.per != 0) {
                 int numberOfProducts = (int) Math.floor((smeltableStack.getCount() / (conversion.per / rank)));
                 // create converted delinium stack
                 ItemStack productStack = new ItemStack(conversion.product, numberOfProducts);
@@ -168,10 +167,8 @@ public class DeliniumCrucibleLootableContainerBlockEntity extends LootableContai
                 }
                 // place ingots into crucible or drop it to the ground
                 drop(productStack);
-                this.world.setBlockState(this.getPos(), this.world.getBlockState(this.getPos()).with(DeliniumCrucible.MELTING, false));
-                this.world.setBlockState(this.getPos(), this.world.getBlockState(this.getPos()).with(DeliniumCrucible.PRIMED, true));
-                this.world.setBlockState(this.getPos(), this.world.getBlockState(this.getPos()).with(DeliniumCrucible.PERCENTAGE, 0));
             }
+            this.ticks = -1;
         }
     }
 
@@ -181,21 +178,20 @@ public class DeliniumCrucibleLootableContainerBlockEntity extends LootableContai
         if (this.world.isChunkLoaded(this.getPos())) {
             boolean melting = DeliniumCrucible.getMeltingFromBlockState(state);
             boolean primed = DeliniumCrucible.getCanMeltFromBlockState(state);
+            // System.out.println(melting + " " + primed);
             if (primed || melting) {
-                if (primed && !melting && this.ticks == -1) {
-                    this.ticks = 0;
-                }
                 if (this.ticks >= 0 && this.ticks <= 1280) {
                     this.ticks++;
                     if (melting) {
                         this.world.setBlockState(this.getPos(), state.with(DeliniumCrucible.PERCENTAGE, (int)(this.ticks / 128)));
                         int percentage = DeliniumCrucible.getPercentageFromBlockState(state);
                         if (percentage == 10) {
-                            this.finishSmelt();
-                            this.ticks = -1;
+                            this.ticks = -2;
+                            this.world.setBlockState(this.getPos(), state.with(DeliniumCrucible.MELTING, false).with(DeliniumCrucible.PRIMED, true).with(DeliniumCrucible.PERCENTAGE, 0));
+                            this.finishSmelt(state);
                         }
                     }
-                } else if (this.ticks != -1){
+                } else if (this.ticks == -1 || this.ticks > 1280) {
                     this.ticks = 0;
                 }
             }

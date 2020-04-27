@@ -41,7 +41,7 @@ public class DeliriumMod implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		System.out.println("DeliriumMod - Init");
-
+		
 		// .obj model - FOML - nerdhub.foml.obj.OBJLoader
 		// https://github.com/OnyxStudios/FOML
 		// OBJLoader.INSTANCE.registerDomain(MODID); --- is not working

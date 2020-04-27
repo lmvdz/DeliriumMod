@@ -10,6 +10,7 @@ import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
 import net.fabricmc.fabric.api.renderer.v1.model.ModelHelper;
 import net.fabricmc.fabric.impl.renderer.RendererAccessImpl;
 import net.lmvdz.delirium.DeliriumMod;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
@@ -37,7 +38,7 @@ import net.minecraft.world.BlockRenderView;
 public class DeliniumCrucibleLootableContainerBlockEntityRenderer
         extends BlockEntityRenderer<DeliniumCrucibleLootableContainerBlockEntity> {
 
-    
+    private int tick = 0;
 
     public DeliniumCrucibleLootableContainerBlockEntityRenderer(
             BlockEntityRenderDispatcher dispatcher) {
@@ -74,7 +75,6 @@ public class DeliniumCrucibleLootableContainerBlockEntityRenderer
         }
         Renderer renderer = RendererAccessImpl.INSTANCE.getRenderer();
         SpriteIdentifier spriteId = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, new Identifier("block/lava_still"));
-        Sprite lavaSprite = spriteId.getSprite();
         VertexConsumer vc = spriteId.getVertexConsumer(vertexConsumers, layerFactory -> { return RenderLayer.getTranslucent(); });
         // VertexConsumer vc = vertexConsumers.getBuffer(RenderLayer.getSolid());
         MeshBuilder meshBuilder = renderer.meshBuilder();
@@ -144,15 +144,25 @@ public class DeliniumCrucibleLootableContainerBlockEntityRenderer
     @Override
     public void render(DeliniumCrucibleLootableContainerBlockEntity blockEntity, float tickDelta,
             MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        
+
+                // System.out.println(tickDelta);
+        boolean shouldApplyDynamics = (tick != (int)(blockEntity.ticks+tickDelta+.5f));
+        this.tick = blockEntity.ticks;
+
         MinecraftClient client = MinecraftClient.getInstance();
-        boolean melting = DeliniumCrucible.getMeltingFromBlockState(blockEntity.getWorld().getBlockState(blockEntity.getPos()));
-        boolean primed = DeliniumCrucible.getCanMeltFromBlockState(blockEntity.getWorld().getBlockState(blockEntity.getPos()));
-        int percentage = DeliniumCrucible.getPercentageFromBlockState(blockEntity.getWorld().getBlockState(blockEntity.getPos()));
+        BlockState state = blockEntity.getWorld().getBlockState(blockEntity.getPos());
+        if (!state.getBlock().equals(DeliniumCrucible.DELINIUM_CRUCIBLE_BLOCK)) {
+            return;
+        }
+        boolean melting = DeliniumCrucible.getMeltingFromBlockState(state);
+        boolean primed = DeliniumCrucible.getCanMeltFromBlockState(state);
+        int percentage = DeliniumCrucible.getPercentageFromBlockState(state);
 
         // Renderer renderer = RendererAccessImpl.INSTANCE.getRenderer();
         // Sprite sprite = client.getBlockRenderManager().getModel(blockEntity.getCachedState()).getSprite();
         
+
+
         double offset = Math.abs(Math.sin((blockEntity.getWorld().getTime() + tickDelta) / 8.0) / 16.0);
         int lightAbove = WorldRenderer.getLightmapCoordinates(blockEntity.getWorld(), blockEntity.getPos().up());
         double distanceToCamera = client.cameraEntity.getPos().squaredDistanceTo(new Vec3d(blockEntity.getPos().getX()+.5f, blockEntity.getPos().getY()+.5f, blockEntity.getPos().getZ()+.5f));
@@ -162,20 +172,23 @@ public class DeliniumCrucibleLootableContainerBlockEntityRenderer
         // renderCube(matrices, vertexConsumers, new Vector3f(.1F, .1F, .1F), new Vector3f(.5f, 1.1f, .5f), null);
         // renderFluid(blockEntity.getPos().up(), (BlockRenderView)client.world, vertexConsumers.getBuffer(RenderLayers.getFluidLayer(Fluids.FLOWING_LAVA.getDefaultState().with(LavaFluid.LEVEL, 8))), Fluids.FLOWING_LAVA.getDefaultState().with(LavaFluid.LEVEL, 8));
         if (!client.isPaused() && (melting || primed)) {
+            
             matrices.push();
             matrices.translate(0f, .5f, 1f);
             matrices.scale(1f, -1f, 1f);
-            int shiftUVTicks = (int)(128 / ((Math.random() * 12) + 8) / ((percentage * .28) + 1));
-            boolean syncDynamicWithUVShiftTicks = true;
+            // int shiftUVTicks = (int)(640 / ((Math.random() * 12) + 10) / ((percentage * .28) + 1));
+            int shiftUVTicks = 50;
+            boolean syncDynamicWithUVShiftTicks = false;
             // System.out.println(percentage);
-            // if (blockEntity.ticks % updatePerTicks == 0) {
-            //     System.out.println("blockentiy ticks " +blockEntity.ticks + " " + updatePerTicks);
-            // }
+            // System.out.println("blockentiy ticks " +blockEntity.ticks + " " + shiftUVTicks);
+
             DeliniumCrucibleLavaModel lavaModel = blockEntity.getLavaModel();
+            
             lavaModel.renderDynamic(
-                syncDynamicWithUVShiftTicks, //apply dynamics per x amount of ticks
-                new MutableTriple<Boolean, Integer, Integer>(lavaModel.UV_SHIFTABLE, shiftUVTicks, 1), // ShiftUV(on/off, shiftIndex)
-                blockEntity.ticks,
+                shouldApplyDynamics,
+                syncDynamicWithUVShiftTicks, // sync dynamic apply with uv shift
+                new MutableTriple<Boolean, Integer, Integer>(lavaModel.UV_SHIFTABLE, shiftUVTicks, 1), // ShiftUV(on/off, apply uv shift evert x amount of ticks, shiftIndex)
+                tick,
                 matrices, // matrix
                 LAVA_MODEL_SPRITE_IDENTIFIER.getVertexConsumer(vertexConsumers, RenderLayer::getEntityTranslucent), 
                 // lightAbove, 
@@ -204,23 +217,23 @@ public class DeliniumCrucibleLootableContainerBlockEntityRenderer
                             float scale = 1F - ((float)(10D-distanceToCamera)/10F);
                             matrices.scale(scale, scale, scale);
                         } else {
-                            matrices.translate(.5, 1.6 + offset, .5);
+                            matrices.translate(.5, 1.65 + offset, .5);
                             matrices.scale(1f, 1f, 1f);
                         }
                         matrices.multiply(Vector3f.POSITIVE_Y
                             .getDegreesQuaternion((blockEntity.getWorld().getTime() + tickDelta) * 4));
                         client.getItemRenderer().renderItem(stack,
-                            ModelTransformation.Mode.GROUND, lightAbove, OverlayTexture.DEFAULT_UV, matrices,
+                            ModelTransformation.Mode.GROUND, 0xF000F0, OverlayTexture.DEFAULT_UV, matrices,
                             vertexConsumers);
                         matrices.pop();
                         DeliniumCrucibleConversion conversion = DeliniumCrucible.smeltConversions.get(stack.getItem());
                         if (conversion != null) {
                             String text = stack.getName().asString() + " (" + stack.getCount()  + ")";
-                            renderTextAboveBlockEntity(distanceToCamera, blockEntity, text, renderDistance, matrices, vertexConsumers, new float[] { 0f, (float)offset+.1f, 0f }, lightAbove);
+                            renderTextAboveBlockEntity(distanceToCamera, blockEntity, text, renderDistance, matrices, vertexConsumers, new float[] { 0f, (float)offset+.1f, 0f }, 0xF000F0);
                             text = (new ItemStack(conversion.product)).getName().asString() + " (" + (stack.getCount() / conversion.per) * conversion.count  + ")";
-                            renderTextAboveBlockEntity(distanceToCamera, blockEntity, text, renderDistance, matrices, vertexConsumers, new float[] { 0f, (float)(offset-.15f), 0f }, lightAbove);
+                            renderTextAboveBlockEntity(distanceToCamera, blockEntity, text, renderDistance, matrices, vertexConsumers, new float[] { 0f, (float)(offset-.15f), 0f }, 0xF000F0);
                             text = percentage + "/10";
-                            renderTextAboveBlockEntity(distanceToCamera, blockEntity, text, renderDistance, matrices, vertexConsumers, new float[] { 0f, (float)(offset-.4f), 0f }, lightAbove);
+                            renderTextAboveBlockEntity(distanceToCamera, blockEntity, text, renderDistance, matrices, vertexConsumers, new float[] { 0f, (float)(offset-.4f), 0f }, 0xF000F0);
                         }
                     }
                 }

@@ -26,12 +26,8 @@ public class DynamicModel extends Model {
 	public int[] u;
     public int[] v;
     public float[] rotation;
+    public ObjectList<DynamicPart[]> seeds;
 
-
-
-    public DynamicModel(Function<Identifier, RenderLayer> layerFactory) {
-        super(layerFactory);
-    }
 
     public DynamicModel(Function<Identifier, RenderLayer> layerFactory, float[] x, float[] y, float[] z, int[] sizeX, int[] sizeY, int[] sizeZ, float[] extra, int[] u, int[] v) {
         super(layerFactory);
@@ -64,6 +60,56 @@ public class DynamicModel extends Model {
         build();
     }
 
+    public DynamicModel(Function<Identifier, RenderLayer> layerFactory, float[] x, float[] y, float[] z, int[] sizeX, int[] sizeY, int[] sizeZ, float[] extra, int[] u, int[] v, float xRotation, float yRotation, float zRotation, ObjectList<DynamicPart[]> seeds) {
+        super(layerFactory);
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.sizeX = sizeX;
+        this.sizeY = sizeY;
+        this.sizeZ = sizeZ;
+        this.extra = extra;
+        this.u = u;
+        this.v = v;
+        this.rotation = new float[] {xRotation, yRotation, zRotation};
+        this.UV_SHIFTABLE = true;
+        this.seeds = seeds;
+        buildUsingSeeds();
+    }
+
+    public DynamicModel(Function<Identifier, RenderLayer> layerFactory, float[] x, float[] y, float[] z, int[] sizeX, int[] sizeY, int[] sizeZ, float[] extra, int[] u, int[] v, float[] rotation) {
+        super(layerFactory);
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.sizeX = sizeX;
+        this.sizeY = sizeY;
+        this.sizeZ = sizeZ;
+        this.extra = extra;
+        this.u = u;
+        this.v = v;
+        this.rotation = rotation;
+        this.UV_SHIFTABLE = true;
+        build();
+    }
+
+    public DynamicModel(Function<Identifier, RenderLayer> layerFactory, float[] x, float[] y, float[] z, int[] sizeX, int[] sizeY, int[] sizeZ, float[] extra, int[] u, int[] v, float[] rotation, ObjectList<DynamicPart[]> seeds) {
+        super(layerFactory);
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.sizeX = sizeX;
+        this.sizeY = sizeY;
+        this.sizeZ = sizeZ;
+        this.extra = extra;
+        this.u = u;
+        this.v = v;
+        this.rotation = rotation;
+        this.UV_SHIFTABLE = true;
+        this.seeds = seeds;
+        buildUsingSeeds();
+    }
+
     public DynamicModel set(DynamicModelPart main) {
         this.main = main;
         return this;
@@ -71,7 +117,7 @@ public class DynamicModel extends Model {
 
     public DynamicModel rotate(float[] rotation) {
         MatrixStack rotationStack = new MatrixStack();
-        rotationStack.translate(-8.0F, 16.0F, 8.0F);
+        rotationStack.translate(rotation[0], rotation[1], rotation[2]);
         this.main.rotate(rotationStack);
         return this;
     }
@@ -79,17 +125,29 @@ public class DynamicModel extends Model {
     public DynamicModel build() {
         return this.set(new DynamicModelPart(this)).rotate(this.rotation).addCuboids();
     }
+
+    public DynamicModel buildUsingSeeds() {
+        return this.set(new DynamicModelPart(this)).rotate(this.rotation).addCuboidsUsingSeeds();
+    }
+
     public DynamicModel addCuboids() {
         for(int i = 0; i < this.x.length; i++) {
 			this.main.addCuboid(this.x[i], this.y[i], this.z[i], this.sizeX[i], this.sizeY[i], this.sizeZ[i], this.extra[i], this.u[i], this.v[i]);
         }
         return this;
     }
+    public DynamicModel addCuboidsUsingSeeds() {
+        for(int i = 0; i < this.x.length; i++) {
+			this.main.addCuboid(this.x[i], this.y[i], this.z[i], this.sizeX[i], this.sizeY[i], this.sizeZ[i], this.extra[i], this.u[i], this.v[i], seeds.get(i));
+        }
+        return this;
+    }
 
 	public DynamicModel rebuild() {
-        this.set(new DynamicModelPart(this, this.main.getDynamicCuboidParts(), this.main.getChildren())).rotate(this.rotation).addCuboids();
+        this.set(new DynamicModelPart(this, this.main)).rotate(this.rotation).addCuboids();
         return this;
-	}
+    }
+
 
 	public DynamicModel shiftU(int shift) {
         this.u = shiftIntArray(this.u, shift);
@@ -117,19 +175,20 @@ public class DynamicModel extends Model {
 			shiftCounter++;
 		}
 		return array;
-	}
-
-    public void setDynamics(ObjectList<DynamicPart[]> dynamicParts) {
-        this.main.setDynamicCuboidParts(dynamicParts);
     }
+    
+    public boolean hasSeeds() {
+        return this.seeds != null && this.seeds.size() > 0;
+    }
+
 
     @Override
     public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
         main.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
     }
 
-    public void renderDynamic(boolean syncDynamicWithUVShiftTicks, MutableTriple<Boolean, Integer, Integer> shiftUV, int tick, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
-		main.renderDynamic(syncDynamicWithUVShiftTicks, shiftUV, tick, matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+    public void renderDynamic(boolean shouldApplyDynamics, boolean syncDynamicWithUVShiftTicks, MutableTriple<Boolean, Integer, Integer> shiftUV, int tick, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
+		main.renderDynamic(shouldApplyDynamics, syncDynamicWithUVShiftTicks, shiftUV, tick, matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
 	}
 
 }

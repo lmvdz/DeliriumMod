@@ -34,12 +34,14 @@ dependencies {
 
 	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
 	// You may need to force-disable transitiveness on them.
-	modCompile "com.github.OnyxStudios:FOML:${foml_version}"
+	// modCompile "com.github.OnyxStudios:FOML:${foml_version}"
 
-	//
-	modCompile 'com.github.modmuss50:OptiFabric:1.0.0-beta8'
+	// optifabric
+	// modImplementation "com.github.modmuss50:OptiFabric:${project.optifabric_version}"
+	modCompile "com.github.modmuss50:OptiFabric:${project.optifabric_version}"
+
     //Deps required for optifabric
-    compile 'org.zeroturnaround:zt-zip:1.14'
+    compile "org.zeroturnaround:zt-zip:1.14"
 }
 
 processResources {
