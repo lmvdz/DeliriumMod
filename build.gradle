@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '0.2.6-SNAPSHOT'
+	id 'fabric-loom' version '0.2.7-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -11,15 +11,19 @@ version = project.mod_version
 group = project.maven_group
 
 repositories {
-    maven {
-        name = "OnyxStudios"
-        url = "https://maven.abusedmaster.xyz"
-    }
+    // maven {
+    //     name = "OnyxStudios"
+    //     url = "https://maven.abusedmaster.xyz"
+    // }
 	maven {
         name = 'CottonMC'
         url = 'https://server.bbkr.space/artifactory/libs-release'
     }
 	maven { url 'https://jitpack.io' }
+
+	// flatDir {
+	// 	dirs 'deps'
+	// }
 }
 
 dependencies {
@@ -32,16 +36,25 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	modImplementation "io.github.cottonmc:cotton-client-commands:${project.cotton_client_command_version}"
 
+
+	// Replace modImplementation with modApi if you expose components in your own API
+    // modImplementation "com.github.OnyxStudios.Cardinal-Components-API:Cardinal-Components-API:2.3.4"
+
+
 	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
 	// You may need to force-disable transitiveness on them.
 	// modCompile "com.github.OnyxStudios:FOML:${foml_version}"
-
+	
+	// modImplementation files("libs/immersive-portals-0.27(forMc1.15withFabric).jar")
+	// modImplementation "curse.maven:immersive-portals-mod:2936532"
+	modImplementation 'com.github.qouteall:ImmersivePortalsMod:v0.28-1.15-2'
 	// optifabric
 	// modImplementation "com.github.modmuss50:OptiFabric:${project.optifabric_version}"
 	modCompile "com.github.modmuss50:OptiFabric:${project.optifabric_version}"
-
-    //Deps required for optifabric
+    // Deps required for optifabric
     compile "org.zeroturnaround:zt-zip:1.14"
+
+	// modCompile files("libs/toxiclibs/toxiclibscore/library/toxiclibscore.jar")
 }
 
 processResources {

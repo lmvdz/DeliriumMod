@@ -2,19 +2,19 @@ package net.lmvdz.delirium.client;
 
 import java.util.ArrayList;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry;
+import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.client.screen.ScreenProviderRegistry;
-import net.lmvdz.delirium.DeliriumMod;
 import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucible;
 import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucibleContainer;
 import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucibleLootableContainerBlockEntityRenderer;
 import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucibleScreen;
 import net.lmvdz.delirium.item.DeliriumItemTooltip;
 import net.lmvdz.delirium.item.DeliriumItemTooltipCallback;
+import net.lmvdz.delirium.portal.PortalEntityRenderer;
+import net.lmvdz.delirium.portal.RotatingPortal;
 import net.lmvdz.delirium.util.FormattingEngine;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
@@ -46,8 +46,11 @@ public class DeliriumClientMod implements ClientModInitializer {
         //     return new DeliniumCrucibleModel(blockState);
         // });
         // ModelLoadingRegistry.INSTANCE.registerResourceProvider(manager -> provider);
-        
-        
+
+        EntityRendererRegistry.INSTANCE.register(
+            RotatingPortal.entityType,
+            (entityRenderDispatcher, context) -> new PortalEntityRenderer<RotatingPortal>(entityRenderDispatcher)
+        );
         
         // Register Block Entity Renderer - Delinium Crucible Block Entity Renderer
         BlockEntityRendererRegistry.INSTANCE.register(DeliniumCrucible.DELINIUM_CRUCIBLE_BLOCK_ENTITY_TYPE, DeliniumCrucibleLootableContainerBlockEntityRenderer::new);
@@ -65,5 +68,34 @@ public class DeliriumClientMod implements ClientModInitializer {
                 )
             )
         );
+
+        // ClientSidePacketRegistry.INSTANCE.register(DeliniumCrucibleLootableContainerBlockEntity.SET_CLIENT_IMMERSIVE_PORTAL_PACKET, (packetContext, attachedData) -> {
+        //     BlockPos pos = attachedData.readBlockPos();
+        //     double axisH_X = attachedData.readDouble();
+        //     double axisH_Y = attachedData.readDouble();
+        //     double axisH_Z = attachedData.readDouble();
+
+        //     double axisW_X = attachedData.readDouble();
+        //     double axisW_Y = attachedData.readDouble();
+        //     double axisW_Z = attachedData.readDouble();
+        //     packetContext.getTaskQueue().execute(() -> {
+        //         World w = packetContext.getPlayer().world;
+        //         BlockEntity be = w.getBlockEntity(pos);
+        //         Vec3d axisH = new Vec3d(axisH_X,axisH_Y,axisH_Z);
+        //         Vec3d axisW = new Vec3d(axisW_X,axisW_Y,axisW_Z);
+        //         if (be instanceof DeliniumCrucibleLootableContainerBlockEntity) {
+        //             DeliniumCrucibleLootableContainerBlockEntity de_be = (DeliniumCrucibleLootableContainerBlockEntity)be;
+        //             Box b = packetContext.getPlayer().getBoundingBox().expand(500);
+        //             w.getEntities(RotatingPortal.entityType, b, p -> {
+        //                 return p instanceof RotatingPortal;
+        //             }).forEach(portal -> {
+        //                 // portal.axisH = axisH;
+        //                 // portal.axisW = axisW;
+        //             });
+        //         }
+                
+
+        //     });
+        // });
     }
 }

@@ -1,74 +1,34 @@
 package net.lmvdz.delirium.modelpart;
 
+import java.util.Arrays;
 import java.util.Random;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.tuple.MutableTriple;
-import org.apache.commons.lang3.tuple.MutablePair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.lmvdz.delirium.model.DynamicModel;
+import net.lmvdz.delirium.util.Interpolation;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.Matrix3f;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.util.math.Vector4f;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 
 public class DynamicModelPart extends ModelPart {
 
-    public static final DynamicModelPart EMPTY;
 
-    static {
-        EMPTY = new DynamicModelPart(0, 0, 0, 0);
-    }
-
-    private float textureWidth;
-    private float textureHeight;
-    private int textureOffsetU;
-    private int textureOffsetV;
-    private ObjectList<DynamicModelPart.DynamicCuboid> cuboids;
-    private ObjectList<DynamicModelPart> children;
-    private DynamicModel dynamicModel;
-    private float lastTick = 0;
-
-
-    public DynamicModelPart(DynamicModel dynamicModel) {
-        super(dynamicModel);
-        this.cuboids = new ObjectArrayList<DynamicModelPart.DynamicCuboid>();
-        this.children = new ObjectArrayList<DynamicModelPart>();
-        this.dynamicModel = dynamicModel;
-    }
-
-    public DynamicModelPart(DynamicModel dynamicModel, DynamicModelPart main) {
-        super(dynamicModel);
-        this.cuboids = new ObjectArrayList<DynamicModelPart.DynamicCuboid>();
-        this.children.addAll(main.children);
-        this.lastTick = main.lastTick;
-        this.dynamicModel = dynamicModel;
-        main = null;
-    }
-
-
-    public DynamicModelPart(DynamicModel dynamicModel, int textureOffsetU, int textureOffsetV) {
-        super(dynamicModel, textureOffsetU, textureOffsetV);
-        this.cuboids = new ObjectArrayList<DynamicModelPart.DynamicCuboid>();
-        this.children = new ObjectArrayList<DynamicModelPart>();
-        this.dynamicModel = dynamicModel;
-    }
-
-    public DynamicModelPart(int textureWidth, int textureHeight, int textureOffsetU, int textureOffsetV) {
-        super(textureWidth, textureHeight, textureOffsetU, textureOffsetV);
-        this.cuboids = new ObjectArrayList<DynamicModelPart.DynamicCuboid>();
-        this.children = new ObjectArrayList<DynamicModelPart>();
-    }
-
-    public enum DYNAMIC_ENUM {
+    public static enum DYNAMIC_ENUM {
         X,
         Y,
         Z,
@@ -88,6 +48,261 @@ public class DynamicModelPart extends ModelPart {
     public static final float[] DEFAULT_APPLY_RANDOM_MULTIPLIER = new float[]{1F, 1F, 1F, 1F, 1F, 1F, 1F, 1F};
     public static final float DEFAULT_APPLY_RANDOM_MAX = .005F;
     public static final float DEFAULT_APPLY_RANDOM_MIN = 0F;
+
+    public boolean UV_SHIFT_APPLY_SYNC;
+    public boolean UV_SHIFTABLE;
+    public boolean UV_SHIFT_EVERY_X_TICK;
+    public boolean UV_SHIFT_EVERY_TICK;
+    public int UV_SHIFT_EVERY_X_TICKS;
+    public boolean UV_SHIFT_EVERY_DELTA_TICK;
+    public boolean UV_SHIFT_EVERY_X_DELTA_TICK;
+    public int UV_SHIFT_EVERY_X_DELTA_TICKS;
+    public boolean UPDATE_DYNAMICS_EVERY_TICK;
+    public boolean UPDATE_DYNAMICS_EVERY_X_TICK;
+    public int UPDATE_DYNAMICS_EVERY_X_TICKS;
+    public boolean UPDATE_DYNAMICS_EVERY_DELTA_TICK;
+    public boolean UPDATE_DYNAMICS_EVERY_X_DELTA_TICK;
+    public int UPDATE_DYNAMICS_EVERY_X_DELTA_TICKS;
+
+    public int shiftDeltaTickCounter = 0;
+    public int dynamicsDeltaTickCounter = 0;
+
+
+    public float[] x;
+	public float[] y;
+	public float[] z;
+	public int[] sizeX;
+	public int[] sizeY;
+	public int[] sizeZ;
+	public float[] extra;
+	public int[] u;
+    public int[] v;
+    public float[] rotation;
+    public ObjectList<DynamicPart[]> seeds;
+    public SpriteIdentifier spriteId;
+    public Function<Identifier, RenderLayer> layerFactory;
+    private float textureWidth;
+    private float textureHeight;
+    private int textureOffsetU;
+    private int textureOffsetV;
+    private ObjectList<DynamicModelPart.DynamicCuboid> cuboids;
+    private ObjectList<DynamicModelPart> children;
+    public static final DynamicModelPart EMPTY = new DynamicModelPart(0, 0, 0, 0);
+
+    public DynamicModelPart setU(int[] u) {
+        this.u = u;
+        return this;
+    }
+    public DynamicModelPart setV(int[] v) {
+        this.v = v;
+        return this;
+    }
+
+    public DynamicModelPart setX(float[] x) {
+        this.x = x;
+        return this;
+    }
+    public DynamicModelPart setY(float[] y) {
+        this.y = y;
+        return this;
+    }
+    public DynamicModelPart setZ(float[] z) {
+        this.z = z;
+        return this;
+    }
+
+    public DynamicModelPart setSizeX(int[] sizeX) {
+        this.sizeX = sizeX;
+        return this;
+    }
+    public DynamicModelPart setSizeY(int[] sizeY) {
+        this.sizeY = sizeY;
+        return this;
+    }
+    public DynamicModelPart setSizeZ(int[] sizeZ) {
+        this.sizeZ = sizeZ;
+        return this;
+    }
+
+    public DynamicModelPart setExtra(float[] extra) {
+        this.extra = extra;
+        return this;
+    }
+
+    public DynamicModelPart setRotation(float[] rotation){
+        this.rotation = rotation;
+        return this;
+    }
+
+    public DynamicModelPart spriteId(SpriteIdentifier spriteId) {
+        this.spriteId = spriteId;
+        return this;
+    }
+
+    public DynamicModelPart layerFactory(Function<Identifier, RenderLayer> layerFactory) {
+        this.layerFactory = layerFactory;
+        return this;
+    }
+
+    public DynamicModelPart seeds(ObjectList<DynamicPart[]> seeds) {
+        this.seeds = seeds;
+        return this;
+    }
+
+    public DynamicModelPart rotateModelPart(float[] rotation) {
+        MatrixStack rotationStack = new MatrixStack();
+        rotationStack.translate(rotation[0], rotation[1], rotation[2]);
+        this.rotate(rotationStack);
+        return this;
+    }
+
+    public DynamicModelPart build() {
+        return this.rotateModelPart(this.rotation).addCuboids().buildChildren();
+    }
+
+    public DynamicModelPart buildChildren() {
+        this.children.forEach(child -> {
+            child.build();
+        });
+        return this;
+    }
+
+    public DynamicModelPart buildUsingSeeds() {
+        return this.rotateModelPart(this.rotation).addCuboidsUsingSeeds().buildChildrenUsingSeeds();
+    }
+
+    public DynamicModelPart buildChildrenUsingSeeds() {
+        this.children.forEach(child -> {
+            child.buildUsingSeeds();
+        });
+        return this;
+    }
+
+    public DynamicModelPart addCuboids() {
+        for(int i = 0; i < this.x.length; i++) {
+			this.addCuboid(this.x[i], this.y[i], this.z[i], this.sizeX[i], this.sizeY[i], this.sizeZ[i], this.extra[i], this.u[i], this.v[i]);
+        }
+        return this;
+    }
+    public DynamicModelPart addCuboidsUsingSeeds() {
+        for(int i = 0; i < this.x.length; i++) {
+			this.addCuboid(this.x[i], this.y[i], this.z[i], this.sizeX[i], this.sizeY[i], this.sizeZ[i], this.extra[i], this.u[i], this.v[i], this.seeds.get(i));
+        }
+        return this;
+    }
+
+	public DynamicModelPart rebuild() {
+        return this.seeds(this.getSeeds()).buildUsingSeeds();
+    }
+
+
+	public DynamicModelPart shiftU(int shift) {
+        this.u = shiftIntArray(this.u, shift);
+        return this;
+	}
+
+	public DynamicModelPart shiftV(int shift) {
+        this.v = shiftIntArray(this.v, shift);
+        return this;
+	}
+
+	public DynamicModelPart shiftUV(int shift) {
+        return this.shiftU(shift).shiftV(shift);
+	}
+
+
+    private int[] shiftIntArray(int[] array, int shift) {
+		int shiftCounter = 0;
+		while(shiftCounter < Math.abs(shift)) {
+			int temp = array[array.length-1]; // last number
+			for (int i = array.length-1; i > 0; i--) {
+				array[i] = array[i-1];
+			}
+			array[0] = temp;
+			shiftCounter++;
+		}
+		return array;
+    }
+    
+    public boolean hasSeeds() {
+        return this.seeds != null && this.seeds.size() > 0;
+    }
+
+    public DynamicModelPart(DynamicModel dynamicModel, float[] x, float[] y, float[] z, int[] sizeX, int[] sizeY, int[] sizeZ, float[] extra, int[] u, int[] v, float[] rotation, ObjectList<DynamicModelPart.DynamicPart[]> seeds, SpriteIdentifier spriteId, Function<Identifier, RenderLayer> layerFactory) {
+        super(dynamicModel);
+        this.cuboids = new ObjectArrayList<DynamicModelPart.DynamicCuboid>();
+        this.children = new ObjectArrayList<DynamicModelPart>();
+        this.UV_SHIFTABLE = true;
+        this.UV_SHIFT_APPLY_SYNC  = true;
+        this.UV_SHIFT_EVERY_TICK = false;
+        this.UV_SHIFT_EVERY_X_TICK = false;
+        this.UV_SHIFT_EVERY_X_TICKS = 0;
+        this.UV_SHIFT_EVERY_DELTA_TICK = false;
+        this.UV_SHIFT_EVERY_X_DELTA_TICK = false;
+        this.UV_SHIFT_EVERY_X_DELTA_TICKS = 0;
+        this.UPDATE_DYNAMICS_EVERY_TICK = true;
+        this.UPDATE_DYNAMICS_EVERY_X_TICK = false;
+        this.UPDATE_DYNAMICS_EVERY_X_TICKS = 0;
+        this.UPDATE_DYNAMICS_EVERY_DELTA_TICK = false;
+        this.UPDATE_DYNAMICS_EVERY_X_DELTA_TICK = false;
+        this.UPDATE_DYNAMICS_EVERY_X_DELTA_TICKS = 0;
+        this.setX(x)
+            .setY(y)
+            .setZ(z)
+            .setSizeX(sizeX)
+            .setSizeY(sizeY)
+            .setSizeZ(sizeZ)
+            .setExtra(extra)
+            .setU(u)
+            .setV(v)
+            .setRotation(rotation)
+            .seeds(seeds)
+            .spriteId(spriteId)
+            .layerFactory(layerFactory)
+            .buildUsingSeeds();
+        
+    }
+
+
+    public DynamicModelPart(DynamicModel dynamicModel, int textureOffsetU, int textureOffsetV) {
+        super(dynamicModel, textureOffsetU, textureOffsetV);
+        this.cuboids = new ObjectArrayList<DynamicModelPart.DynamicCuboid>();
+        this.children = new ObjectArrayList<DynamicModelPart>();
+    }
+    public DynamicModelPart with(boolean UV_SHIFT_APPLY_SYNC, boolean UV_SHIFTABLE, boolean UV_SHIFT_EVERY_X_TICK, boolean UV_SHIFT_EVERY_TICK, int UV_SHIFT_EVERY_X_TICKS, boolean UV_SHIFT_EVERY_DELTA_TICK, boolean UV_SHIFT_EVERY_X_DELTA_TICK, int UV_SHIFT_EVERY_X_DELTA_TICKS, boolean UPDATE_DYNAMICS_EVERY_TICK, boolean UPDATE_DYNAMICS_EVERY_X_TICK, int UPDATE_DYNAMICS_EVERY_X_TICKS, boolean UPDATE_DYNAMICS_EVERY_DELTA_TICK, boolean UPDATE_DYNAMICS_EVERY_X_DELTA_TICK, int UPDATE_DYNAMICS_EVERY_X_DELTA_TICKS) {
+        this.UV_SHIFTABLE = UV_SHIFTABLE;
+        this.UV_SHIFT_APPLY_SYNC = UV_SHIFT_APPLY_SYNC;
+        this.UV_SHIFT_EVERY_TICK = UV_SHIFT_EVERY_TICK;
+        this.UV_SHIFT_EVERY_X_TICK = UV_SHIFT_EVERY_X_TICK;
+        this.UV_SHIFT_EVERY_X_TICKS = UV_SHIFT_EVERY_X_TICKS;
+        this.UV_SHIFT_EVERY_DELTA_TICK = UV_SHIFT_EVERY_DELTA_TICK;
+        this.UV_SHIFT_EVERY_X_DELTA_TICK = UV_SHIFT_EVERY_X_DELTA_TICK;
+        this.UV_SHIFT_EVERY_X_DELTA_TICKS = UV_SHIFT_EVERY_X_DELTA_TICKS;
+        this.UPDATE_DYNAMICS_EVERY_TICK = UPDATE_DYNAMICS_EVERY_TICK;
+        this.UPDATE_DYNAMICS_EVERY_X_TICK = UPDATE_DYNAMICS_EVERY_X_TICK;
+        this.UPDATE_DYNAMICS_EVERY_X_TICKS = UPDATE_DYNAMICS_EVERY_X_TICKS;
+        this.UPDATE_DYNAMICS_EVERY_DELTA_TICK = UPDATE_DYNAMICS_EVERY_DELTA_TICK;
+        this.UPDATE_DYNAMICS_EVERY_X_DELTA_TICK = UPDATE_DYNAMICS_EVERY_X_DELTA_TICK;
+        this.UPDATE_DYNAMICS_EVERY_X_DELTA_TICKS = UPDATE_DYNAMICS_EVERY_X_DELTA_TICKS;
+        return this;
+    }
+
+    public DynamicModelPart(int textureWidth, int textureHeight, int textureOffsetU, int textureOffsetV) {
+        super(textureWidth, textureHeight, textureOffsetU, textureOffsetV);
+        this.cuboids = new ObjectArrayList<DynamicModelPart.DynamicCuboid>();
+        this.children = new ObjectArrayList<DynamicModelPart>();
+    }
+
+    public DynamicModelPart addDynamicChild(DynamicModelPart child) {
+        this.children.add(child);
+        return this;
+    }
+    public DynamicModelPart addDynamicChildren(ObjectList<DynamicModelPart> children) {
+        this.children.addAll(children);
+        return this;
+    }
+
+    
     @Environment(EnvType.CLIENT)
     public class DynamicPart {
         
@@ -117,60 +332,65 @@ public class DynamicModelPart extends ModelPart {
 
 
         public DynamicPart dynamic(DYNAMIC_ENUM dEnum, boolean state, float min, float max, float value,  float lerpPercent, float applyRandomMax, float applyRandomMin, float applyRandomMultiplier) {
-            return this.state(dEnum, state).minMax(dEnum, min, max).value(dEnum, value).lerpPercent(dEnum, lerpPercent).applyRandomMax(dEnum, applyRandomMax).applyRandomMin(dEnum, applyRandomMin).applyRandomMultiplier(dEnum, applyRandomMultiplier);
+            return this.setEnum(dEnum).state(state).minMax(min, max).value(value).lerpPercent(lerpPercent).applyRandomMax(applyRandomMax).applyRandomMin(applyRandomMin).applyRandomMultiplier(applyRandomMultiplier);
         }
 
-        public DynamicPart minMax(DYNAMIC_ENUM dEnum, float min, float max) {
-            return this.min(dEnum, min).max(dEnum, max);
+        public DynamicPart setEnum(DYNAMIC_ENUM dEnum) {
+            this.dynamic = dEnum;
+            return this;
         }
 
-        public DynamicPart state(DYNAMIC_ENUM dEnum, boolean state) {
+        public DynamicPart minMax(float min, float max) {
+            return this.min(min).max(max);
+        }
+
+        public DynamicPart state(boolean state) {
             this.state = state;
             return this;
         }
         
-        public DynamicPart disable(DYNAMIC_ENUM dEnum) {
+        public DynamicPart disable() {
             this.state = true;
             return this;
         }
 
-        public DynamicPart enable(DYNAMIC_ENUM dEnum) {
+        public DynamicPart enable() {
             this.state = true;
             return this;
         }
 
-        public DynamicPart min(DYNAMIC_ENUM dEnum, float min) {
+        public DynamicPart min(float min) {
             this.min = min;
             return this;
         }
 
-        public DynamicPart max(DYNAMIC_ENUM dEnum, float max) {
+        public DynamicPart max(float max) {
             this.max = max;
             return this;
         }
 
-        public DynamicPart value(DYNAMIC_ENUM dEnum, float value) {
+        public DynamicPart value(float value) {
             this.value = value;
             return this;
         }
 
         
-        public DynamicPart lerpPercent(DYNAMIC_ENUM dEnum, float lerpPercent) {
+        public DynamicPart lerpPercent(float lerpPercent) {
             this.lerpPercent = lerpPercent;
             return this;
         }
         
-        public DynamicPart applyRandomMax(DYNAMIC_ENUM dEnum, float applyRandomMax) {
+        public DynamicPart applyRandomMax(float applyRandomMax) {
             this.applyRandomMax = applyRandomMax;
             return this;
         }
 
-        public DynamicPart applyRandomMin(DYNAMIC_ENUM dEnum, float applyRandomMin) {
+        public DynamicPart applyRandomMin(float applyRandomMin) {
             this.applyRandomMin = applyRandomMin;
             return this;
         }
         
-        public DynamicPart applyRandomMultiplier(DYNAMIC_ENUM dEnum, float applyRandomMultiplier) {
+        public DynamicPart applyRandomMultiplier(float applyRandomMultiplier) {
             this.applyRandomMultiplier = applyRandomMultiplier;
             return this;
         }
@@ -184,9 +404,7 @@ public class DynamicModelPart extends ModelPart {
                         this.newValue *= -1;
                     }
                 }
-                this.value = this.lerp(this.value, this.newValue, this.lerpPercent);
-                // System.out.println((Math.abs(this.value) +  Math.abs(this.newValue)) / 2);
-                
+                this.value = (float)Interpolation.LinearInterpolate(this.value, this.newValue, this.lerpPercent);
             }
             return this;
         }
@@ -196,9 +414,6 @@ public class DynamicModelPart extends ModelPart {
             return (double) Math.round(value * scale) / scale;
         }
 
-        public float lerp(float start, float end, float percent) {
-            return (start + percent*(end - start));
-        }
 
         @Override
         public String toString() {
@@ -292,7 +507,7 @@ public class DynamicModelPart extends ModelPart {
         public DynamicCuboid(DynamicModelPart parentModelPart, int u, int v, float x, float y, float z, float sizeX, float sizeY, float sizeZ, float extraX, float extraY, float extraZ, boolean mirror, float textureWidth, float textureHeight) {
             super(u, v, x, y, z, sizeX, sizeY, extraX, sizeZ, extraY, extraZ, mirror, textureWidth, textureHeight);
             
-            this.parts = new DynamicPart[DYNAMIC_ENUM_LENGTH];
+            DynamicPart[] parts = new DynamicPart[DYNAMIC_ENUM_LENGTH];
             for(int i = 0; i < DYNAMIC_ENUM_LENGTH; i++) {
                 parts[i] = new DynamicPart(DYNAMIC_ENUM.values()[i], true);
             }
@@ -301,8 +516,15 @@ public class DynamicModelPart extends ModelPart {
         }
 
         public DynamicCuboid parts(DynamicPart[] parts) {
-            this.parts = parts;
+            this.parts = validateParts(parts);
             return this;
+        }
+
+        public DynamicPart[] validateParts(DynamicPart[] parts) {
+            Arrays.sort(parts, (DynamicPart a, DynamicPart b) -> {
+                return a.dynamic.ordinal() - b.dynamic.ordinal();
+            });
+            return parts;
         }
 
         public DynamicCuboid set(DynamicModelPart parentModelPart, int u, int v, float x, float y, float z, float sizeX, float sizeY, float sizeZ, float extraX, float extraY, float extraZ, boolean mirror, float textureWidth, float textureHeight, DynamicPart[] seed) {
@@ -463,29 +685,35 @@ public class DynamicModelPart extends ModelPart {
 
     @Override
     public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay) {
-        this.renderDynamic(new MutableTriple<MutablePair<Boolean, Boolean>, Integer, Integer>(new MutablePair<Boolean,Boolean>(false, false), 0, 0),0, matrices, vertexConsumer, light, overlay);
+        this.renderDynamic(false, 0, matrices, vertexConsumer, light, overlay);
     }
 
-    public void renderDynamic(MutableTriple<MutablePair<Boolean, Boolean>, Integer, Integer> shiftUV, int tick, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay) {
-        this.renderDynamic(shiftUV, tick, matrices, vertexConsumer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
-    }
-    
     @Override
     public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
-        this.renderDynamic(new MutableTriple<MutablePair<Boolean, Boolean>, Integer, Integer>(new MutablePair<Boolean,Boolean>(false, false), 0, 0), 0, matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        this.renderDynamic(false, 0, matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
     }
 
-    public void renderDynamic(MutableTriple<MutablePair<Boolean, Boolean>, Integer, Integer> shiftUV, float tick, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
+
+    public void renderDynamic(boolean ticked, int tick, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay) {
+        this.renderDynamic(ticked, tick, matrices, vertexConsumer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
+    }
+
+    public void renderDynamic(boolean ticked, int tick, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+        this.renderDynamic(ticked, tick, matrices, vertexConsumers, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
+    }
+    
+
+    public void renderDynamic(boolean ticked, int tick, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
         if (this.visible) {
             if (!this.cuboids.isEmpty() || !this.children.isEmpty()) {
                 matrices.push();
                 this.rotate(matrices);
-                this.renderCuboidsDynamic(shiftUV, tick, matrices.peek(), vertexConsumer, light, overlay, red, green, blue, alpha);
+                this.renderCuboidsDynamic(ticked, tick, matrices.peek(), vertexConsumer, light, overlay, red, green, blue, alpha);
                 ObjectListIterator<DynamicModelPart> var9 = this.children.iterator();
 
                 while(var9.hasNext()) {
                     DynamicModelPart modelPart = (DynamicModelPart)var9.next();
-                    modelPart.renderDynamic(shiftUV, tick, matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+                    modelPart.renderDynamic(ticked, tick, matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
                 }
 
                 matrices.pop();
@@ -493,69 +721,81 @@ public class DynamicModelPart extends ModelPart {
         }
     }
 
-    
-    private void renderCuboidsDynamic(MutableTriple<MutablePair<Boolean, Boolean>, Integer, Integer> shiftUV, float tick, MatrixStack.Entry matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
-        
-        boolean shiftingUV = ((int)tick % shiftUV.getMiddle() == 0);
-        boolean shiftEnabledModel = shiftUV.getLeft().getRight();
-        boolean shouldApplyDynamics = (shiftUV.getLeft().getLeft() && shiftingUV);
+    public void renderDynamic(boolean ticked, int tick, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, float red, float green, float blue, float alpha) {
+        if (this.visible) {
+            if (!this.cuboids.isEmpty() || !this.children.isEmpty()) {
+                matrices.push();
+                this.rotate(matrices);
+                this.renderCuboidsDynamic(ticked, tick, matrices.peek(), vertexConsumers, light, overlay, red, green, blue, alpha);
+                ObjectListIterator<DynamicModelPart> var9 = this.children.iterator();
 
-        if (shiftEnabledModel && shiftingUV && lastTick != tick) {
-            lastTick = tick;
-            dynamicModel.shiftUV(shiftUV.getRight()).rebuild();
+                while(var9.hasNext()) {
+                    DynamicModelPart modelPart = (DynamicModelPart)var9.next();
+                    modelPart.renderDynamic(ticked, tick, matrices, vertexConsumers, light, overlay, red, green, blue, alpha);
+                }
+
+                matrices.pop();
+            }
+        }
+    }
+    private void renderCuboidsDynamic(boolean ticked, int tick, MatrixStack.Entry matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, float red, float green, float blue, float alpha) {
+        renderCuboidsDynamic(ticked, tick, matrices, spriteId.getVertexConsumer(vertexConsumers, layerFactory), light, overlay, red, green, blue, alpha);
+    }
+
+    private void renderCuboidsDynamic(boolean ticked, int tick, MatrixStack.Entry matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
+        
+        boolean shouldApplyDynamics = false;
+
+        if (shiftDeltaTickCounter > UV_SHIFT_EVERY_X_DELTA_TICKS) {
+            shiftDeltaTickCounter = 0;
         }
 
+        if (dynamicsDeltaTickCounter > UPDATE_DYNAMICS_EVERY_X_DELTA_TICKS) {
+            dynamicsDeltaTickCounter = 0;
+        }
+
+        if (UV_SHIFTABLE && (((UV_SHIFT_EVERY_X_TICK && ((int)tick % UV_SHIFT_EVERY_X_TICKS == 0) || UV_SHIFT_EVERY_TICK) && ticked) || UV_SHIFT_EVERY_DELTA_TICK || (UV_SHIFT_EVERY_X_DELTA_TICK && UV_SHIFT_EVERY_X_DELTA_TICKS == ++shiftDeltaTickCounter))) {
+            System.out.println("Rebuilding Dynamic Model - UV Shifted");
+            if (UV_SHIFT_APPLY_SYNC) {
+                shouldApplyDynamics = true;
+            }
+            shiftUV(1).rebuild();
+        }
+
+        if ((UPDATE_DYNAMICS_EVERY_TICK && ticked) ||(UPDATE_DYNAMICS_EVERY_X_TICK  && ((int)tick % UPDATE_DYNAMICS_EVERY_X_TICKS == 0)) || UPDATE_DYNAMICS_EVERY_DELTA_TICK || (UPDATE_DYNAMICS_EVERY_X_DELTA_TICK && UPDATE_DYNAMICS_EVERY_X_DELTA_TICKS == ++dynamicsDeltaTickCounter)) {
+            shouldApplyDynamics = true;
+        }
+        
         Matrix4f matrix4f = matrices.getModel();
         Matrix3f matrix3f = matrices.getNormal();
         ObjectListIterator<DynamicModelPart.DynamicCuboid> cubiodsIterator = this.cuboids.iterator();
 
-        float dx = 0;
-        float dy = 0;
-        float dz = 0;
-        float dRed = 0;
-        float dGreen = 0;
-        float dBlue = 0;
-        float dAlpha = 0;
-        float dLight = 0;
+        float dx = 0.0F;
+        float dy = 0.0F;
+        float dz = 0.0F;
+        float dRed = 0.0F;
+        float dGreen = 0.0F;
+        float dBlue = 0.0F;
+        float dAlpha = 0.0F;
+        float dLight = 0.0F;
 
-        DynamicPart[] parts;
-
-        DynamicPart dxPart;
-        DynamicPart dyPart;
-        DynamicPart dzPart;
-        DynamicPart dRedPart;
-        DynamicPart dGreenPart;
-        DynamicPart dBluePart;
-        DynamicPart dAlphaPart;
-        DynamicPart dLightPart;
 
         while(cubiodsIterator.hasNext()) {
 
             DynamicModelPart.DynamicCuboid cuboid = (DynamicModelPart.DynamicCuboid)cubiodsIterator.next();
-
-            parts = cuboid.parts;
-
-            dxPart = parts[DYNAMIC_ENUM.X.ordinal()];
-            dyPart = parts[DYNAMIC_ENUM.Y.ordinal()];
-            dzPart = parts[DYNAMIC_ENUM.Z.ordinal()];
-            dRedPart = parts[DYNAMIC_ENUM.RED.ordinal()];
-            dGreenPart = parts[DYNAMIC_ENUM.GREEN.ordinal()];
-            dBluePart = parts[DYNAMIC_ENUM.BLUE.ordinal()];
-            dAlphaPart = parts[DYNAMIC_ENUM.ALPHA.ordinal()];
-            dLightPart = parts[DYNAMIC_ENUM.LIGHT.ordinal()];
             
+            dx = cuboid.parts[DYNAMIC_ENUM.X.ordinal()].apply(shouldApplyDynamics).value;
+            dy = cuboid.parts[DYNAMIC_ENUM.Y.ordinal()].apply(shouldApplyDynamics).value;
+            dz = cuboid.parts[DYNAMIC_ENUM.Z.ordinal()].apply(shouldApplyDynamics).value;
+            dRed = cuboid.parts[DYNAMIC_ENUM.RED.ordinal()].apply(shouldApplyDynamics).value;
+            dGreen = cuboid.parts[DYNAMIC_ENUM.GREEN.ordinal()].apply(shouldApplyDynamics).value;
+            dBlue = cuboid.parts[DYNAMIC_ENUM.BLUE.ordinal()].apply(shouldApplyDynamics).value;
+            dAlpha = cuboid.parts[DYNAMIC_ENUM.ALPHA.ordinal()].apply(shouldApplyDynamics).value;
+            dLight = cuboid.parts[DYNAMIC_ENUM.LIGHT.ordinal()].apply(shouldApplyDynamics).value;
+        
 
-            dx = dxPart != null ? dxPart.apply(shouldApplyDynamics).value : 0F;
-            dy = dyPart != null  ?  dyPart.apply(shouldApplyDynamics).value : 0F;
-            dz = dzPart != null ? dzPart.apply(shouldApplyDynamics).value : 0F;
-            dRed = dRedPart != null ? dRedPart.apply(shouldApplyDynamics).value : 0F;
-            dGreen = dGreenPart != null ? dGreenPart.apply(shouldApplyDynamics).value : 0F;
-            dBlue = dBluePart != null ? dBluePart.apply(shouldApplyDynamics).value  : 0F;
-            dAlpha = dAlphaPart != null ? dAlphaPart.apply(shouldApplyDynamics).value  : 0F;
-            dLight = dLightPart != null ? dLightPart.apply(shouldApplyDynamics).value  : 0F;
-            // System.out.println(dx+" "+dy+" "+dz+" "+dRed+" "+dGreen+" "+dBlue+" "+dAlpha+" "+dLight);
-
-            
+            // System.out.println(dx + " " + dy+ " " +dz+ " " +(red+dRed)+ " " +(green+dGreen)+ " " +(blue+dBlue)+ " " + (alpha+dAlpha)+ " " + (int)(light+dLight));            
+            // System.out.println(dx);            
             DynamicModelPart.DynamicQuad[] cuboidSidesQuadArray = cuboid.sides;
             int cuboidSidesLength = cuboidSidesQuadArray.length;
 
@@ -576,12 +816,12 @@ public class DynamicModelPart extends ModelPart {
                     
                     Vector4f vector4f = new Vector4f(j, k, l, 1.0F);
                     vector4f.transform(matrix4f);
-                    // System.out.println(dLight);
                     vertexConsumer.vertex(vector4f.getX()+dx, vector4f.getY()+dy, vector4f.getZ()+dz, red+dRed, green+dGreen, blue+dBlue, alpha+dAlpha, vertex.u, vertex.v, overlay, (int)(light+dLight), normalX, normalY, normalZ);
                 }
             }
         }
     }
+    
 
     public void addChild(DynamicModelPart part) {
         this.children.add(part);
@@ -657,6 +897,10 @@ public class DynamicModelPart extends ModelPart {
 
     public void addDynamicCuboid(DynamicModelPart parent, int u, int v, float x, float y, float z, float sizeX, float sizeY, float sizeZ, float extraX, float extraY, float extraZ, boolean mirror, boolean bl, DynamicPart[] seed) {
         this.cuboids.add(new DynamicCuboid(parent, u, v, x, y, z, sizeX, sizeY, sizeZ, extraX, extraY, extraZ, mirror, this.textureWidth, this.textureHeight, seed));
+    }
+
+    public ObjectList<DynamicModelPart> getChildren() {
+        return this.children;
     }
 
     public ObjectList<DynamicPart[]> getSeeds() {
