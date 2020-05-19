@@ -305,25 +305,34 @@ public class PortalManipulation {
                 pos.add(0.5, 0.5, 0.5),
                 pos.subtract(0.5, 0.5, 0.5)
             ),
-            p -> p.getNormal().dotProduct(normal) > 0.5 && predicate.test(p)
+            p -> {
+                return p.getNormal().dotProduct(normal) > 0.5 && predicate.test(p);
+            }
         );
     }
 
-
+    /**
+     * Generates a GeometryPortalShape for Portal.specialShape based on the parameter number of sides
+     * @param <T> T extends Portal
+     * @param portal Portal instance
+     * @param sides number of sides the polygon portal shape should have
+     */
     public static <T extends Portal> void generatePolygonPortalShape(T portal, int sides) {
-        if (sides >= 3) {
-            portal.specialShape = new GeometryPortalShape();
-            double theta = 2 * Math.PI / sides;
-            for (int i = 0; i < sides; ++i) {
-                double x2 = Math.cos(theta * i);
-                double y2 = Math.sin(theta * i);
-                double x3 = Math.cos(theta * (i+1));
-                double y3 = Math.sin(theta * (i+1));
-                portal.specialShape.triangles.add(new TriangleInPlane(0, portal.width/2, y2 * portal.height/2, x2 * portal.width/2, y3 * portal.height/2, x3 * portal.width/2));
-            }
+        portal.specialShape = new GeometryPortalShape();
+        double theta = 2 * Math.PI / sides;
+        for (int i = 0; i < sides; ++i) {
+            double x2 = Math.cos(theta * i);
+            double y2 = Math.sin(theta * i);
+            double x3 = Math.cos(theta * (i+1));
+            double y3 = Math.sin(theta * (i+1));
+            // portal.specialShape.triangles.add(new TriangleInPlane(0, portal.width/2, y2 * portal.height/2, x2 * portal.width/2, y3 * portal.height/2, x3 * portal.width/2));
+            portal.specialShape.triangles.add(new TriangleInPlane(0, 0, x2 * portal.width/2, y2 * portal.height/2, x3 * portal.width/2, y3 * portal.height/2));
+        }
+        if (sides <= 3 && sides >= 50) {
+            System.out.println("PortalManipulation - Number of sides used to generate polygon portal shape exceeds suggested bounds.");
             // portal.specialShape.triangles.forEach(triangle -> {
             //     System.out.println(triangle.x1 + " " + triangle.y1 + " " + triangle.x2 + " " + triangle.y2 + " " + triangle.x3 + " " +triangle.y3);
             // });
-        }
+        } 
     }
 }

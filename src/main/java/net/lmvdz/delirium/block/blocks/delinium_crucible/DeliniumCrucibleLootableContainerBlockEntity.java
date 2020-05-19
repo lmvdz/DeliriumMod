@@ -1,6 +1,7 @@
 package net.lmvdz.delirium.block.blocks.delinium_crucible;
 
 import net.lmvdz.delirium.DeliriumMod;
+import net.lmvdz.delirium.portal.PlatonicSolidPortal;
 import net.lmvdz.delirium.portal.RotatingPortal;
 import net.lmvdz.delirium.util.FormattingEngine;
 import net.minecraft.block.BlockState;
@@ -15,20 +16,19 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Tickable;
-import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 /**
  * BlockEntity
  */
-public class DeliniumCrucibleLootableContainerBlockEntity extends LootableContainerBlockEntity
-        implements Tickable, IHasPortal, IAmFacing {
+public class DeliniumCrucibleLootableContainerBlockEntity extends LootableContainerBlockEntity implements Tickable {
     public int ticks = 0;
     private int rank = 1;
     public int smeltableStackIndex = -1;
     private DeliniumCrucibleLavaModel LAVA_MODEL;
     private DeliniumCruciblePortalModel PORTAL_MODEL;
     public RotatingPortal IMMERSIVE_PORTAL;
+    public PlatonicSolidPortal PLATONIC_PORTAL;
 
     // public static final Identifier SPAWN_IMMERSIVE_PORTAL_PACKET_ID =
     //         new Identifier(DeliriumMod.MODID, "SPAWN_IMMERSIVE_PORTAL");
@@ -218,12 +218,6 @@ public class DeliniumCrucibleLootableContainerBlockEntity extends LootableContai
                 }
             }
         }
-    }
-
-
-    @Override
-    public Direction getFacing() {
-        return DeliniumCrucible.getHorizontalFacingFromBlockState(this.world.getBlockState(this.getPos()));
     }
 
 }

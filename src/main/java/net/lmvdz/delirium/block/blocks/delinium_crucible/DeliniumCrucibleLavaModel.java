@@ -29,7 +29,7 @@ public class DeliniumCrucibleLavaModel extends DynamicModel {
 
     public DeliniumCrucibleLavaModel() {
 		super(RenderLayer::getEntityTranslucent);
-		this.withParts(ObjectArrayList.wrap(new DynamicModelPart[] { generateModelPart(this, u.clone(), v.clone(), x.clone(), y.clone(), z.clone(), sizeX.clone(), sizeY.clone(), sizeZ.clone(), extra.clone(), rotation.clone(), defaultSeeds(x.length), sprite, layerFactory)})).buildUsingSeeds();
+		withParts(ObjectArrayList.wrap(new DynamicModelPart[] { DynamicModelPart.generateModelPart(this, u.clone(), v.clone(), x.clone(), y.clone(), z.clone(), sizeX.clone(), sizeY.clone(), sizeZ.clone(), extra.clone(), rotation.clone(), DynamicModelPart.defaultSeeds(x.length), sprite, layerFactory)}));
 	}
 	
 }

@@ -11,12 +11,6 @@ public class DeliniumCruciblePortalModel extends DynamicModel {
 		models = new ObjectArrayList<>();
 		models.add(new DeliniumCruciblePortalLavaModel());
         models.add(new DeliniumCruciblePortalTransparentModel());
-		// models.add(new DeliniumCruciblePortalCrucibleModel());
 		this.withModels(models).buildUsingSeeds();
-        // this.with(ObjectArrayList.wrap(new DynamicModelPart[] {
-        //     this.lava,
-        //     this.transparent,
-        //     this.crucible
-        // })).buildUsingSeeds();
     }
 }

@@ -1,12 +1,9 @@
 package net.lmvdz.delirium.block.blocks.delinium_crucible;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectList;
 import net.lmvdz.delirium.DeliriumMod;
 import net.lmvdz.delirium.model.DynamicModel;
 import net.lmvdz.delirium.modelpart.DynamicModelPart;
-import net.lmvdz.delirium.modelpart.DynamicModelPart.DYNAMIC_ENUM;
-import net.lmvdz.delirium.modelpart.DynamicModelPart.DynamicPart;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.SpriteIdentifier;
@@ -19,20 +16,7 @@ public class DeliniumCruciblePortalCrucibleModel extends DynamicModel {
 
     public DeliniumCruciblePortalCrucibleModel() {
 		super(RenderLayer::getEntityTranslucent);
-		ObjectList<DynamicPart[]> seeds = new ObjectArrayList<>();
-		for(int i = 0; i < CRUCIBLE_CUBOIDS.length; i++) {
-			seeds.add(new DynamicPart[] { 
-				(DynamicModelPart.EMPTY).new DynamicPart(DYNAMIC_ENUM.X, false, -.05f, .075f, 0f, .5f, DynamicModelPart.DEFAULT_APPLY_RANDOM_MAX, DynamicModelPart.DEFAULT_APPLY_RANDOM_MIN, 1F),
-				(DynamicModelPart.EMPTY).new DynamicPart(DYNAMIC_ENUM.Y, false, -.05f, .075f, 0f, .5f, DynamicModelPart.DEFAULT_APPLY_RANDOM_MAX, DynamicModelPart.DEFAULT_APPLY_RANDOM_MIN, 1F),
-				(DynamicModelPart.EMPTY).new DynamicPart(DYNAMIC_ENUM.Z, false, -.05f, .075f, 0f, .5f, DynamicModelPart.DEFAULT_APPLY_RANDOM_MAX, DynamicModelPart.DEFAULT_APPLY_RANDOM_MIN, 1F),
-				(DynamicModelPart.EMPTY).new DynamicPart(DYNAMIC_ENUM.RED, false),
-				(DynamicModelPart.EMPTY).new DynamicPart(DYNAMIC_ENUM.GREEN, false),
-				(DynamicModelPart.EMPTY).new DynamicPart(DYNAMIC_ENUM.BLUE, false),
-				(DynamicModelPart.EMPTY).new DynamicPart(DYNAMIC_ENUM.ALPHA, false, -.5f, -.75f, 0f,  .5f, DynamicModelPart.DEFAULT_APPLY_RANDOM_MAX, DynamicModelPart.DEFAULT_APPLY_RANDOM_MIN, 1F),
-				(DynamicModelPart.EMPTY).new DynamicPart(DYNAMIC_ENUM.LIGHT, false, -5F,  5F,  0f,  .15F, DynamicModelPart.DEFAULT_APPLY_RANDOM_MAX, DynamicModelPart.DEFAULT_APPLY_RANDOM_MIN, 1F),
-			});
-		}
-        this.withParts(ObjectArrayList.wrap(new DynamicModelPart[]{generateModelPart(this, CRUCIBLE_CUBOIDS.clone(), CRUCIBLE_ROTATION.clone(), crucibleSprite, seeds, layerFactory).with(false, false, false, false, 0, false, false, 0, false, true, 25, false, false, 0)})).buildUsingSeeds();
+        this.withParts(ObjectArrayList.wrap(new DynamicModelPart[]{DynamicModelPart.generateModelPart(this, CRUCIBLE_CUBOIDS.clone(), CRUCIBLE_ROTATION.clone(), crucibleSprite, DynamicModelPart.defaultSeeds(CRUCIBLE_CUBOIDS.length/9), layerFactory).with(false, false, 0, false, false, 0, false, false, 0, false, true, 25, false, false, 0)}));
     }
 
 }

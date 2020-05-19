@@ -2,12 +2,9 @@ package net.lmvdz.delirium;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
-import net.fabricmc.fabric.api.entity.FabricEntityTypeBuilder;
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucible;
 import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucibleLava;
-import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCruciblePortalCrucible;
-import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCruciblePortalLava;
-import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCruciblePortalTransparent;
 import net.lmvdz.delirium.blockitem.blockitems.DeliniumCrucibleBlockItem;
 import net.lmvdz.delirium.item.delinium.items.Delinium;
 import net.lmvdz.delirium.item.delinium.items.DeliniumIngot;
@@ -76,9 +73,9 @@ public class DeliriumMod implements ModInitializer {
 		// -- blocks
 		new DeliniumCrucible(); // DeliriumBlock + BlockEntityProvider
 		new DeliniumCrucibleLava();
-		new DeliniumCruciblePortalLava();
-		new DeliniumCruciblePortalCrucible();
-		new DeliniumCruciblePortalTransparent();
+		// new DeliniumCruciblePortalLava();
+		// new DeliniumCruciblePortalCrucible();
+		// new DeliniumCruciblePortalTransparent();
 		
 		// -- block items
 		new DeliniumCrucibleBlockItem(); //DeliriumBlockItem
@@ -86,7 +83,7 @@ public class DeliriumMod implements ModInitializer {
 		RotatingPortal.entityType = Registry.register(
 			Registry.ENTITY_TYPE,
 			new Identifier(MODID, "rotating_portal"),
-			FabricEntityTypeBuilder.create( EntityCategory.MISC, (EntityType<RotatingPortal> type, World world1) -> new RotatingPortal(type, world1)).size(new EntityDimensions(1, 1, true)).setImmuneToFire().build()
+			FabricEntityTypeBuilder.create( EntityCategory.MISC, (EntityType<RotatingPortal> type, World world1) -> new RotatingPortal(type, world1)).dimensions(new EntityDimensions(1, 1, true)).fireImmune().build()
 		);
 
 		// ServerSidePacketRegistry.INSTANCE.register(DeliniumCrucibleLootableContainerBlockEntity.SET_IMMERSIVE_PORTAL_ROTATION, (packetContext, attachedData) -> {

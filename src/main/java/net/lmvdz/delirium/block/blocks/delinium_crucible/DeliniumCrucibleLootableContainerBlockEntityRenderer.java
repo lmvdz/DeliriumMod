@@ -36,8 +36,7 @@ public class DeliniumCrucibleLootableContainerBlockEntityRenderer
         extends BlockEntityRenderer<DeliniumCrucibleLootableContainerBlockEntity> {
 
     private float tick = 0;
-    private int shiftDeltaTickCounter = 0;
-    private int dynamicsDeltaTickCounter = 0;
+
 
     public DeliniumCrucibleLootableContainerBlockEntityRenderer(
             BlockEntityRenderDispatcher dispatcher) {
@@ -170,8 +169,8 @@ public class DeliniumCrucibleLootableContainerBlockEntityRenderer
             // int shiftUVTicks = (int)(640 / ((Math.random() * 12) + 10) / ((percentage * .28) + 1));
 
             boolean ticked = this.tick > tickDelta;
+            // System.out.println(blockEntity.getPos());
             this.tick = tickDelta;
-
             matrices.push();
             matrices.translate(0f, .5f, 1f);
             matrices.scale(1f, -1f, 1f);

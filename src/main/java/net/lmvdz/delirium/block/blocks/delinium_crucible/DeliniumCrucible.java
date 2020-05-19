@@ -1,13 +1,15 @@
 package net.lmvdz.delirium.block.blocks.delinium_crucible;
 
-import net.fabricmc.fabric.api.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.container.ContainerProviderRegistry;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.lmvdz.delirium.DeliriumMod;
 import net.lmvdz.delirium.block.DeliriumBlock;
 import net.lmvdz.delirium.item.delinium.items.Delinium;
 import net.lmvdz.delirium.item.delinium.items.DeliniumIngot;
+import net.lmvdz.delirium.portal.PlatonicSolidPortal;
 import net.lmvdz.delirium.portal.PortalManipulation;
 import net.lmvdz.delirium.portal.RotatingPortal;
+import net.lmvdz.delirium.portal.PlatonicSolidPortal.PlatonicSolidEnum;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
@@ -15,7 +17,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
@@ -91,7 +93,7 @@ public class DeliniumCrucible extends DeliriumBlock implements BlockEntityProvid
 
     public DeliniumCrucible() {
         // setup map material and render layer
-        super(FabricBlockSettings.of(Delinium.MAP_MATERIAL).nonOpaque().build(), RenderLayer.getTranslucent());
+        super(FabricBlockSettings.of(Delinium.MAP_MATERIAL).nonOpaque(), RenderLayer.getTranslucent());
 
         if (DELINIUM_CRUCIBLE_BLOCK == null) {
 
@@ -127,6 +129,12 @@ public class DeliniumCrucible extends DeliriumBlock implements BlockEntityProvid
                                             DELINIUM_CRUCIBLE_BLOCK)
                                     .build(null));
         }
+    }
+
+    @Override
+    public void onEntityLand(BlockView world, Entity entity) {
+        // damage player if blockstate is primed/melting
+        super.onEntityLand(world, entity);
     }
 
     @Override
@@ -217,39 +225,30 @@ public class DeliniumCrucible extends DeliriumBlock implements BlockEntityProvid
                     melting = getMeltingFromBlockState(world.getBlockState(pos));
                     state = world.getBlockState(pos);
                     facing = getHorizontalFacingFromBlockState(state);
-                    if ((de_blockEntity.IMMERSIVE_PORTAL == null || de_blockEntity.IMMERSIVE_PORTAL.removed) && (primed || melting)) {
-                        System.out.println("adding portals");
-                        Vec3d axisW = new Vec3d(facing.getVector());
-                        if (facing.toString() == "east" || facing.toString() == "west") {
-                            Vector3f f = new Vector3f(axisW);
-                            f.rotate(Vector3f.POSITIVE_Y.getDegreesQuaternion(90));
-                            axisW = new Vec3d(f);
-                        }
-                        de_blockEntity.IMMERSIVE_PORTAL = new RotatingPortal(RotatingPortal.entityType, world, new Vec3d(Direction.UP.getVector()), axisW, DimensionType.THE_NETHER, new Vec3d(pos.getX()*8, pos.getY(), pos.getZ()*8), 5, 6, true, new Vec3d(pos.getX(), pos.getY(), pos.getZ()), 3);
-                        de_blockEntity.IMMERSIVE_PORTAL = de_blockEntity.IMMERSIVE_PORTAL.spawn(world).makeBiWayBiFacingBiWay();
-                        // PortalManipulation.rotatePortalBody(de_blockEntity.IMMERSIVE_PORTAL, rotation);
-                        // de_blockEntity.IMMERSIVE_PORTAL.setCustomName(new LiteralText("Test"));
-                        // de_blockEntity.IMMERSIVE_PORTAL.setCustomNameVisible(true);
-                        
-                        
-                        // de_blockEntity.IMMERSIVE_PORTAL_OPPOSITE_FACED =  PortalManipulation.completeBiFacedPortal(de_blockEntity.IMMERSIVE_PORTAL, RotatingPortal.entityType);
-                        // de_blockEntity.IMMERSIVE_PORTAL_BI_WAY = PortalManipulation.completeBiWayPortal(de_blockEntity.IMMERSIVE_PORTAL, RotatingPortal.entityType);
-                        // de_blockEntity.IMMERSIVE_PORTAL_OPPOSITE_BI_WAY = PortalManipulation.completeBiWayPortal(de_blockEntity.IMMERSIVE_PORTAL_OPPOSITE_FACED, RotatingPortal.entityType);
-                        
-                        // PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
-                        // passedData.writeBlockPos(pos);
-                        // passedData.writeUuid(de_blockEntity.IMMERSIVE_PORTAL.getUuid());
-                        // passedData.writeUuid(de_blockEntity.IMMERSIVE_PORTAL_OPPOSITE_FACED.getUuid());
-                        // passedData.writeUuid(de_blockEntity.IMMERSIVE_PORTAL_BI_WAY.getUuid());
-                        // passedData.writeUuid(de_blockEntity.IMMERSIVE_PORTAL_OPPOSITE_BI_WAY.getUuid());
-                        // ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, DeliniumCrucibleLootableContainerBlockEntity.SET_CLIENT_IMMERSIVE_PORTAL_PACKET, passedData);
-                    } else if (de_blockEntity.IMMERSIVE_PORTAL != null && !de_blockEntity.IMMERSIVE_PORTAL.removed && !primed && !melting) {
-                        System.out.println("removing portals");
-                        PortalManipulation.removeConnectedPortals(RotatingPortal.entityType, de_blockEntity.IMMERSIVE_PORTAL, p -> {
-                            System.out.println(p + " removed.");
-                        });
-                        de_blockEntity.IMMERSIVE_PORTAL.remove();
-                    }
+                    // if ((de_blockEntity.PLATONIC_PORTAL == null || de_blockEntity.PLATONIC_PORTAL.removed) && (primed || melting)) {
+                    //     de_blockEntity.PLATONIC_PORTAL = PlatonicSolidPortal.cloneFromEnum(PlatonicSolidEnum.TETRAHEDRON).setDimensionType(DimensionType.THE_NETHER).setCenter(new Vec3d(pos.getX(), pos.getY(), pos.getZ()));
+                    //     de_blockEntity.PLATONIC_PORTAL = de_blockEntity.PLATONIC_PORTAL.setDestination(new Vec3d(pos.getX()*8, pos.getY(), pos.getZ()*8)).setScale(4);
+                    //     de_blockEntity.PLATONIC_PORTAL = de_blockEntity.PLATONIC_PORTAL.spawn(world);
+                    // } else if (de_blockEntity.PLATONIC_PORTAL != null && !de_blockEntity.PLATONIC_PORTAL.removed && !primed && !melting) {
+                    //     de_blockEntity.PLATONIC_PORTAL.remove();
+                    // }
+                    // if ((de_blockEntity.IMMERSIVE_PORTAL == null || de_blockEntity.IMMERSIVE_PORTAL.removed) && (primed || melting)) {
+                    //     Vec3d axisW = new Vec3d(facing.getVector());
+                    //     if (facing.toString() == "east" || facing.toString() == "west") {
+                    //         Vector3f f = new Vector3f(axisW);
+                    //         f.rotate(Vector3f.POSITIVE_Y.getDegreesQuaternion(90));
+                    //         axisW = new Vec3d(f);
+                    //     }
+                    //     System.out.println("adding portals");
+                    //     de_blockEntity.IMMERSIVE_PORTAL = new RotatingPortal(RotatingPortal.entityType, world, new Vec3d(Direction.UP.getVector()), axisW, DimensionType.THE_NETHER, new Vec3d(pos.getX()*8, pos.getY(), pos.getZ()*8), 5, 6, true, new Vec3d(pos.getX(), pos.getY(), pos.getZ()), 3, true);
+                    //     de_blockEntity.IMMERSIVE_PORTAL = de_blockEntity.IMMERSIVE_PORTAL.spawn(world).makeBiWayBiFacingBiWay();
+                    // } else if (de_blockEntity.IMMERSIVE_PORTAL != null && !de_blockEntity.IMMERSIVE_PORTAL.removed && !primed && !melting) {
+                    //     System.out.println("removing portals");
+                    //     PortalManipulation.removeConnectedPortals(RotatingPortal.entityType, de_blockEntity.IMMERSIVE_PORTAL, p -> {
+                    //         System.out.println(p + " removed.");
+                    //     });
+                    //     de_blockEntity.IMMERSIVE_PORTAL.remove();
+                    // }
                 }
             }
 

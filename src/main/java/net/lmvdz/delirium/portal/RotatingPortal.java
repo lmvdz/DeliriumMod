@@ -18,41 +18,50 @@ import net.minecraft.world.dimension.DimensionType;
  * - references to the connected portals (biFacingPortal, biWayPortal, biWayBiFacingPortal)
  */
 public class RotatingPortal extends Portal {
+
     // EntityType
     public static EntityType<RotatingPortal> entityType;
     // whether or not the portal should rotate
     public boolean enablePortalRotate;
-    
+    // whether or not the portal should generate it's shape based on the number of sides
+    public boolean generatePortalShapeFromSides;
+
     // the initial portal horizontal axis
     protected Vec3d initialAxisW;
     // the initial portal vertical axis
     protected Vec3d initialAxisH;
 
-    // whether or not the portal should increase to the MAX_SIDES and then decrease to the MIN_SIDES going back and forth endlessly
-    public boolean interpolateSides;
+    
     // number of sides the portal should have
     protected int sides = 3;
+    // maximum number of sides allowed for the specialShape
+    private static final int MAX_SIDES = 50;
+    // minimum number of sides allowed for the specialShape
+    private static final int MIN_SIDES = 3;
+
+    // whether or not the portal should increase to the MAX_SIDES and then decrease to the MIN_SIDES going back and forth endlessly
+    public boolean enableInterpolateSides;
     // number of maximum sides the portal can have
-    protected int MAX_SIDES = 50;
+    protected int INTERPOLATE_MAX_SIDES = 50;
     // number of minimum sides the portal can have
-    protected int MIN_SIDES = 3;
+    protected int INTERPOLATE_MIN_SIDES = 3;
     // how many sides to increase/decrease by every frame 
     protected int SIDE_INCREMENT = 1;
 
     // Whether or not the portal is bi-facing
-    private boolean biFacing;
+    protected boolean biFacing;
     // link to the bi-facing portal
-    private RotatingPortal biFacingPortal;
+    protected RotatingPortal biFacingPortal;
 
     // Whether or not the portal is bi-way
-    private boolean biWay;
+    protected boolean biWay;
     // link to the bi-way portal
-    private RotatingPortal biWayPortal;
-    
+    protected RotatingPortal biWayPortal;
+
     // Whether or not the portal is bi-way-bi-facing
-    private boolean biWayBiFacing;
+    protected boolean biWayBiFacing;
     // link to the bi-way-bi-facing
-    private RotatingPortal biWayBiFacingPortal;
+    protected RotatingPortal biWayBiFacingPortal;
 
     /**
      * Default constructor, enables rotation, disables interactability
@@ -61,25 +70,43 @@ public class RotatingPortal extends Portal {
      */
     public RotatingPortal(EntityType<?> entityType, World world) {
         super(entityType, world);
-        this.enablePortalRotate = true;
+        this.enablePortalRotate = false;
         // waiting for newest release 
         // this.setInteractable(false); 
     }
 
     /**
-     * NULL WORLD CONSTRUCTOR
-     * @param entityType 
-     * @param world
+     * 
+     * @param axisH
+     * @param axisW
+     * @param dimensionTo
+     * @param destination
+     * @param width
+     * @param height
+     * @param enablePortalRotate
+     * @param sides
+     * @param enableInterpolateSides
+     * @param generatePortalShapeFromSides
      */
-    public RotatingPortal(Vec3d axisH, Vec3d axisW, DimensionType dimensionTo, Vec3d destination, double width, double height, boolean enablePortalRotate, int sides) {
+    public RotatingPortal(Vec3d axisH, Vec3d axisW, DimensionType dimensionTo, Vec3d destination, double width, double height, boolean enablePortalRotate, int sides, boolean enableInterpolateSides, boolean generatePortalShapeFromSides) {
         super(RotatingPortal.entityType, null);
         // waiting for newest release 
         // this.setInteractable(false); 
-        this.setPortal(axisH, axisW, dimensionTo, destination, width, height).setRotatePortalAxis(enablePortalRotate).setSides(sides);
+        this.setPortal(axisH, axisW, dimensionTo, destination, width, height).setRotatePortalAxis(enablePortalRotate).setSides(sides).setInterpolateSides(enableInterpolateSides).setGeneratePortalShapeFromSides(generatePortalShapeFromSides);
     }
 
-    public RotatingPortal attachWorld(World w) {
-        this.world = w;
+    public RotatingPortal setGeneratePortalShapeFromSides(boolean generatePortalShapeFromSides) {
+        this.generatePortalShapeFromSides = generatePortalShapeFromSides;
+        return this.generateShapeFromSides();
+    }
+
+    /**
+     * Attach a world to the entity to allow for spawning
+     * @param world World, pass a ServerWorld instance to allow for spawning
+     * @return RotatingPortal instance
+     */
+    public RotatingPortal attachWorld(World world) {
+        this.world = world;
         if (this.world != null) {
             this.dimension = world.dimension.getType();
         }
@@ -87,7 +114,7 @@ public class RotatingPortal extends Portal {
     }
 
     public RotatingPortal clone() {
-        return new RotatingPortal(entityType, world, axisH, axisW, dimensionTo, destination, width, height, enablePortalRotate, new Vec3d(this.getX(), this.getY(), this.getZ()), sides);
+        return new RotatingPortal(entityType, world, axisH, axisW, dimensionTo, destination, width, height, enablePortalRotate, new Vec3d(this.getX(), this.getY(), this.getZ()), sides, enableInterpolateSides);
     }
 
     /**
@@ -105,20 +132,84 @@ public class RotatingPortal extends Portal {
      * @param enablePortalRotate
      * @param center
      */
-    public RotatingPortal(EntityType<?> entityType, World world, Vec3d axisH, Vec3d axisW, DimensionType dimensionTo, Vec3d destination, double width, double height, boolean enablePortalRotate, Vec3d center, int sides) {
+    public RotatingPortal(EntityType<?> entityType, World world, Vec3d axisH, Vec3d axisW, DimensionType dimensionTo, Vec3d destination, double width, double height, boolean enablePortalRotate, Vec3d center, int sides, boolean enableInterpolateSides) {
         super(entityType, world);
         // waiting for newest release 
         // this.setInteractable(false);
-        this.setPortal(axisH, axisW, dimensionTo, destination, width, height).setRotatingPortal(enablePortalRotate, center).setSides(sides).generateShapeFromSides();
+        this.setPortal(axisH, axisW, dimensionTo, destination, width, height).setRotatingPortal(enablePortalRotate, center).setSides(sides).setInterpolateSides(enableInterpolateSides).generateShapeFromSides();
     }
-
+    /**
+     * Set the current number of sides the portal should have.
+     * @param sides int, number of sides, between 3 and 50 inclusive
+     * @return
+     */
     public RotatingPortal setSides(int sides) {
-        this.sides = sides;
+        if (sides < MIN_SIDES) {
+            this.sides = MIN_SIDES;
+            System.out.printf("RotatingPortal - # of sides must be >= %d, you entered %d setting to %d.", MIN_SIDES, sides, MIN_SIDES);
+        } else if (sides > MAX_SIDES) {
+            this.sides = MAX_SIDES;
+            System.out.printf("RotatingPortal - # of sides must be <= %d, you entered %d setting to %d.", MAX_SIDES, sides, MAX_SIDES);
+        } else {
+            this.sides = sides;
+        }
+        return this;
+    }
+    /**
+     * Enable or Disable the portal shape sides interpolation 
+     * @param enableInterpolateSides
+     * @return Rotating Portal instance
+     */
+    public RotatingPortal setInterpolateSides(boolean enableInterpolateSides) {
+        this.enableInterpolateSides = enableInterpolateSides;
         return this;
     }
 
+    /**
+     * Set the max number of sides for interpolating the number of sides the portal has.
+     * @param maxSides
+     * @return Rotating Portal Instance
+     */
+    public RotatingPortal setMaxSidesInterpolation(int maxSides) {
+        if (maxSides <= MAX_SIDES && maxSides >= MIN_SIDES) {
+            this.INTERPOLATE_MAX_SIDES = maxSides;
+        } else {
+            System.out.printf("RotatingPortal - max interpolate sides must be between %d and %d inclusive. Setting to %d.", MIN_SIDES, MAX_SIDES, MAX_SIDES);
+            this.INTERPOLATE_MAX_SIDES = MAX_SIDES;
+        }
+        return this;
+    } 
+    /**
+     * Set the min number of sides for interpolating the number of sides the portal has.
+     * @param minSides
+     * @return Rotating Portal Instance
+     */
+    public RotatingPortal setMinSidesInterpolation(int minSides) {
+        if (minSides <= MAX_SIDES && minSides >= MIN_SIDES) {
+            this.INTERPOLATE_MIN_SIDES = minSides;
+        } else {
+            System.out.printf("RotatingPortal - min interpolate sides must be between %d and %d inclusive. Setting to %d.", MIN_SIDES, MAX_SIDES, MAX_SIDES);
+            this.INTERPOLATE_MIN_SIDES = MIN_SIDES;
+        }
+        return this;
+    } 
+    /**
+     * Sets the max and min number of sides for interpolating the number of sides the portal has.
+     * @param maxSides int, between 3 and 50 inclusive
+     * @param minSides int, between 3 and 50 inclusive
+     * @return Rotating Portal instance
+     */
+    public RotatingPortal setMinMaxSidesInterpolation(int maxSides, int minSides) {
+        return this.setMaxSidesInterpolation(maxSides).setMinSidesInterpolation(minSides);
+    }
+    /**
+     * Uses the PortalManipulation.generatePolygonPortalShape() function
+     * @return RotatingPortal instance
+     */
     public RotatingPortal generateShapeFromSides() {
-        PortalManipulation.generatePolygonPortalShape(this, this.sides);
+        if (this.generatePortalShapeFromSides) {
+            PortalManipulation.generatePolygonPortalShape(this, this.sides);
+        }
         return this;
     }
 
@@ -265,13 +356,18 @@ public class RotatingPortal extends Portal {
         return this;
     }
 
+    public RotatingPortal offsetCenter(Vec3d offset) {
+        Vec3d newCenter = this.getPos().add(offset);
+        return this.setCenter(newCenter.x, newCenter.y, newCenter.z);
+    }
+
     /**
      * Sets the center of the portal using the facing of the portal
      * @param center Vec3d, where the center should be
      * @return RotatingPortal instance
      */
     public RotatingPortal setCenter(Vec3d center) {
-        center = center.add((.5 * width/2) - .75, 4.1, .5);
+        center = center.add(0, 2, 0);
         return this.setCenter(center.getX(), center.getY(), center.getZ());
     }
 
@@ -318,28 +414,32 @@ public class RotatingPortal extends Portal {
      */
     @Override
     public void tick() {
-        if (this.world.isClient && enablePortalRotate) {
-            if (interpolateSides) {
+        if (this.world.isClient) {
+            if (this.enableInterpolateSides) {
                 this.sides += SIDE_INCREMENT;
-                if (this.sides >= MAX_SIDES) {
+                if (this.sides >= INTERPOLATE_MAX_SIDES) {
                     if (SIDE_INCREMENT > 0) {
                         SIDE_INCREMENT *= -1;
                     }
-                } else if (this.sides <= MIN_SIDES) {
+                } else if (this.sides <= INTERPOLATE_MIN_SIDES) {
                     if (SIDE_INCREMENT < 0) {
                         SIDE_INCREMENT *= -1;
                     }
                 }
                 this.generateShapeFromSides();
             }
-            MinecraftClient client = MinecraftClient.getInstance();
-            Camera c = client.gameRenderer.getCamera();
-            Quaternion q = c.getVerticalPlane().getDegreesQuaternion(180);
-            q.hamiltonProduct(c.getHorizontalPlane().getDegreesQuaternion(180));
-            q.hamiltonProduct(c.getRotation());
-            q.hamiltonProduct(Vector3f.POSITIVE_Y.getDegreesQuaternion(90));
-            rotatePortalAxis(q, q);
-            this.updateCache();
+            if (this.enablePortalRotate) {
+                System.out.println("enablePortalRotate");
+                MinecraftClient client = MinecraftClient.getInstance();
+                Camera c = client.gameRenderer.getCamera();
+                Quaternion q = c.getVerticalPlane().getDegreesQuaternion(180);
+                q.hamiltonProduct(c.getHorizontalPlane().getDegreesQuaternion(180));
+                q.hamiltonProduct(c.getRotation());
+                q.hamiltonProduct(Vector3f.POSITIVE_Y.getDegreesQuaternion(90));
+                rotatePortalAxis(q, q);
+                this.updateCache();
+            }
+            
         }
     }
 
@@ -349,9 +449,9 @@ public class RotatingPortal extends Portal {
      * @return RotatingPortal instance
      */
     public RotatingPortal spawn(World world) {
+        System.out.println(this + " spawned.");
         world.spawnEntity(this);
         return this;
-    
     }
 
     /**

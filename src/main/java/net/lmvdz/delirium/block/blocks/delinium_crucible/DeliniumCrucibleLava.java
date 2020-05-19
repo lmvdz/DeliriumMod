@@ -1,6 +1,7 @@
 package net.lmvdz.delirium.block.blocks.delinium_crucible;
 
-import net.fabricmc.fabric.api.block.FabricBlockSettings;
+
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.lmvdz.delirium.DeliriumMod;
 import net.lmvdz.delirium.block.DeliriumBlock;
 import net.lmvdz.delirium.item.delinium.items.Delinium;
@@ -14,7 +15,7 @@ public class DeliniumCrucibleLava extends DeliriumBlock {
     public static DeliniumCrucibleLava DELINIUM_CRUCIBLE_LAVA_BLOCK;
 
     public DeliniumCrucibleLava() {
-        super(FabricBlockSettings.of(Delinium.MAP_MATERIAL).nonOpaque().build(), RenderLayer.getEntitySolid(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, new Identifier(DeliriumMod.MODID, "block/delinium_crucible_lava")).getTextureId()));
+        super(FabricBlockSettings.of(Delinium.MAP_MATERIAL).nonOpaque(), RenderLayer.getEntitySolid(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, new Identifier(DeliriumMod.MODID, "block/delinium_crucible_lava")).getTextureId()));
 
         if (DELINIUM_CRUCIBLE_LAVA_BLOCK == null) {
             DELINIUM_CRUCIBLE_LAVA_BLOCK = this;

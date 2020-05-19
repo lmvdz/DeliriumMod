@@ -1,12 +1,9 @@
 package net.lmvdz.delirium.block.blocks.delinium_crucible;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectList;
 import net.lmvdz.delirium.DeliriumMod;
 import net.lmvdz.delirium.model.DynamicModel;
 import net.lmvdz.delirium.modelpart.DynamicModelPart;
-import net.lmvdz.delirium.modelpart.DynamicModelPart.DYNAMIC_ENUM;
-import net.lmvdz.delirium.modelpart.DynamicModelPart.DynamicPart;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.SpriteIdentifier;
@@ -20,20 +17,7 @@ public class DeliniumCruciblePortalLavaModel extends DynamicModel {
 
     public DeliniumCruciblePortalLavaModel() {
 		super(RenderLayer::getEntityTranslucent);
-		ObjectList<DynamicPart[]> seeds = new ObjectArrayList<>();
-		for(int i = 0; i < LAVA_CUBOIDS.length; i++) {
-			seeds.add(new DynamicPart[] { 
-				(DynamicModelPart.EMPTY).new DynamicPart(DYNAMIC_ENUM.X, false, -.05f, .075f, 0f, .5f, DynamicModelPart.DEFAULT_APPLY_RANDOM_MAX, DynamicModelPart.DEFAULT_APPLY_RANDOM_MIN, 1F),
-				(DynamicModelPart.EMPTY).new DynamicPart(DYNAMIC_ENUM.Y, false, -.05f, .075f, 0f, .5f, DynamicModelPart.DEFAULT_APPLY_RANDOM_MAX, DynamicModelPart.DEFAULT_APPLY_RANDOM_MIN, 1F),
-				(DynamicModelPart.EMPTY).new DynamicPart(DYNAMIC_ENUM.Z, false, -.05f, .075f, 0f, .5f, DynamicModelPart.DEFAULT_APPLY_RANDOM_MAX, DynamicModelPart.DEFAULT_APPLY_RANDOM_MIN, 1F),
-				(DynamicModelPart.EMPTY).new DynamicPart(DYNAMIC_ENUM.RED, false, -.5f, .75f, 0f, .5f, DynamicModelPart.DEFAULT_APPLY_RANDOM_MAX, DynamicModelPart.DEFAULT_APPLY_RANDOM_MIN, 1F),
-				(DynamicModelPart.EMPTY).new DynamicPart(DYNAMIC_ENUM.GREEN, false),
-				(DynamicModelPart.EMPTY).new DynamicPart(DYNAMIC_ENUM.BLUE, false),
-				(DynamicModelPart.EMPTY).new DynamicPart(DYNAMIC_ENUM.ALPHA, true, -.5f, .75f, 0f, .5f, DynamicModelPart.DEFAULT_APPLY_RANDOM_MAX, DynamicModelPart.DEFAULT_APPLY_RANDOM_MIN, 1F),
-				(DynamicModelPart.EMPTY).new DynamicPart(DYNAMIC_ENUM.LIGHT, true, -5F, 5F, 0f, .15F, DynamicModelPart.DEFAULT_APPLY_RANDOM_MAX, DynamicModelPart.DEFAULT_APPLY_RANDOM_MIN, 1F),
-			});
-		}
-        this.withParts(ObjectArrayList.wrap(new DynamicModelPart[]{generateModelPart(this, LAVA_CUBOIDS.clone(), LAVA_ROTATION.clone(), lavaSprite, seeds, layerFactory)})).buildUsingSeeds();
+        this.withParts(ObjectArrayList.wrap(new DynamicModelPart[]{DynamicModelPart.generateModelPart(this, LAVA_CUBOIDS.clone(), LAVA_ROTATION.clone(), lavaSprite, DynamicModelPart.defaultSeeds(LAVA_CUBOIDS.length/9), layerFactory)}));
     }
 
 }

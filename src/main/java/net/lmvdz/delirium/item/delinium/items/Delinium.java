@@ -1,6 +1,6 @@
 package net.lmvdz.delirium.item.delinium.items;
 
-import net.fabricmc.fabric.api.block.FabricMaterialBuilder;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricMaterialBuilder;
 import net.lmvdz.delirium.item.DeliriumItemToolMaterial;
 import net.minecraft.block.Material;
 import net.minecraft.block.MaterialColor;
