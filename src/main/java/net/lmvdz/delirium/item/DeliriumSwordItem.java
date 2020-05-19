@@ -20,7 +20,7 @@ import net.minecraft.world.World;
  * DeliriumSwordItem
  */
 public class DeliriumSwordItem extends SwordItem {
-    public static HashMap<Identifier, DeliriumSwordItem> SWORDS = new HashMap<>();
+    
     private String name = "";
     private Identifier identifier;
 
@@ -47,7 +47,7 @@ public class DeliriumSwordItem extends SwordItem {
     protected static void registerSwordItem(DeliriumSwordItem item) {
         setItemName(item, CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getClass().getSimpleName()));
         setIdentifier(item);
-        SWORDS.put(getIdentifier(item), Registry.register(Registry.ITEM, getIdentifier(item), item));
+        DeliriumMod.SWORDS.put(getIdentifier(item), Registry.register(Registry.ITEM, getIdentifier(item), item));
         System.out.println("Registered SwordItem: " + item.getTranslationKey());
     }
 

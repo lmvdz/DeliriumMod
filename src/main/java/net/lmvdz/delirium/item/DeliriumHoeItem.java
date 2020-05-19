@@ -19,7 +19,7 @@ import net.minecraft.world.World;
 
 public class DeliriumHoeItem extends HoeItem {
 
-    public static HashMap<Identifier, DeliriumHoeItem> HOES = new HashMap<>();
+    
 
     private String name = "";
     private Identifier identifier;
@@ -46,7 +46,7 @@ public class DeliriumHoeItem extends HoeItem {
     protected static void registerHoeItem(DeliriumHoeItem item) {
         setItemName(item, CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getClass().getSimpleName()));
         setIdentifier(item);
-        HOES.put(getIdentifier(item), Registry.register(Registry.ITEM, getIdentifier(item), item));
+        DeliriumMod.HOES.put(getIdentifier(item), Registry.register(Registry.ITEM, getIdentifier(item), item));
         System.out.println("Registered SwordItem: " + item.getTranslationKey());
     }
 

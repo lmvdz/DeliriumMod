@@ -1,11 +1,22 @@
 package net.lmvdz.delirium;
 
+import java.util.HashMap;
+
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
+import net.lmvdz.delirium.block.DeliriumBlock;
 import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucible;
 import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucibleLava;
+import net.lmvdz.delirium.blockitem.DeliriumBlockItem;
 import net.lmvdz.delirium.blockitem.blockitems.DeliniumCrucibleBlockItem;
+import net.lmvdz.delirium.item.DeliriumAxeItem;
+import net.lmvdz.delirium.item.DeliriumHoeItem;
+import net.lmvdz.delirium.item.DeliriumItem;
+import net.lmvdz.delirium.item.DeliriumPickaxeItem;
+import net.lmvdz.delirium.item.DeliriumShovelItem;
+import net.lmvdz.delirium.item.DeliriumSwordItem;
+import net.lmvdz.delirium.item.DeliriumToolItem;
 import net.lmvdz.delirium.item.delinium.items.Delinium;
 import net.lmvdz.delirium.item.delinium.items.DeliniumIngot;
 import net.lmvdz.delirium.item.delinium.tools.axe.DeliniumAxe;
@@ -36,8 +47,15 @@ public class DeliriumMod implements ModInitializer {
 	public final static String MODID = "delirium";
 	public static WarpManager WarpManager = new WarpManager();
 	public final static ItemGroup ITEM_GROUP = FabricItemGroupBuilder.create(new Identifier(MODID, "items")).icon(() -> new ItemStack(Registry.ITEM.get(new Identifier(MODID, "delinium")))).build();
-
-
+	public static HashMap<Identifier, DeliriumBlock> BLOCKS = new HashMap<>();
+	public static HashMap<Identifier, DeliriumBlockItem> BLOCK_ITEMS = new HashMap<>();
+	public static HashMap<Identifier, DeliriumToolItem> TOOLS = new HashMap<>();
+    public static HashMap<Identifier, DeliriumSwordItem> SWORDS = new HashMap<>();
+    public static HashMap<Identifier, DeliriumShovelItem> SHOVELS = new HashMap<>();
+    public static HashMap<Identifier, DeliriumPickaxeItem> PICKAXES = new HashMap<>();
+    public static HashMap<Identifier, DeliriumHoeItem> HOES = new HashMap<>();
+    public static HashMap<Identifier, DeliriumAxeItem> AXES = new HashMap<>();
+    public static HashMap<Identifier, DeliriumItem> ITEMS = new HashMap<>();
 	@Override
 	public void onInitialize() {
 		System.out.println("DeliriumMod - Init");

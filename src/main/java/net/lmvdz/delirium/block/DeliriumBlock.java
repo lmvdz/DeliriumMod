@@ -6,6 +6,8 @@ import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.lmvdz.delirium.DeliriumMod;
 import net.minecraft.block.Block;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.model.SpriteAtlasManager;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -13,7 +15,6 @@ import net.minecraft.util.registry.Registry;
  * DeliriumBlock
  */
 public class DeliriumBlock extends Block {
-    public static HashMap<Identifier, DeliriumBlock> BLOCKS = new HashMap<>();
     
     private String name = "";
     private Identifier identifier;
@@ -28,7 +29,7 @@ public class DeliriumBlock extends Block {
         setBlockName(block, CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE,
                 block.getClass().getSimpleName()));
         setIdentifier(block);
-        BLOCKS.put(getIdentifier(block), Registry.register(Registry.BLOCK, getIdentifier(block), block));
+        DeliriumMod.BLOCKS.put(getIdentifier(block), Registry.register(Registry.BLOCK, getIdentifier(block), block));
         System.out.println("Registered Block: " + block.getTranslationKey());
     }
 

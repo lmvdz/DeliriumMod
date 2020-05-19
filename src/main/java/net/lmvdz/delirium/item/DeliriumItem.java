@@ -22,15 +22,19 @@ import net.minecraft.world.World;
 public class DeliriumItem extends Item {
     private String name = "";
     private boolean isDamageable = false;
+    private Identifier identifier;
     
-    public static HashMap<Identifier, DeliriumItem> ITEMS = new HashMap<>();
 
     public DeliriumItem(Item.Settings settings) {
         super(settings.group(DeliriumMod.ITEM_GROUP));
     }
 
+    public static void setIdentifier(DeliriumItem item) {
+        item.identifier = new Identifier(DeliriumMod.MODID, item.getTranslationKey());
+    }
+
     public static Identifier getIdentifier(DeliriumItem item) {
-        return new Identifier(DeliriumMod.MODID, item.getTranslationKey());
+        return item.identifier;
     }
 
     public static String getItemName(DeliriumItem item) {
@@ -43,7 +47,8 @@ public class DeliriumItem extends Item {
 
     protected static void registerItem(DeliriumItem item) {
         setItemName(item, CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getClass().getSimpleName()));
-        ITEMS.put(getIdentifier(item), Registry.register(Registry.ITEM, getIdentifier(item), item));
+        setIdentifier(item);
+        DeliriumMod.ITEMS.put(getIdentifier(item), Registry.register(Registry.ITEM, getIdentifier(item), item));
         System.out.println("Registered Item: " + item.getTranslationKey());
     }
 
@@ -67,7 +72,7 @@ public class DeliriumItem extends Item {
         return this.isDamageable;
     }
 
-    public Ingredient asIngredient() {
-        return Ingredient.ofItems(this);
+    public static Ingredient asIngredient(DeliriumItem item) {
+        return Ingredient.ofItems(item);
     }
 }

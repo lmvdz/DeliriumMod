@@ -17,8 +17,6 @@ import net.minecraft.util.registry.Registry;
  */
 public class DeliriumBlockItem extends BlockItem {
 
-    public static HashMap<Identifier, DeliriumBlockItem> BLOCK_ITEMS = new HashMap<>();
-
     private String name = "";
     private Identifier identifier;
     public DeliriumBlockItem(Block block, Settings settings) {
@@ -28,7 +26,7 @@ public class DeliriumBlockItem extends BlockItem {
     public static void registerBlockItem(DeliriumBlockItem item) {
         setBlockItemName(item, CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getClass().getSimpleName()));
         setIdentifier(item);
-        BLOCK_ITEMS.put(getIdentifier(item), Registry.register(Registry.ITEM, getIdentifier(item), item));
+        DeliriumMod.BLOCK_ITEMS.put(getIdentifier(item), Registry.register(Registry.ITEM, getIdentifier(item), item));
         System.out.println("Registered Block Item: " + item.getTranslationKey());
     }
     public static void setIdentifier(DeliriumBlockItem item) {

@@ -19,8 +19,7 @@ import net.minecraft.world.World;
 
 public class DeliriumAxeItem extends AxeItem {
 
-    public static HashMap<Identifier, DeliriumAxeItem> AXES = new HashMap<>();
-
+    
     private String name = "";
     private Identifier identifier;
 
@@ -45,7 +44,7 @@ public class DeliriumAxeItem extends AxeItem {
     protected static void registerAxeItem(DeliriumAxeItem item) {
         setItemName(item, CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getClass().getSimpleName()));
         setIdentifier(item);
-        AXES.put(getIdentifier(item), Registry.register(Registry.ITEM, getIdentifier(item), item));
+        DeliriumMod.AXES.put(getIdentifier(item), Registry.register(Registry.ITEM, getIdentifier(item), item));
         System.out.println("Registered SwordItem: " + item.getTranslationKey());
     }
 

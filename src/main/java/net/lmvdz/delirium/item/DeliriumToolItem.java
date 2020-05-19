@@ -21,7 +21,7 @@ import net.minecraft.world.World;
  */
 public class DeliriumToolItem extends ToolItem {
 
-    public static HashMap<Identifier, DeliriumToolItem> TOOLS = new HashMap<>();
+    
 
     private String name = "";
     private Identifier identifier;
@@ -47,7 +47,7 @@ public class DeliriumToolItem extends ToolItem {
     protected static void registerToolItem(DeliriumToolItem item) {
         setItemName(item, CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getClass().getSimpleName()));
         setIdentifier(item);
-        TOOLS.put(getIdentifier(item), Registry.register(Registry.ITEM, getIdentifier(item), item));
+        DeliriumMod.TOOLS.put(getIdentifier(item), Registry.register(Registry.ITEM, getIdentifier(item), item));
         System.out.println("Registered ToolItem: " + item.getTranslationKey());
     }
 

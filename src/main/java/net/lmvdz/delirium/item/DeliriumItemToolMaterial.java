@@ -20,7 +20,7 @@ public class DeliriumItemToolMaterial extends DeliriumItem implements ToolMateri
         this.attackDamage = attackDamage;
         this.enchantability = enchantability;
         this.miningLevel = miningLevel;
-        this.repairIngredient = this.asIngredient();
+        this.repairIngredient = asIngredient(this);
     }
 
     @Override

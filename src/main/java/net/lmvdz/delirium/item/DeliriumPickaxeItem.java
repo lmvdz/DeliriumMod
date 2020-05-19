@@ -18,8 +18,7 @@ import net.minecraft.world.World;
 
 public class DeliriumPickaxeItem extends PickaxeItem {
 
-    public static HashMap<Identifier, DeliriumPickaxeItem> PICKAXES = new HashMap<>();
-
+    
     private String name = "";
 
     protected DeliriumPickaxeItem(DeliriumItemToolMaterial material, int attackDamage, float attackSpeed, Settings settings) {
@@ -40,7 +39,7 @@ public class DeliriumPickaxeItem extends PickaxeItem {
 
     protected static void registerPickaxeItem(DeliriumPickaxeItem item) {
         setItemName(item, CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getClass().getSimpleName()));
-        PICKAXES.put(item.getIdentifier(), Registry.register(Registry.ITEM, item.getIdentifier(), item));
+        DeliriumMod.PICKAXES.put(item.getIdentifier(), Registry.register(Registry.ITEM, item.getIdentifier(), item));
         System.out.println("Registered SwordItem: " + item.getTranslationKey());
     }
 

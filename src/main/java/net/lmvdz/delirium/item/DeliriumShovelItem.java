@@ -21,7 +21,7 @@ import net.minecraft.world.World;
  * DeliriumShovelItem
  */
 public class DeliriumShovelItem extends ShovelItem {
-    public static HashMap<Identifier, DeliriumShovelItem> SHOVELS = new HashMap<>();
+    
     private String name = "";
     private Identifier identifier;
     public DeliriumShovelItem(ToolMaterial material, float attackDamage, float attackSpeed,
@@ -47,7 +47,7 @@ public class DeliriumShovelItem extends ShovelItem {
     protected static void registerShovelItem(DeliriumShovelItem item) {
         setItemName(item, CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getClass().getSimpleName()));
         setIdentifier(item);
-        SHOVELS.put(getIdentifier(item), Registry.register(Registry.ITEM, getIdentifier(item), item));
+        DeliriumMod.SHOVELS.put(getIdentifier(item), Registry.register(Registry.ITEM, getIdentifier(item), item));
         System.out.println("Registered ShovelItem: " + item.getTranslationKey());
     }
 
