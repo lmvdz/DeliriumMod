@@ -33,6 +33,10 @@ public class DeliriumBlock extends Block {
         System.out.println("Registered Block: " + block.getTranslationKey());
     }
 
+    public static boolean isInstanceOf(Block b) {
+        return b instanceof DeliriumBlock;
+    }
+
     public static void setIdentifier(DeliriumBlock block) {
         block.identifier = new Identifier(DeliriumMod.MODID, getBlockName(block));
     }

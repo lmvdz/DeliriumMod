@@ -1,6 +1,7 @@
 package net.lmvdz.delirium.warp;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.UUID;
 
 /**
@@ -8,27 +9,23 @@ import java.util.UUID;
  */
 public class WarpManager {
 
-    private ArrayList<Warp> warps;
+    private HashMap<UUID, Warp> warps;
 
     public WarpManager() {
-        this.warps = new ArrayList<>();
+        this.warps = new HashMap<>();
     }
 
     public boolean saveAll() {
         return false;
     }
 
-    public ArrayList<Warp> getWarps() {
+    public HashMap<UUID, Warp> getWarps() {
         return this.warps;
-    }
-
-    public void addWarp(Warp w) {
-        this.warps.add(w);
     }
 
     public ArrayList<Warp> getWarpsByCreator(UUID creator) {
         ArrayList<Warp> subList = new ArrayList<>();
-        warps.forEach(warp -> {
+        warps.values().forEach(warp -> {
             if (warp.getCreator().equals(creator)) {
                 subList.add(Warp.copy(warp));
             }
@@ -38,7 +35,7 @@ public class WarpManager {
 
     public ArrayList<Warp> getWarpsByDimension(int dimension) {
         ArrayList<Warp> subList = new ArrayList<>();
-        warps.forEach(warp -> {
+        warps.values().forEach(warp -> {
             if (warp.getDimension() == dimension) {
                 subList.add(Warp.copy(warp));
             }
@@ -48,7 +45,7 @@ public class WarpManager {
 
     public ArrayList<Warp> getWarpsByName(String name) {
         ArrayList<Warp> subList = new ArrayList<>();
-        warps.forEach(warp -> {
+        warps.values().forEach(warp -> {
             if (warp.getName().contains(name)) {
                 subList.add(Warp.copy(warp));
             }

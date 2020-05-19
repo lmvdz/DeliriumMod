@@ -154,7 +154,8 @@ public class DeliniumCrucibleLootableContainerBlockEntityRenderer
         // Sprite sprite = client.getBlockRenderManager().getModel(blockEntity.getCachedState()).getSprite();
         
 
-
+        boolean ticked = this.tick > tickDelta;
+        this.tick = tickDelta;
         double offset = Math.abs(Math.sin((blockEntity.getWorld().getTime() + tickDelta) / 8.0) / 16.0);
         int lightAbove = WorldRenderer.getLightmapCoordinates(blockEntity.getWorld(), blockEntity.getPos().up());
         double distanceToCamera = client.cameraEntity.getPos().squaredDistanceTo(new Vec3d(blockEntity.getPos().getX()+.5f, blockEntity.getPos().getY()+.5f, blockEntity.getPos().getZ()+.5f));
@@ -167,10 +168,6 @@ public class DeliniumCrucibleLootableContainerBlockEntityRenderer
 
             
             // int shiftUVTicks = (int)(640 / ((Math.random() * 12) + 10) / ((percentage * .28) + 1));
-
-            boolean ticked = this.tick > tickDelta;
-            // System.out.println(blockEntity.getPos());
-            this.tick = tickDelta;
             matrices.push();
             matrices.translate(0f, .5f, 1f);
             matrices.scale(1f, -1f, 1f);

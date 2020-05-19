@@ -1,6 +1,7 @@
 package net.lmvdz.delirium.block.blocks;
 
 import net.lmvdz.delirium.block.DeliriumBlock;
+import net.minecraft.block.Block;
 import net.minecraft.client.render.RenderLayer;
 
 /**
@@ -19,5 +20,8 @@ public class DeliniumBlock extends DeliriumBlock {
         }
     }
 
+    public static boolean isInstanceOf(Block b) {
+        return b instanceof DeliniumBlock;
+    }
     
 }

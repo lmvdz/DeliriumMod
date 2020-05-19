@@ -201,8 +201,7 @@ public class DeliniumCrucibleLootableContainerBlockEntity extends LootableContai
                 if (this.ticks >= 0 && this.ticks <= 1280) {
                     this.ticks++;
                     if (melting) {
-                        this.world.setBlockState(this.getPos(),
-                                state.with(DeliniumCrucible.PERCENTAGE, (int) (this.ticks / 128)));
+                        this.world.setBlockState(this.getPos(), state.with(DeliniumCrucible.PERCENTAGE, (int) (this.ticks / 128)));
                         int percentage = DeliniumCrucible.getPercentageFromBlockState(state);
                         if (percentage == 10) {
                             this.ticks = -2;

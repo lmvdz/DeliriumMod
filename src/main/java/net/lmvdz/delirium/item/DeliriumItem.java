@@ -27,6 +27,8 @@ public class DeliriumItem extends Item {
 
     public DeliriumItem(Item.Settings settings) {
         super(settings.group(DeliriumMod.ITEM_GROUP));
+        setItemName(this, CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, this.getClass().getSimpleName()));
+        setIdentifier(this);
     }
 
     public static void setIdentifier(DeliriumItem item) {
@@ -45,11 +47,10 @@ public class DeliriumItem extends Item {
         item.name = name;
     }
 
-    protected static void registerItem(DeliriumItem item) {
-        setItemName(item, CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getClass().getSimpleName()));
-        setIdentifier(item);
-        DeliriumMod.ITEMS.put(getIdentifier(item), Registry.register(Registry.ITEM, getIdentifier(item), item));
-        System.out.println("Registered Item: " + item.getTranslationKey());
+    protected DeliriumItem registerItem() {
+        DeliriumMod.ITEMS.putIfAbsent(getIdentifier(this), Registry.register(Registry.ITEM, getIdentifier(this), this));
+        System.out.println("Registered Item: " + this.getTranslationKey());
+        return this;
     }
 
     @Override
@@ -72,7 +73,7 @@ public class DeliriumItem extends Item {
         return this.isDamageable;
     }
 
-    public static Ingredient asIngredient(DeliriumItem item) {
+    public static Ingredient asIngredient(Item item) {
         return Ingredient.ofItems(item);
     }
 }

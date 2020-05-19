@@ -1,6 +1,7 @@
 package net.lmvdz.delirium.warp;
-
+import java.util.HashMap;
 import java.util.UUID;
+
 import net.lmvdz.delirium.DeliriumMod;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Vec3d;
@@ -15,18 +16,25 @@ public class Warp {
     private Vec3d location;
     private float yaw;
     private float pitch;
+    private UUID warpUuid;
     private UUID creator;
+    private HashMap<UUID, Boolean> whitelist;
     private float cost;
 
-    public Warp(ServerPlayerEntity player, String name, float cost) {
+    public Warp(ServerPlayerEntity player, String name, float cost, HashMap<UUID, Boolean> whitelist) {
         this.dimension = player.world.getDimension().getType().getRawId();
+        this.warpUuid = UUID.randomUUID();
         this.name = name;
         this.location = player.getPosVector();
         this.yaw = player.yaw;
         this.pitch = player.pitch;
         this.creator = player.getUuid();
         this.cost = cost;
-        DeliriumMod.WarpManager.addWarp(this);
+        this.whitelist = whitelist;
+        whitelist.putIfAbsent(this.creator, true);
+        do {
+            this.warpUuid = UUID.randomUUID();
+        } while (DeliriumMod.WarpManager.getWarps().putIfAbsent(this.warpUuid, this) != this);
     }
 
     public Warp(ServerPlayerEntity player) {
@@ -34,10 +42,10 @@ public class Warp {
     }
 
     public Warp(ServerPlayerEntity player, String name) {
-        new Warp(player, name, 0);
+        new Warp(player, name, 0, new HashMap<>());
     }
 
-    public Warp(Warp warp) {
+    private Warp(Warp warp) {
         this.dimension = warp.getDimension();
         this.name = warp.getName();
         this.location = warp.getLocation();
@@ -45,10 +53,15 @@ public class Warp {
         this.pitch = warp.getPitch();
         this.creator = warp.getCreator();
         this.cost = warp.getCost();
+        this.whitelist = warp.getWhitelist();
     }
 
     public static Warp copy(Warp warp) {
         return new Warp(warp);
+    }
+
+    public HashMap<UUID, Boolean> getWhitelist() {
+        return this.whitelist;
     }
 
     public int getDimension() {

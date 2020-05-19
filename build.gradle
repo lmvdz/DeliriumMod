@@ -47,7 +47,7 @@ dependencies {
 	
 	// modImplementation files("libs/immersive-portals-0.27(forMc1.15withFabric).jar")
 	// modImplementation "curse.maven:immersive-portals-mod:2936532"
-	modImplementation 'com.github.qouteall:ImmersivePortalsMod:v0.28-1.15-2'
+	modImplementation 'com.github.qouteall:ImmersivePortalsMod:v0.29-1.15'
 	// optifabric
 	// modImplementation "com.github.modmuss50:OptiFabric:${project.optifabric_version}"
 	// modCompile "com.github.modmuss50:OptiFabric:${project.optifabric_version}"
@@ -55,6 +55,8 @@ dependencies {
     // compile "org.zeroturnaround:zt-zip:1.14"
 
 	// modCompile files("libs/toxiclibs/toxiclibscore/library/toxiclibscore.jar")
+
+	// modImplementation 'org.greenrobot:eventbus:3.2.0'
 }
 
 processResources {

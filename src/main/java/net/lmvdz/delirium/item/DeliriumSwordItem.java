@@ -2,10 +2,16 @@ package net.lmvdz.delirium.item;
 
 import net.minecraft.item.SwordItem;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.google.common.base.CaseFormat;
+
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.lmvdz.delirium.DeliriumMod;
 import net.lmvdz.delirium.util.FormattingEngine;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -25,8 +31,10 @@ public class DeliriumSwordItem extends SwordItem {
     private Identifier identifier;
 
 
-    public DeliriumSwordItem(DeliriumItemToolMaterial material, int attackDamage, float attackSpeed, Settings settings) {
+    public DeliriumSwordItem(ItemToolMaterial material, int attackDamage, float attackSpeed, Settings settings) {
         super(material, attackDamage, attackSpeed, settings.group(DeliriumMod.ITEM_GROUP));
+        setItemName(this, CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, this.getClass().getSimpleName()));
+        setIdentifier(this);
     }
 
     public static void setIdentifier(DeliriumSwordItem item) {
@@ -44,11 +52,10 @@ public class DeliriumSwordItem extends SwordItem {
         item.name = name;
     }
 
-    protected static void registerSwordItem(DeliriumSwordItem item) {
-        setItemName(item, CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getClass().getSimpleName()));
-        setIdentifier(item);
-        DeliriumMod.SWORDS.put(getIdentifier(item), Registry.register(Registry.ITEM, getIdentifier(item), item));
-        System.out.println("Registered SwordItem: " + item.getTranslationKey());
+    protected DeliriumSwordItem registerSwordItem() {
+        DeliriumMod.SWORDS.put(getIdentifier(this), Registry.register(Registry.ITEM, getIdentifier(this), this));
+        System.out.println("Registered SwordItem: " + this.getTranslationKey());
+        return this;
     }
 
     @Override
@@ -64,5 +71,20 @@ public class DeliriumSwordItem extends SwordItem {
     @Override
     public Text getName(ItemStack itemStack) {
         return FormattingEngine.replaceColorCodeInTranslatableText(new TranslatableText("item." + DeliriumMod.MODID + "." + this.getTranslationKey()));
+    }
+
+    public static DeliriumSwordItem makeOutOf(ItemToolMaterial itemToolMaterial, int attackDamage, float attackSpeed, Item.Settings settings) {
+        DeliriumSwordItem dsi = new DeliriumSwordItem(itemToolMaterial, attackDamage, attackSpeed, settings);
+        DeliriumSwordItem.setItemNameFromIngredient(dsi, CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, itemToolMaterial.getRepairIngredientAsItem().getClass().getSimpleName()));
+        DeliriumSwordItem.setIdentifier(dsi);
+        return dsi.registerSwordItem();
+    }
+
+    public static void setItemNameFromIngredient(DeliriumSwordItem item, String name) {
+        setItemName(item, name + "_sword");
+    }
+
+    public static DeliriumSwordItem makeOutOf(Item i, int attackDamage, int durability, int enchantability, int miningLevel, float miningSpeed, float attackSpeed, Item.Settings settings) {
+        return makeOutOf(new ItemToolMaterial(settings, attackDamage,  durability, enchantability, miningLevel, miningSpeed,attackSpeed, i), attackDamage, attackSpeed, settings);
     }
 }

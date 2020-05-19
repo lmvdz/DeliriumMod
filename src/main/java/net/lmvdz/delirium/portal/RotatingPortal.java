@@ -18,7 +18,7 @@ import net.minecraft.world.dimension.DimensionType;
  * - references to the connected portals (biFacingPortal, biWayPortal, biWayBiFacingPortal)
  */
 public class RotatingPortal extends Portal {
-
+    
     // EntityType
     public static EntityType<RotatingPortal> entityType;
     // whether or not the portal should rotate
@@ -70,9 +70,8 @@ public class RotatingPortal extends Portal {
      */
     public RotatingPortal(EntityType<?> entityType, World world) {
         super(entityType, world);
-        this.enablePortalRotate = false;
-        // waiting for newest release 
-        // this.setInteractable(false); 
+        this.enablePortalRotate = false; 
+        this.setInteractable(false); 
     }
 
     /**
@@ -89,9 +88,8 @@ public class RotatingPortal extends Portal {
      * @param generatePortalShapeFromSides
      */
     public RotatingPortal(Vec3d axisH, Vec3d axisW, DimensionType dimensionTo, Vec3d destination, double width, double height, boolean enablePortalRotate, int sides, boolean enableInterpolateSides, boolean generatePortalShapeFromSides) {
-        super(RotatingPortal.entityType, null);
-        // waiting for newest release 
-        // this.setInteractable(false); 
+        super(RotatingPortal.entityType, null); 
+        this.setInteractable(false); 
         this.setPortal(axisH, axisW, dimensionTo, destination, width, height).setRotatePortalAxis(enablePortalRotate).setSides(sides).setInterpolateSides(enableInterpolateSides).setGeneratePortalShapeFromSides(generatePortalShapeFromSides);
     }
 
@@ -117,7 +115,7 @@ public class RotatingPortal extends Portal {
         return new RotatingPortal(entityType, world, axisH, axisW, dimensionTo, destination, width, height, enablePortalRotate, new Vec3d(this.getX(), this.getY(), this.getZ()), sides, enableInterpolateSides);
     }
 
-    /**
+    /**s
      * Required Fields Constructor, enables rotation, disables interactability
      * @param entityType
      * @param world

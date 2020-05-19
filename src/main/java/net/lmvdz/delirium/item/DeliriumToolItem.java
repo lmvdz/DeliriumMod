@@ -1,10 +1,16 @@
 package net.lmvdz.delirium.item;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.google.common.base.CaseFormat;
+
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.lmvdz.delirium.DeliriumMod;
 import net.lmvdz.delirium.util.FormattingEngine;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ToolItem;
 import net.minecraft.text.Text;
@@ -26,8 +32,10 @@ public class DeliriumToolItem extends ToolItem {
     private String name = "";
     private Identifier identifier;
 
-    public DeliriumToolItem(DeliriumItemToolMaterial material, Settings settings) {
+    public DeliriumToolItem(ItemToolMaterial material, Settings settings) {
         super(material, settings.group(DeliriumMod.ITEM_GROUP));
+        setItemName(this, CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, this.getClass().getSimpleName()));
+        setIdentifier(this);
     }
     public static void setIdentifier(DeliriumToolItem item) {
         item.identifier = new Identifier(DeliriumMod.MODID, item.getTranslationKey());
@@ -44,11 +52,11 @@ public class DeliriumToolItem extends ToolItem {
         item.name = name;
     }
 
-    protected static void registerToolItem(DeliriumToolItem item) {
-        setItemName(item, CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getClass().getSimpleName()));
-        setIdentifier(item);
-        DeliriumMod.TOOLS.put(getIdentifier(item), Registry.register(Registry.ITEM, getIdentifier(item), item));
-        System.out.println("Registered ToolItem: " + item.getTranslationKey());
+    protected DeliriumToolItem registerToolItem() {
+        Identifier id = getIdentifier(this);
+        DeliriumMod.TOOLS.put(id, Registry.register(Registry.ITEM, id, this));
+        System.out.println("Registered ToolItem: " + this.getTranslationKey());
+        return this;
     }
 
     @Override
@@ -64,6 +72,21 @@ public class DeliriumToolItem extends ToolItem {
     @Override
     public Text getName(ItemStack itemStack) {
         return FormattingEngine.replaceColorCodeInTranslatableText(new TranslatableText("item." + DeliriumMod.MODID + "." + this.getTranslationKey()));
+    }
+
+    public static DeliriumToolItem makeOutOf(ItemToolMaterial itemToolMaterial, Item.Settings settings) {
+        DeliriumToolItem dti = new DeliriumToolItem(itemToolMaterial, settings);
+        DeliriumToolItem.setItemNameFromIngredient(dti, CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, itemToolMaterial.getRepairIngredientAsItem().getClass().getSimpleName()));
+        DeliriumToolItem.setIdentifier(dti);
+        return dti.registerToolItem();
+    }
+
+    public static void setItemNameFromIngredient(DeliriumToolItem item, String name) {
+        setItemName(item, name + "_tool");
+    }
+
+    public static DeliriumToolItem makeOutOf(Item i, int attackDamage, int durability, int enchantability, int miningLevel, float miningSpeed, float attackSpeed, Item.Settings settings) {
+        return makeOutOf(new ItemToolMaterial(settings, attackDamage, durability, enchantability, miningLevel, miningSpeed, attackSpeed, i), settings);
     }
     
 }

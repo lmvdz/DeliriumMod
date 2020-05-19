@@ -1,11 +1,18 @@
 package net.lmvdz.delirium.item;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.google.common.base.CaseFormat;
+
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.lmvdz.delirium.DeliriumMod;
 import net.lmvdz.delirium.util.FormattingEngine;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.HoeItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 import net.minecraft.text.Text;
@@ -23,8 +30,10 @@ public class DeliriumHoeItem extends HoeItem {
 
     private String name = "";
     private Identifier identifier;
-    protected DeliriumHoeItem(DeliriumItemToolMaterial material, float attackSpeed, Settings settings) {
+    protected DeliriumHoeItem(ItemToolMaterial material, float attackSpeed, Settings settings) {
         super(material, attackSpeed, settings.group(DeliriumMod.ITEM_GROUP));
+        setItemName(this, CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, this.getClass().getSimpleName()));
+        setIdentifier(this);
     }
 
     public static void setIdentifier(DeliriumHoeItem item) {
@@ -43,11 +52,10 @@ public class DeliriumHoeItem extends HoeItem {
         item.name = name;
     }
 
-    protected static void registerHoeItem(DeliriumHoeItem item) {
-        setItemName(item, CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, item.getClass().getSimpleName()));
-        setIdentifier(item);
-        DeliriumMod.HOES.put(getIdentifier(item), Registry.register(Registry.ITEM, getIdentifier(item), item));
-        System.out.println("Registered SwordItem: " + item.getTranslationKey());
+    protected DeliriumHoeItem registerHoeItem() {
+        DeliriumMod.HOES.putIfAbsent(getIdentifier(this), Registry.register(Registry.ITEM, getIdentifier(this), this));
+        System.out.println("Registered HoeItem: " + this.getTranslationKey());
+        return this;
     }
 
     @Override
@@ -63,6 +71,21 @@ public class DeliriumHoeItem extends HoeItem {
     @Override
     public Text getName(ItemStack itemStack) {
         return FormattingEngine.replaceColorCodeInTranslatableText(new TranslatableText("item." + DeliriumMod.MODID + "." + this.getTranslationKey()));
+    }
+
+    public static DeliriumHoeItem makeOutOf(ItemToolMaterial itemToolMaterial, float attackSpeed, Item.Settings settings) {
+        DeliriumHoeItem dhi = new DeliriumHoeItem(itemToolMaterial, attackSpeed, settings);
+        DeliriumHoeItem.setItemNameFromIngredient(dhi, CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, itemToolMaterial.getRepairIngredientAsItem().getClass().getSimpleName()));
+        DeliriumHoeItem.setIdentifier(dhi);
+        return dhi.registerHoeItem();
+    }
+
+    public static void setItemNameFromIngredient(DeliriumHoeItem item, String name) {
+        setItemName(item, name + "_hoe"); 
+    }
+
+    public static DeliriumHoeItem makeOutOf(Item i, float attackDamage, int durability, int enchantability, int miningLevel, float miningSpeed, float attackSpeed, Item.Settings settings) {
+        return makeOutOf(new ItemToolMaterial(settings, attackDamage, durability, enchantability, miningLevel, miningSpeed, attackSpeed, i), attackSpeed, settings);
     }
 
 }
