@@ -1,5 +1,5 @@
 {
-    "itemGroup.delirium.items": "Delirium",
+    "itemGroup.delirium.items": "§{GOLD}Delirium§{RED}Mod§{RESET}",
     "item.delirium.delinium": "§{GOLD}Delinium§{RESET}",
     "item.delirium.delinium_ingot": "§{GOLD}Delinium §{DARK_CYAN}Ingot§{RESET}",
     "item.delirium.delinium_sword": "§{GOLD}Delinium §{DARK_CYAN}Sword§{RESET}",

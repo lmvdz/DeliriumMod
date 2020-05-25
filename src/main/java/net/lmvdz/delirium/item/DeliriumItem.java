@@ -1,6 +1,5 @@
 package net.lmvdz.delirium.item;
 
-import java.util.HashMap;
 import com.google.common.base.CaseFormat;
 import net.lmvdz.delirium.DeliriumMod;
 import net.lmvdz.delirium.util.FormattingEngine;

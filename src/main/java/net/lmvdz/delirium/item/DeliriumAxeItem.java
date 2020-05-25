@@ -1,19 +1,12 @@
 package net.lmvdz.delirium.item;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.google.common.base.CaseFormat;
-
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.lmvdz.delirium.DeliriumMod;
 import net.lmvdz.delirium.util.FormattingEngine;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "delirium",
-  "version": "${mod_version}",
+  "version": "1.0.0",
 
   "name": "DeliriumMod - Depths of Dispair",
   "description": "In this modpack you will be put through hell.",

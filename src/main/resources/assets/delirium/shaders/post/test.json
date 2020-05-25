@@ -1,0 +1,15 @@
+{
+    "targets": ["swap"],
+
+    "passes": [{
+            "name": "delirium:test",
+            "intarget": "minecraft:main",
+            "outtarget": "swap"
+        },
+        {
+            "name": "delirium:test",
+            "intarget": "swap",
+            "outtarget": "minecraft:main"
+        }
+    ]
+}

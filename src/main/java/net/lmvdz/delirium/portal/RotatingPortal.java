@@ -427,7 +427,7 @@ public class RotatingPortal extends Portal {
                 this.generateShapeFromSides();
             }
             if (this.enablePortalRotate) {
-                System.out.println("enablePortalRotate");
+                // System.out.println("enablePortalRotate");
                 MinecraftClient client = MinecraftClient.getInstance();
                 Camera c = client.gameRenderer.getCamera();
                 Quaternion q = c.getVerticalPlane().getDegreesQuaternion(180);

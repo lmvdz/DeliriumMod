@@ -1,0 +1,16 @@
+{
+    "targets": [
+        "swap"
+    ],
+    "passes": [{
+            "name": "delirium:rainbow_ping",
+            "intarget": "minecraft:main",
+            "outtarget": "swap"
+        },
+        {
+            "name": "blit",
+            "intarget": "swap",
+            "outtarget": "minecraft:main"
+        }
+    ]
+}

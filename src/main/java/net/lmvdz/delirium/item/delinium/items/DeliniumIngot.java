@@ -15,7 +15,7 @@ public class DeliniumIngot extends ItemToolMaterial {
         if (DELINIUM_INGOT == null) {
             DELINIUM_INGOT = this;
             registerItem();
-            create();
+            createTools();
         }
     }
 }

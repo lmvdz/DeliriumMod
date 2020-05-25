@@ -28,7 +28,7 @@ import net.minecraft.util.math.Direction;
 /**
  * Each DynamicModelPart has DynamicCuboid(s)
  * Each DynamicCuboid has a DynamicPart[] (one DynamicPart for each DYNAMIC_ENUM)
- * Each DynamicCuboid can calculate new offsets for each DynamicPart based on deltaTick or tick
+ * Each DynamicCuboid can calculate new offsets for each DynamicPart
  * Each DynamicCuboid can shift it's texture UV array
  */
 public class DynamicModelPart extends ModelPart {
@@ -56,6 +56,10 @@ public class DynamicModelPart extends ModelPart {
     public static final float[] DEFAULT_APPLY_RANDOM_MULTIPLIER = new float[]{1F, 1F, 1F, 1F, 1F, 1F, 1F, 1F};
     public static final float[] DEFAULT_APPLY_RANDOM_MAX = new float[] {.005F, .005F, .005F, .005F, .005F, .005F, .005F, .005F};
     public static final float[] DEFAULT_APPLY_RANDOM_MIN = new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F};
+
+    // UV mixing? --- instead of shifting the array, mix the array of UV
+    // public boolean UV_MIX_APPLY_SYNC;
+    // public boolean UV_MIXABLE;
 
     public boolean UV_SHIFT_APPLY_SYNC;
     public int UV_SHIFT_AMOUNT;
@@ -250,7 +254,7 @@ public class DynamicModelPart extends ModelPart {
      * @return DynamicModelPart instance
      */
     public DynamicModelPart buildChildren() {
-        this.children.forEach(child -> {
+        this.children.parallelStream().forEach(child -> {
             child.build();
         });
         return this;
@@ -269,7 +273,7 @@ public class DynamicModelPart extends ModelPart {
      * @return DynamicModelPart instance
      */
     public DynamicModelPart buildChildrenUsingSeeds() {
-        this.children.forEach(child -> {
+        this.children.parallelStream().forEach(child -> {
             child.buildUsingSeeds();
         });
         return this;
@@ -714,20 +718,17 @@ public class DynamicModelPart extends ModelPart {
          */
         public DynamicPart apply(boolean shouldApplyDynamics) {
             if (this.state) {
-                // System.out.println(this.dynamic.toString() + " " + round(this.value, 3) + " " + round(this.newValue, 3));
                 // if the values are equal to 3 decimal places calculate a new value
+                Random random = new Random();
                 if (shouldApplyDynamics || round(this.value, 3) == round(this.newValue, 3)) {
-                    float r = (float)(((Math.random() * this.applyRandomMax) + this.applyRandomMin) * this.applyRandomMultiplier);
+                    float r = (float)(((random.nextGaussian() * this.applyRandomMax) + this.applyRandomMin) * this.applyRandomMultiplier);
                     this.newValue = (float)((((r * this.max) + this.min)));
                     if (this.newValue + this.value < 0 || this.newValue - this.value > 0) {
                         this.newValue *= -1;
                     }
                 }
-                double lerp1 = Interpolation.LinearInterpolate(this.value, this.newValue, this.lerpPercent);
-                double lerp2 = Interpolation.LinearInterpolate(lerp1, this.newValue, this.lerpPercent);
-                // System.out.println(this.value +  " " + lerp1 + " " + lerp2 + " " + this.newValue);
-                this.value = (float)Interpolation.CubicInterpolate(this.value, lerp1, lerp2, this.newValue, this.lerpPercent);
-                // this.value = (float)Interpolation.LinearInterpolate(this.value, this.newValue, this.lerpPercent);
+                // CosineInterpolate
+                this.value = (float)Interpolation.CosineInterpolate(this.value, this.newValue, this.lerpPercent);
             }
             return this;
         }
@@ -1177,6 +1178,16 @@ public class DynamicModelPart extends ModelPart {
             DynamicModelPart.DynamicVertex vertex7 = new DynamicModelPart.DynamicVertex(x, g, h, 8.0F, 0.0F);
             return new DynamicModelPart.DynamicVertex[] { vertex0, vertex1, vertex2, vertex3, vertex4, vertex5, vertex6, vertex7 };
         }
+
+        public void apply(boolean shouldApplyDynamics) {
+            ObjectArrayList.wrap(this.parts).parallelStream().forEach(part -> {
+                part.apply(shouldApplyDynamics);
+            });
+        }
+
+        public float getPartValue(DYNAMIC_ENUM dEnum) {
+            return this.parts[dEnum.ordinal()].value;
+        }
     }
     /**
      * Overrides default render function and sends to dynamic render...
@@ -1244,12 +1255,10 @@ public class DynamicModelPart extends ModelPart {
                 matrices.pop();
             }
             if (!this.children.isEmpty()) {
-                ObjectListIterator<DynamicModelPart> var9 = this.children.iterator();
 
-                while(var9.hasNext()) {
-                    DynamicModelPart modelPart = (DynamicModelPart)var9.next();
-                    modelPart.renderDynamic(ticked, tick, matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
-                }
+                this.children.parallelStream().forEach(child -> {
+                    child.renderDynamic(ticked, tick, matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+                });
             }
         }
     }
@@ -1276,12 +1285,9 @@ public class DynamicModelPart extends ModelPart {
                 matrices.pop();
             }
             if (!this.children.isEmpty()) {
-                ObjectListIterator<DynamicModelPart> var9 = this.children.iterator();
-
-                while(var9.hasNext()) {
-                    DynamicModelPart modelPart = (DynamicModelPart)var9.next();
-                    modelPart.renderDynamic(ticked, tick, matrices, vertexConsumers, light, overlay, red, green, blue, alpha);
-                }
+                this.children.parallelStream().forEach(child -> {
+                    child.renderDynamic(ticked, tick, matrices, vertexConsumers, light, overlay, red, green, blue, alpha);
+                });
             }
         }
     }
@@ -1330,7 +1336,7 @@ public class DynamicModelPart extends ModelPart {
         }
 
         if (UV_SHIFTABLE && (((UV_SHIFT_EVERY_X_TICK && ((int)tick % UV_SHIFT_EVERY_X_TICKS == 0) || UV_SHIFT_EVERY_TICK) && ticked) || UV_SHIFT_EVERY_DELTA_TICK || (UV_SHIFT_EVERY_X_DELTA_TICK && UV_SHIFT_EVERY_X_DELTA_TICKS == ++shiftDeltaTickCounter))) {
-            System.out.println("RCD - Shifting UV");
+            // System.out.println("RCD - Shifting UV");
             if (UV_SHIFT_APPLY_SYNC) {
                 shouldApplyDynamics = true;
             }
@@ -1341,9 +1347,9 @@ public class DynamicModelPart extends ModelPart {
             shouldApplyDynamics = true;
         }
 
-        if (shouldApplyDynamics) {
-            System.out.println("RCD applying dynamics");
-        }
+        // if (shouldApplyDynamics) {
+        //     System.out.println("RCD applying dynamics");
+        // }
         
 
         Matrix4f matrix4f = matrices.getModel();
@@ -1363,15 +1369,17 @@ public class DynamicModelPart extends ModelPart {
         while(cubiodsIterator.hasNext()) {
 
             DynamicModelPart.DynamicCuboid cuboid = (DynamicModelPart.DynamicCuboid)cubiodsIterator.next();
+            cuboid.apply(shouldApplyDynamics);
+
             // get each dynamicPart value
-            dx = cuboid.parts[DYNAMIC_ENUM.X.ordinal()].apply(shouldApplyDynamics).value;
-            dy = cuboid.parts[DYNAMIC_ENUM.Y.ordinal()].apply(shouldApplyDynamics).value;
-            dz = cuboid.parts[DYNAMIC_ENUM.Z.ordinal()].apply(shouldApplyDynamics).value;
-            dRed = cuboid.parts[DYNAMIC_ENUM.RED.ordinal()].apply(shouldApplyDynamics).value;
-            dGreen = cuboid.parts[DYNAMIC_ENUM.GREEN.ordinal()].apply(shouldApplyDynamics).value;
-            dBlue = cuboid.parts[DYNAMIC_ENUM.BLUE.ordinal()].apply(shouldApplyDynamics).value;
-            dAlpha = cuboid.parts[DYNAMIC_ENUM.ALPHA.ordinal()].apply(shouldApplyDynamics).value;
-            dLight = cuboid.parts[DYNAMIC_ENUM.LIGHT.ordinal()].apply(shouldApplyDynamics).value;
+            dx = cuboid.getPartValue(DYNAMIC_ENUM.X);
+            dy = cuboid.getPartValue(DYNAMIC_ENUM.Y);
+            dz = cuboid.getPartValue(DYNAMIC_ENUM.Z);
+            dRed = cuboid.getPartValue(DYNAMIC_ENUM.RED);
+            dGreen = cuboid.getPartValue(DYNAMIC_ENUM.GREEN);
+            dBlue = cuboid.getPartValue(DYNAMIC_ENUM.BLUE);
+            dAlpha = cuboid.getPartValue(DYNAMIC_ENUM.ALPHA);
+            dLight = cuboid.getPartValue(DYNAMIC_ENUM.LIGHT);
         
 
             // System.out.println(dx + " " + dy+ " " +dz+ " " +(red+dRed)+ " " +(green+dGreen)+ " " +(blue+dBlue)+ " " + (alpha+dAlpha)+ " " + (int)(light+dLight));            
@@ -1626,7 +1634,7 @@ public class DynamicModelPart extends ModelPart {
 	public static ObjectList<DynamicModelPart> generateModelParts(DynamicModel dynamicModel, float[][] x, float[][] y, float[][] z, int[][] sizeX, int[][] sizeY, int[][] sizeZ, float[][] extra, int[][] u, int[][]v, float[][] rotation, SpriteIdentifier[] sprite, Function<Identifier, RenderLayer> layerFactory) {		
 		ObjectList<DynamicModelPart> MODEL_PARTS = new ObjectArrayList<DynamicModelPart>();
         for(int i = 0; i < x.length; i++) {
-            MODEL_PARTS.add(generateModelPart(dynamicModel, u[i], v[i], x[i], y[i], z[i], sizeX[i], sizeY[i], sizeZ[i], extra[i], rotation[i], defaultSeeds(x.length), sprite[i], layerFactory));
+            MODEL_PARTS.add(generateModelPart(dynamicModel, u[i], v[i], x[i], y[i], z[i], sizeX[i], sizeY[i], sizeZ[i], extra[i], rotation[i], sprite[i], defaultSeeds(x.length), layerFactory));
         }
 		return MODEL_PARTS;
     }
@@ -1648,7 +1656,7 @@ public class DynamicModelPart extends ModelPart {
      * @param layerFactory -- RenderLayer Factory Function
      * @return DyanmicModelPart
      */
-    public static DynamicModelPart generateModelPart(DynamicModel dynamicModel, int[] u,int[] v,float[] x,float[] y,float[] z,int[] sizeX,int[] sizeY,int[] sizeZ, float[] extra, float[] rotation, ObjectList<DynamicPart[]> seeds, SpriteIdentifier spriteId, Function<Identifier,RenderLayer> layerFactory) {
+    public static DynamicModelPart generateModelPart(DynamicModel dynamicModel, int[] u,int[] v,float[] x,float[] y,float[] z,int[] sizeX,int[] sizeY,int[] sizeZ, float[] extra, float[] rotation, SpriteIdentifier spriteId, ObjectList<DynamicPart[]> seeds, Function<Identifier,RenderLayer> layerFactory) {
         return new DynamicModelPart(dynamicModel, x, y, z, sizeX, sizeY, sizeZ, extra, u, v, rotation, seeds, spriteId, layerFactory);
     }
 
@@ -1688,7 +1696,7 @@ public class DynamicModelPart extends ModelPart {
 
             extra[i] = allCuboids[index+8];
         }
-        return generateModelPart(dynamicModel, u, v, x, y, z, sizeX, sizeY, sizeZ, extra, rotation, seeds, spriteId, layerFactory);
+        return generateModelPart(dynamicModel, u, v, x, y, z, sizeX, sizeY, sizeZ, extra, rotation, spriteId, seeds, layerFactory);
     }
 
     /**

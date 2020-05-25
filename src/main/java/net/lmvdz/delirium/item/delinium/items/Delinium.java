@@ -21,7 +21,7 @@ public class Delinium extends ItemToolMaterial {
         if (DELINIUM == null) {
             DELINIUM = this;
             registerItem();
-            create();
+            createTools();
         }
     }
 

@@ -102,7 +102,7 @@ public class ItemToolMaterial extends DeliriumItem implements ToolMaterial {
         return this;
     }
 
-    public ItemToolMaterial create() {
+    public ItemToolMaterial createTools() {
         return this.createTool().createSword().createShovel().createPickaxe().createHoe().createAxe();
     }
     

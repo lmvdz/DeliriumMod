@@ -1,7 +1,9 @@
 package net.lmvdz.delirium;
 
 import java.util.HashMap;
-
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
@@ -35,6 +37,7 @@ import net.minecraft.world.World;
 public class DeliriumMod implements ModInitializer {
 
 	public final static String MODID = "delirium";
+	public static Logger LOGGER = LogManager.getLogger();
 	public static WarpManager WarpManager = new WarpManager();
 	public final static ItemGroup ITEM_GROUP = FabricItemGroupBuilder.create(new Identifier(MODID, "items")).icon(() -> new ItemStack(Registry.ITEM.get(new Identifier(MODID, "delinium")))).build();
 	public static HashMap<Identifier, DeliriumBlock> BLOCKS = new HashMap<>();
@@ -47,9 +50,13 @@ public class DeliriumMod implements ModInitializer {
     public static HashMap<Identifier, DeliriumAxeItem> AXES = new HashMap<>();
 	public static HashMap<Identifier, DeliriumItem> ITEMS = new HashMap<>();
 
+	public static void log(Level level, String string) {
+		LOGGER.log(level, "[" + MODID + "] " + string);
+	}
+
 	@Override
 	public void onInitialize() {
-		System.out.println("DeliriumMod - Init");
+		log(Level.INFO, "Initialization");
 		
 		// .obj model - FOML - nerdhub.foml.obj.OBJLoader
 		// https://github.com/OnyxStudios/FOML

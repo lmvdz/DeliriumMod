@@ -1,13 +1,11 @@
 package net.lmvdz.delirium.block;
 
-import java.util.HashMap;
+
 import com.google.common.base.CaseFormat;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.lmvdz.delirium.DeliriumMod;
 import net.minecraft.block.Block;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.model.SpriteAtlasManager;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 

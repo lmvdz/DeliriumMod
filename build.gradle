@@ -54,6 +54,9 @@ dependencies {
     // Deps required for optifabric
     // compile "org.zeroturnaround:zt-zip:1.14"
 
+	// Satin - GLSL
+	modImplementation "io.github.ladysnake:Satin:${satin_version}"
+
 	// modCompile files("libs/toxiclibs/toxiclibscore/library/toxiclibscore.jar")
 
 	// modImplementation 'org.greenrobot:eventbus:3.2.0'

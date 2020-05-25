@@ -283,7 +283,7 @@ public class DeliniumCrucible extends DeliriumBlock implements BlockEntityProvid
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
-        return Block.createCuboidShape(3.5, 0, 3.5, 12.5, 10, 12.5);
+        return Block.createCuboidShape(3.5, 0, 3.5, 12.5, 9, 12.5);
         // return super.getOutlineShape(state, view, pos, context);
     }
 
