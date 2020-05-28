@@ -3,8 +3,7 @@
   "minVersion": "0.8",
   "package": "net.lmvdz.delirium.mixin",
   "compatibilityLevel": "JAVA_8",
-  "mixins": [
-  ],
+  "mixins": [],
   "client": [
     "QuadInvoker",
     "TitleScreenMixin"

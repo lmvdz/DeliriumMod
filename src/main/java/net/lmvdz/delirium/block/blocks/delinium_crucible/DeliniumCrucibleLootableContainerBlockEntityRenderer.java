@@ -2,16 +2,15 @@ package net.lmvdz.delirium.block.blocks.delinium_crucible;
 
 import java.util.Iterator;
 import java.util.List;
-
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
-
 import net.fabricmc.fabric.api.renderer.v1.Renderer;
 import net.fabricmc.fabric.api.renderer.v1.mesh.Mesh;
 import net.fabricmc.fabric.api.renderer.v1.mesh.MeshBuilder;
 import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
 import net.fabricmc.fabric.api.renderer.v1.model.ModelHelper;
 import net.fabricmc.fabric.impl.renderer.RendererAccessImpl;
+import net.lmvdz.delirium.shader.ShaderRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
@@ -30,12 +29,10 @@ import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.SpriteIdentifier;
-import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -64,6 +61,8 @@ public class DeliniumCrucibleLootableContainerBlockEntityRenderer
         return (float) (Math.sin((angle) * Math.PI / 180));
     }
 
+
+
     /**
      * Render a black cube
      * 
@@ -89,7 +88,8 @@ public class DeliniumCrucibleLootableContainerBlockEntityRenderer
         SpriteIdentifier spriteId = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX,
                 new Identifier("block/lava_still"));
         VertexConsumer vc = spriteId.getVertexConsumer(vertexConsumers, layerFactory -> {
-            return RenderLayer.getTranslucent();
+            return ShaderRenderLayer.computeShaderRenderLayerIfAbsent(RenderLayer.getTranslucent(),
+                    "delirium:illusion", ShaderRenderLayer.ExampleShaderRenderLayer.shaderTarget);
         });
         // VertexConsumer vc = vertexConsumers.getBuffer(RenderLayer.getSolid());
         MeshBuilder meshBuilder = renderer.meshBuilder();

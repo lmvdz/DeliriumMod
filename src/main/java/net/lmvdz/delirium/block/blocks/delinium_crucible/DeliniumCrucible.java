@@ -6,10 +6,8 @@ import net.lmvdz.delirium.DeliriumMod;
 import net.lmvdz.delirium.block.DeliriumBlock;
 import net.lmvdz.delirium.item.delinium.items.Delinium;
 import net.lmvdz.delirium.item.delinium.items.DeliniumIngot;
-import net.lmvdz.delirium.portal.PlatonicSolidPortal;
 import net.lmvdz.delirium.portal.PortalManipulation;
 import net.lmvdz.delirium.portal.RotatingPortal;
-import net.lmvdz.delirium.portal.PlatonicSolidPortal.PlatonicSolidEnum;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
@@ -38,12 +36,10 @@ import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 
 
 /**

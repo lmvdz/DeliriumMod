@@ -1,9 +1,20 @@
 {
-    "itemGroup.delirium.items": "§{GOLD}Delirium§{RED}Mod§{RESET}",
+    "itemGroup.delirium.items": "Delirium",
     "item.delirium.delinium": "§{GOLD}Delinium§{RESET}",
-    "item.delirium.delinium_ingot": "§{GOLD}Delinium §{DARK_CYAN}Ingot§{RESET}",
     "item.delirium.delinium_sword": "§{GOLD}Delinium §{DARK_CYAN}Sword§{RESET}",
-    "block.delirium.delinium_crucible": "§{GOLD}Delinium §{DARK_CYAN}Crucible§{RESET}",
+    "item.delirium.delinium_pickaxe": "§{GOLD}Delinium §{DARK_CYAN}Pickaxe§{RESET}",
+    "item.delirium.delinium_axe": "§{GOLD}Delinium §{DARK_CYAN}Axe§{RESET}",
+    "item.delirium.delinium_shovel": "§{GOLD}Delinium §{DARK_CYAN}Shovel§{RESET}",
+    "item.delirium.delinium_hoe": "§{GOLD}Delinium §{DARK_CYAN}Hoe§{RESET}",
+    "item.delirium.delinium_tool": "§{GOLD}Delinium §{DARK_CYAN}Sword§{RESET}",
+    "item.delirium.delinium_ingot": "§{GOLD}Delinium §{CYAN}Ingot§{RESET}",
+    "item.delirium.delinium_ingot_sword": "§{GOLD}Delinium §{CYAN}Ingot §{DARK_CYAN}Sword§{RESET}",
+    "item.delirium.delinium_ingot_pickaxe": "§{GOLD}Delinium §{CYAN}Ingot §{DARK_CYAN}Pickaxe§{RESET}",
+    "item.delirium.delinium_ingot_axe": "§{GOLD}Delinium §{CYAN}Ingot §{DARK_CYAN}Axe§{RESET}",
+    "item.delirium.delinium_ingot_shovel": "§{GOLD}Delinium §{CYAN}Ingot §{DARK_CYAN}Shovel§{RESET}",
+    "item.delirium.delinium_ingot_hoe": "§{GOLD}Delinium §{CYAN}Ingot §{DARK_CYAN}Hoe§{RESET}",
+    "item.delirium.delinium_ingot_tool": "§{GOLD}Delinium §{CYAN}Ingot §{DARK_CYAN}Tool§{RESET}",
+    "block.delirium.delinium_crucible": "§{GOLD}Delinium §{CYAN}Ingot §{DARK_CYAN}Crucible§{RESET}",
     "item.delirium.delinium_crucible_block_item": "§{GOLD}Delinium §{DARK_CYAN}Crucible§{RESET}",
     "container.delirium.delinium_crucible": "§{GOLD}Delinium §{DARK_CYAN}Crucible§{RESET}"
 }

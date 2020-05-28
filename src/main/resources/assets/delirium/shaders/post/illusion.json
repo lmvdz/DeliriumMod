@@ -1,0 +1,17 @@
+{
+    "targets": [
+        "swap",
+        "final"
+    ],
+    "passes": [{
+            "name": "delirium:illusion",
+            "intarget": "final",
+            "outtarget": "swap"
+        },
+        {
+            "name": "blit",
+            "intarget": "swap",
+            "outtarget": "final"
+        }
+    ]
+}

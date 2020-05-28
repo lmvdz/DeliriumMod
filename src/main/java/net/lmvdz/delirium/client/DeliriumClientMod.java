@@ -2,16 +2,11 @@ package net.lmvdz.delirium.client;
 
 import java.util.ArrayList;
 import ladysnake.satin.api.event.PostWorldRenderCallback;
-import ladysnake.satin.api.event.ShaderEffectRenderCallback;
-import ladysnake.satin.api.experimental.ReadableDepthFramebuffer;
-import ladysnake.satin.api.managed.ManagedShaderEffect;
-import ladysnake.satin.api.managed.ShaderEffectManager;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.client.screen.ScreenProviderRegistry;
 import net.fabricmc.fabric.api.event.client.ClientTickCallback;
-import net.lmvdz.delirium.DeliriumMod;
 import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucible;
 import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucibleContainer;
 import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucibleLootableContainerBlockEntityRenderer;
@@ -20,11 +15,11 @@ import net.lmvdz.delirium.item.DeliriumItemTooltip;
 import net.lmvdz.delirium.item.DeliriumItemTooltipCallback;
 import net.lmvdz.delirium.portal.PortalEntityRenderer;
 import net.lmvdz.delirium.portal.RotatingPortal;
+import net.lmvdz.delirium.shader.ShaderRenderLayer;
 import net.lmvdz.delirium.util.FormattingEngine;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Identifier;
 
 /**
  * FabricRPG
@@ -32,20 +27,17 @@ import net.minecraft.util.Identifier;
 public class DeliriumClientMod implements ClientModInitializer {
 
 
-    private static final ManagedShaderEffect TEST = ShaderEffectManager.getInstance()
-            .manage(new Identifier(DeliriumMod.MODID, "shaders/post/test.json"));
 
     @Override
     public void onInitializeClient() {
-        ReadableDepthFramebuffer.useFeature();
-        ClientTickCallback.EVENT.register(DepthFx.INSTANCE);
-        PostWorldRenderCallback.EVENT.register(DepthFx.INSTANCE);
-
-
+        // ReadableDepthFramebuffer.useFeature();
+        // ClientTickCallback.EVENT.register(DepthFx.INSTANCE);
+        // PostWorldRenderCallback.EVENT.register(DepthFx.INSTANCE);
+        // PostWorldRenderLayerCallback.EVENT.register(ShaderRenderLayerFx.INSTANCE);
         // the render method of the shader will be called after the game
         // has drawn the world on the main framebuffer, when it renders
         // vanilla post process shaders
-        ShaderEffectRenderCallback.EVENT.register(TEST::render);
+        // ShaderEffectRenderCallback.EVENT.register(TEST::render);
 
         // Delirium Items Tooltip Callback
         DeliriumItemTooltipCallback.EVENT.register((stack, player, tooltipContext, components) -> {

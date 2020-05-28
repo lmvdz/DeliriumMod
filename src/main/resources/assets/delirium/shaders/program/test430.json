@@ -4,21 +4,22 @@
         "srcrgb": "srcalpha",
         "dstrgb": "1-srcalpha"
     },
-    "vertex": "delirium:test",
-    "fragment": "delirium:test",
+    "vertex": "delirium:test430",
+    "fragment": "delirium:test430",
     "attributes": ["Position", "Color", "Texture", "Overlay", "Light", "Normal"],
     "samplers": [{
-        "name": "DiffuseSampler"
-    }, {
-        "name": "DepthSampler"
-    }],
+            "name": "DiffuserSampler"
+        },
+        {
+            "name": "DepthSampler"
+        }
+    ],
     "uniforms": [{
             "name": "ProjMat",
             "type": "matrix4x4",
             "count": 16,
             "values": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]
-        },
-        {
+        }, {
             "name": "OutSize",
             "type": "float",
             "count": 2,
