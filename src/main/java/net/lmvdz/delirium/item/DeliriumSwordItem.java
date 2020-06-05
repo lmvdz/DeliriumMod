@@ -20,20 +20,23 @@ import net.minecraft.world.World;
  * DeliriumSwordItem
  */
 public class DeliriumSwordItem extends SwordItem {
-    
+
     private String name = "";
     private Identifier identifier;
 
 
-    public DeliriumSwordItem(ItemToolMaterial material, int attackDamage, float attackSpeed, Settings settings) {
+    public DeliriumSwordItem(ItemToolMaterial material, int attackDamage, float attackSpeed,
+            Settings settings) {
         super(material, attackDamage, attackSpeed, settings.group(DeliriumMod.ITEM_GROUP));
-        setItemName(this, CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, this.getClass().getSimpleName()));
+        setItemName(this, CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE,
+                this.getClass().getSimpleName()));
         setIdentifier(this);
     }
 
     public static void setIdentifier(DeliriumSwordItem item) {
         item.identifier = new Identifier(DeliriumMod.MODID, item.getTranslationKey());
     }
+
     public static Identifier getIdentifier(DeliriumSwordItem item) {
         return item.identifier;
     }
@@ -41,13 +44,14 @@ public class DeliriumSwordItem extends SwordItem {
     public static String getItemName(DeliriumSwordItem item) {
         return item.name;
     }
-    
+
     public static void setItemName(DeliriumSwordItem item, String name) {
         item.name = name;
     }
 
     protected DeliriumSwordItem registerSwordItem() {
-        DeliriumMod.SWORDS.put(getIdentifier(this), Registry.register(Registry.ITEM, getIdentifier(this), this));
+        DeliriumMod.SWORDS.put(getIdentifier(this),
+                Registry.register(Registry.ITEM, getIdentifier(this), this));
         System.out.println("Registered SwordItem: " + this.getTranslationKey());
         return this;
     }
@@ -64,12 +68,17 @@ public class DeliriumSwordItem extends SwordItem {
 
     @Override
     public Text getName(ItemStack itemStack) {
-        return FormattingEngine.replaceColorCodeInTranslatableText(new TranslatableText("item." + DeliriumMod.MODID + "." + this.getTranslationKey()));
+        return FormattingEngine.replaceColorCodeInTranslatableText(
+                new TranslatableText("item." + DeliriumMod.MODID + "." + this.getTranslationKey()));
     }
 
-    public static DeliriumSwordItem makeOutOf(ItemToolMaterial itemToolMaterial, int attackDamage, float attackSpeed, Item.Settings settings) {
-        DeliriumSwordItem dsi = new DeliriumSwordItem(itemToolMaterial, attackDamage, attackSpeed, settings);
-        DeliriumSwordItem.setItemNameFromIngredient(dsi, CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, itemToolMaterial.getRepairIngredientAsItem().getClass().getSimpleName()));
+    public static DeliriumSwordItem makeOutOf(ItemToolMaterial itemToolMaterial, int attackDamage,
+            float attackSpeed, Item.Settings settings) {
+        DeliriumSwordItem dsi =
+                new DeliriumSwordItem(itemToolMaterial, attackDamage, attackSpeed, settings);
+        DeliriumSwordItem.setItemNameFromIngredient(dsi,
+                CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE,
+                        itemToolMaterial.getRepairIngredientAsItem().getClass().getSimpleName()));
         DeliriumSwordItem.setIdentifier(dsi);
         return dsi.registerSwordItem();
     }
@@ -78,7 +87,12 @@ public class DeliriumSwordItem extends SwordItem {
         setItemName(item, name + "_sword");
     }
 
-    public static DeliriumSwordItem makeOutOf(Item i, int attackDamage, int durability, int enchantability, int miningLevel, float miningSpeed, float attackSpeed, Item.Settings settings) {
-        return makeOutOf(new ItemToolMaterial(settings, attackDamage,  durability, enchantability, miningLevel, miningSpeed,attackSpeed, i), attackDamage, attackSpeed, settings);
+    public static DeliriumSwordItem makeOutOf(Item ingredient, int attackDamage, int durability,
+            int enchantability, int miningLevel, float miningSpeed, float attackSpeed,
+            Item.Settings settings) {
+        return makeOutOf(
+                new ItemToolMaterial(settings, attackDamage, durability, enchantability,
+                        miningLevel, miningSpeed, attackSpeed, ingredient),
+                attackDamage, attackSpeed, settings);
     }
 }

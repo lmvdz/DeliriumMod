@@ -10,7 +10,7 @@ import net.fabricmc.fabric.api.renderer.v1.mesh.MeshBuilder;
 import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
 import net.fabricmc.fabric.api.renderer.v1.model.ModelHelper;
 import net.fabricmc.fabric.impl.renderer.RendererAccessImpl;
-import net.lmvdz.delirium.shader.ShaderRenderLayer;
+import net.lmvdz.delirium.client.DeliriumClientMod;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
@@ -88,8 +88,13 @@ public class DeliniumCrucibleLootableContainerBlockEntityRenderer
         SpriteIdentifier spriteId = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX,
                 new Identifier("block/lava_still"));
         VertexConsumer vc = spriteId.getVertexConsumer(vertexConsumers, layerFactory -> {
-            return ShaderRenderLayer.computeShaderRenderLayerIfAbsent(RenderLayer.getTranslucent(),
-                    "delirium:illusion", ShaderRenderLayer.ExampleShaderRenderLayer.shaderTarget);
+            return DeliriumClientMod.ExampleShaderEffectRenderLayer
+                    .getRenderLayer(RenderLayer.getTranslucent());
+
+
+            // return
+            // ShaderRenderLayer.computeShaderRenderLayerIfAbsent(RenderLayer.getTranslucent(),
+            // "delirium:illusion", ShaderRenderLayer.ExampleShaderRenderLayer.shaderTarget);
         });
         // VertexConsumer vc = vertexConsumers.getBuffer(RenderLayer.getSolid());
         MeshBuilder meshBuilder = renderer.meshBuilder();

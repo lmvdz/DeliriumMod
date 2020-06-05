@@ -2,11 +2,13 @@ package net.lmvdz.delirium.client;
 
 import java.util.ArrayList;
 import ladysnake.satin.api.event.PostWorldRenderCallback;
+import ladysnake.satin.api.event.ShaderEffectRenderCallback;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.client.screen.ScreenProviderRegistry;
 import net.fabricmc.fabric.api.event.client.ClientTickCallback;
+import net.lmvdz.delirium.DeliriumMod;
 import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucible;
 import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucibleContainer;
 import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucibleLootableContainerBlockEntityRenderer;
@@ -15,7 +17,8 @@ import net.lmvdz.delirium.item.DeliriumItemTooltip;
 import net.lmvdz.delirium.item.DeliriumItemTooltipCallback;
 import net.lmvdz.delirium.portal.PortalEntityRenderer;
 import net.lmvdz.delirium.portal.RotatingPortal;
-import net.lmvdz.delirium.shader.ShaderRenderLayer;
+import net.lmvdz.delirium.shader.ShaderEffectRenderLayer;
+import net.lmvdz.delirium.shader.ShaderProgramRenderLayer;
 import net.lmvdz.delirium.util.FormattingEngine;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
@@ -27,11 +30,14 @@ import net.minecraft.text.TranslatableText;
 public class DeliriumClientMod implements ClientModInitializer {
 
 
+    public static ShaderEffectRenderLayer ExampleShaderEffectRenderLayer;
+    public static ShaderProgramRenderLayer ExampleShaderProgramRenderLayer;
+
 
     @Override
     public void onInitializeClient() {
         // ReadableDepthFramebuffer.useFeature();
-        // ClientTickCallback.EVENT.register(DepthFx.INSTANCE);
+
         // PostWorldRenderCallback.EVENT.register(DepthFx.INSTANCE);
         // PostWorldRenderLayerCallback.EVENT.register(ShaderRenderLayerFx.INSTANCE);
         // the render method of the shader will be called after the game
@@ -51,7 +57,14 @@ public class DeliriumClientMod implements ClientModInitializer {
                 }
             }
         });
-
+        ExampleShaderEffectRenderLayer =
+                new ShaderEffectRenderLayer(DeliriumMod.MODID, "illusion", effect -> {
+                    System.out.println("Example Shader Effect Render Layer");
+                });
+        ExampleShaderProgramRenderLayer =
+                new ShaderProgramRenderLayer(DeliriumMod.MODID, "rainbow", effect -> {
+                    System.out.println("Example Shader Program Render Layer");
+                });
 
         // Register DeliniumCrucibleBlock Models
         // ModelLoadingRegistry.INSTANCE.registerVariantProvider(manager ->

@@ -12,6 +12,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.MaterialColor;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.render.RenderLayer;
@@ -59,7 +60,7 @@ public class DeliniumCrucible extends DeliriumBlock implements BlockEntityProvid
     public static IntProperty PERCENTAGE = IntProperty.of("percentage", 0, 10);
     public static DirectionProperty FACING = Properties.HORIZONTAL_FACING;
 
-    
+
 
     // private final HashMap<ModelIdentifier, UnbakedModel> variants = new HashMap<>();
 
@@ -89,19 +90,22 @@ public class DeliniumCrucible extends DeliriumBlock implements BlockEntityProvid
 
     public DeliniumCrucible() {
         // setup map material and render layer
-        super(FabricBlockSettings.of(Delinium.MAP_MATERIAL).nonOpaque(), RenderLayer.getTranslucent());
+        super(FabricBlockSettings.of(Delinium.MAP_MATERIAL).nonOpaque(),
+                RenderLayer.getTranslucent());
 
         if (DELINIUM_CRUCIBLE_BLOCK == null) {
 
             DELINIUM_CRUCIBLE_BLOCK = this;
 
             setDefaultState(getStateManager().getDefaultState().with(MELTING, false)
-                    .with(PRIMED, false).with(FACING, Direction.NORTH)
-                    .with(PERCENTAGE, 0));
+                    .with(PRIMED, false).with(FACING, Direction.NORTH).with(PERCENTAGE, 0));
 
-            DeliniumCrucibleConversion.registerSmeltConversion(Delinium.DELINIUM, 4, DeliniumIngot.DELINIUM_INGOT, 1);
-            DeliniumCrucibleConversion.registerSmeltConversion(Items.IRON_ORE, 1, Items.IRON_INGOT, 1);
-            DeliniumCrucibleConversion.registerSmeltConversion(Items.GOLD_ORE, 1, Items.GOLD_INGOT, 1);
+            DeliniumCrucibleConversion.registerSmeltConversion(Delinium.DELINIUM, 4,
+                    DeliniumIngot.DELINIUM_INGOT, 1);
+            DeliniumCrucibleConversion.registerSmeltConversion(Items.IRON_ORE, 1, Items.IRON_INGOT,
+                    1);
+            DeliniumCrucibleConversion.registerSmeltConversion(Items.GOLD_ORE, 1, Items.GOLD_INGOT,
+                    1);
 
             registerDeliriumBlock(DELINIUM_CRUCIBLE_BLOCK);
 
@@ -116,7 +120,8 @@ public class DeliniumCrucible extends DeliriumBlock implements BlockEntityProvid
             DELINIUM_CRUCIBLE_CONTAINER_TRANSLATION_KEY =
                     Util.createTranslationKey("container", getIdentifier(DELINIUM_CRUCIBLE_BLOCK));
 
-            DELINIUM_CRUCIBLE_BLOCK_ENTITY = new Identifier(DeliriumMod.MODID, getBlockName(DELINIUM_CRUCIBLE_BLOCK)+"_block_entity");
+            DELINIUM_CRUCIBLE_BLOCK_ENTITY = new Identifier(DeliriumMod.MODID,
+                    getBlockName(DELINIUM_CRUCIBLE_BLOCK) + "_block_entity");
 
             DELINIUM_CRUCIBLE_BLOCK_ENTITY_TYPE =
                     Registry.register(Registry.BLOCK_ENTITY_TYPE, DELINIUM_CRUCIBLE_BLOCK_ENTITY,
@@ -149,13 +154,13 @@ public class DeliniumCrucible extends DeliriumBlock implements BlockEntityProvid
     public static int getPercentageFromBlockState(BlockState blockState) {
         return blockState.get(PERCENTAGE);
     }
+
     public static Direction getHorizontalFacingFromBlockState(BlockState blockState) {
         return blockState.get(FACING);
     }
 
     public BlockState getPlacementState(final ItemPlacementContext ctx) {
-        return (BlockState) this.getDefaultState().with(FACING,
-                ctx.getPlayerFacing());
+        return (BlockState) this.getDefaultState().with(FACING, ctx.getPlayerFacing());
     }
 
     @Override
@@ -165,11 +170,13 @@ public class DeliniumCrucible extends DeliriumBlock implements BlockEntityProvid
 
     // Open Container
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player,
+            Hand hand, BlockHitResult hit) {
         if (!world.isClient()) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof DeliniumCrucibleLootableContainerBlockEntity) {
-                DeliniumCrucibleLootableContainerBlockEntity de_blockEntity = ((DeliniumCrucibleLootableContainerBlockEntity) blockEntity);
+                DeliniumCrucibleLootableContainerBlockEntity de_blockEntity =
+                        ((DeliniumCrucibleLootableContainerBlockEntity) blockEntity);
                 boolean usedItemOnCrucible = false;
                 ItemStack itemStack = player.inventory.getInvStack(player.inventory.selectedSlot);
                 Item inHand = itemStack.getItem();
@@ -178,32 +185,30 @@ public class DeliniumCrucible extends DeliriumBlock implements BlockEntityProvid
                 Direction facing = getHorizontalFacingFromBlockState(state);
                 if (!primed && !melting && inHand == Items.LAVA_BUCKET) {
                     if (itemStack.getCount() == 1) {
-                        player.inventory.setInvStack(
-                            player.inventory.selectedSlot,
+                        player.inventory.setInvStack(player.inventory.selectedSlot,
                                 new ItemStack(Items.BUCKET, 1));
                     } else {
-                        player.inventory.setInvStack(
-                            player.inventory.selectedSlot,
+                        player.inventory.setInvStack(player.inventory.selectedSlot,
                                 new ItemStack(Items.LAVA_BUCKET, itemStack.getCount() - 1));
                         player.inventory.offerOrDrop(world, new ItemStack(Items.BUCKET, 1));
                     }
                     world.setBlockState(pos, state.with(PRIMED, true));
                     usedItemOnCrucible = true;
-                } else if (primed && DeliniumCrucibleConversion.smeltConversions.get(inHand) != null) {
+                } else if (primed
+                        && DeliniumCrucibleConversion.smeltConversions.get(inHand) != null) {
                     int emptySlot = de_blockEntity.inventory.getFirstEmptySlot();
                     if (emptySlot != -1) {
-                        de_blockEntity.inventory.setInvStack(emptySlot, player.inventory.takeInvStack(player.inventory.selectedSlot, itemStack.getCount()));
+                        de_blockEntity.inventory.setInvStack(emptySlot, player.inventory
+                                .takeInvStack(player.inventory.selectedSlot, itemStack.getCount()));
                         usedItemOnCrucible = true;
                         de_blockEntity.tryToSmelt(world);
                     }
-                } else if (primed && inHand == Items.BUCKET){
+                } else if (primed && inHand == Items.BUCKET) {
                     if (itemStack.getCount() == 1) {
-                        player.inventory.setInvStack(
-                                player.inventory.selectedSlot,
+                        player.inventory.setInvStack(player.inventory.selectedSlot,
                                 new ItemStack(Items.LAVA_BUCKET, 1));
                     } else {
-                        player.inventory.setInvStack(
-                                player.inventory.selectedSlot,
+                        player.inventory.setInvStack(player.inventory.selectedSlot,
                                 new ItemStack(Items.BUCKET, itemStack.getCount() - 1));
                         player.inventory.offerOrDrop(world, new ItemStack(Items.LAVA_BUCKET, 1));
                     }
@@ -212,38 +217,52 @@ public class DeliniumCrucible extends DeliriumBlock implements BlockEntityProvid
                 }
                 if (!usedItemOnCrucible && !melting && !primed) {
                     // OPEN CONTAINER
-                    ContainerProviderRegistry.INSTANCE.openContainer(getIdentifier(this),
-                        player, buf -> buf.writeBlockPos(pos));
-                    
+                    ContainerProviderRegistry.INSTANCE.openContainer(getIdentifier(this), player,
+                            buf -> buf.writeBlockPos(pos));
+
                 }
                 if (usedItemOnCrucible) {
                     primed = getCanMeltFromBlockState(world.getBlockState(pos));
                     melting = getMeltingFromBlockState(world.getBlockState(pos));
                     state = world.getBlockState(pos);
                     facing = getHorizontalFacingFromBlockState(state);
-                    // if ((de_blockEntity.PLATONIC_PORTAL == null || de_blockEntity.PLATONIC_PORTAL.removed) && (primed || melting)) {
-                    //     de_blockEntity.PLATONIC_PORTAL = PlatonicSolidPortal.cloneFromEnum(PlatonicSolidEnum.TETRAHEDRON).setDimensionType(DimensionType.THE_NETHER).setCenter(new Vec3d(pos.getX(), pos.getY(), pos.getZ()));
-                    //     de_blockEntity.PLATONIC_PORTAL = de_blockEntity.PLATONIC_PORTAL.setDestination(new Vec3d(pos.getX()*8, pos.getY(), pos.getZ()*8)).setScale(4);
-                    //     de_blockEntity.PLATONIC_PORTAL = de_blockEntity.PLATONIC_PORTAL.spawn(world);
-                    // } else if (de_blockEntity.PLATONIC_PORTAL != null && !de_blockEntity.PLATONIC_PORTAL.removed && !primed && !melting) {
-                    //     de_blockEntity.PLATONIC_PORTAL.remove();
+                    // if ((de_blockEntity.PLATONIC_PORTAL == null ||
+                    // de_blockEntity.PLATONIC_PORTAL.removed) && (primed || melting)) {
+                    // de_blockEntity.PLATONIC_PORTAL =
+                    // PlatonicSolidPortal.cloneFromEnum(PlatonicSolidEnum.TETRAHEDRON).setDimensionType(DimensionType.THE_NETHER).setCenter(new
+                    // Vec3d(pos.getX(), pos.getY(), pos.getZ()));
+                    // de_blockEntity.PLATONIC_PORTAL =
+                    // de_blockEntity.PLATONIC_PORTAL.setDestination(new Vec3d(pos.getX()*8,
+                    // pos.getY(), pos.getZ()*8)).setScale(4);
+                    // de_blockEntity.PLATONIC_PORTAL = de_blockEntity.PLATONIC_PORTAL.spawn(world);
+                    // } else if (de_blockEntity.PLATONIC_PORTAL != null &&
+                    // !de_blockEntity.PLATONIC_PORTAL.removed && !primed && !melting) {
+                    // de_blockEntity.PLATONIC_PORTAL.remove();
                     // }
-                    // if ((de_blockEntity.IMMERSIVE_PORTAL == null || de_blockEntity.IMMERSIVE_PORTAL.removed) && (primed || melting)) {
-                    //     Vec3d axisW = new Vec3d(facing.getVector());
-                    //     if (facing.toString() == "east" || facing.toString() == "west") {
-                    //         Vector3f f = new Vector3f(axisW);
-                    //         f.rotate(Vector3f.POSITIVE_Y.getDegreesQuaternion(90));
-                    //         axisW = new Vec3d(f);
-                    //     }
-                    //     System.out.println("adding portals");
-                    //     de_blockEntity.IMMERSIVE_PORTAL = new RotatingPortal(RotatingPortal.entityType, world, new Vec3d(Direction.UP.getVector()), axisW, DimensionType.THE_NETHER, new Vec3d(pos.getX()*8, pos.getY(), pos.getZ()*8), 5, 6, true, new Vec3d(pos.getX(), pos.getY(), pos.getZ()), 3, true);
-                    //     de_blockEntity.IMMERSIVE_PORTAL = de_blockEntity.IMMERSIVE_PORTAL.spawn(world).makeBiWayBiFacingBiWay();
-                    // } else if (de_blockEntity.IMMERSIVE_PORTAL != null && !de_blockEntity.IMMERSIVE_PORTAL.removed && !primed && !melting) {
-                    //     System.out.println("removing portals");
-                    //     PortalManipulation.removeConnectedPortals(RotatingPortal.entityType, de_blockEntity.IMMERSIVE_PORTAL, p -> {
-                    //         System.out.println(p + " removed.");
-                    //     });
-                    //     de_blockEntity.IMMERSIVE_PORTAL.remove();
+                    // if ((de_blockEntity.IMMERSIVE_PORTAL == null ||
+                    // de_blockEntity.IMMERSIVE_PORTAL.removed) && (primed || melting)) {
+                    // Vec3d axisW = new Vec3d(facing.getVector());
+                    // if (facing.toString() == "east" || facing.toString() == "west") {
+                    // Vector3f f = new Vector3f(axisW);
+                    // f.rotate(Vector3f.POSITIVE_Y.getDegreesQuaternion(90));
+                    // axisW = new Vec3d(f);
+                    // }
+                    // System.out.println("adding portals");
+                    // de_blockEntity.IMMERSIVE_PORTAL = new
+                    // RotatingPortal(RotatingPortal.entityType, world, new
+                    // Vec3d(Direction.UP.getVector()), axisW, DimensionType.THE_NETHER, new
+                    // Vec3d(pos.getX()*8, pos.getY(), pos.getZ()*8), 5, 6, true, new
+                    // Vec3d(pos.getX(), pos.getY(), pos.getZ()), 3, true);
+                    // de_blockEntity.IMMERSIVE_PORTAL =
+                    // de_blockEntity.IMMERSIVE_PORTAL.spawn(world).makeBiWayBiFacingBiWay();
+                    // } else if (de_blockEntity.IMMERSIVE_PORTAL != null &&
+                    // !de_blockEntity.IMMERSIVE_PORTAL.removed && !primed && !melting) {
+                    // System.out.println("removing portals");
+                    // PortalManipulation.removeConnectedPortals(RotatingPortal.entityType,
+                    // de_blockEntity.IMMERSIVE_PORTAL, p -> {
+                    // System.out.println(p + " removed.");
+                    // });
+                    // de_blockEntity.IMMERSIVE_PORTAL.remove();
                     // }
                 }
             }
@@ -260,16 +279,19 @@ public class DeliniumCrucible extends DeliriumBlock implements BlockEntityProvid
         if (state.getBlock() != newState.getBlock()) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof DeliniumCrucibleLootableContainerBlockEntity) {
-                DeliniumCrucibleLootableContainerBlockEntity dc_blockEntity = (DeliniumCrucibleLootableContainerBlockEntity)blockEntity;
+                DeliniumCrucibleLootableContainerBlockEntity dc_blockEntity =
+                        (DeliniumCrucibleLootableContainerBlockEntity) blockEntity;
                 ItemScatterer.spawn(world, (BlockPos) pos, (Inventory) (dc_blockEntity));
                 world.updateHorizontalAdjacent(pos, this);
                 if (DeliniumCrucible.getCanMeltFromBlockState(state)) {
                     world.setBlockState(pos, Blocks.FIRE.getDefaultState());
                 }
-                if (dc_blockEntity.IMMERSIVE_PORTAL != null && !dc_blockEntity.IMMERSIVE_PORTAL.removed) {
-                    PortalManipulation.removeConnectedPortals(RotatingPortal.entityType, dc_blockEntity.IMMERSIVE_PORTAL, p -> {
-                        System.out.println(p + " removed.");
-                    });
+                if (dc_blockEntity.IMMERSIVE_PORTAL != null
+                        && !dc_blockEntity.IMMERSIVE_PORTAL.removed) {
+                    PortalManipulation.removeConnectedPortals(RotatingPortal.entityType,
+                            dc_blockEntity.IMMERSIVE_PORTAL, p -> {
+                                System.out.println(p + " removed.");
+                            });
                     dc_blockEntity.IMMERSIVE_PORTAL.remove();
                 }
             }
@@ -278,7 +300,8 @@ public class DeliniumCrucible extends DeliriumBlock implements BlockEntityProvid
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos,
+            EntityContext context) {
         return Block.createCuboidShape(3.5, 0, 3.5, 12.5, 9, 12.5);
         // return super.getOutlineShape(state, view, pos, context);
     }
@@ -292,7 +315,8 @@ public class DeliniumCrucible extends DeliriumBlock implements BlockEntityProvid
     @Override
     public int getLuminance(BlockState state) {
         if (getMeltingFromBlockState(state) || getCanMeltFromBlockState(state)) {
-            return getPercentageFromBlockState(state) > 0 ? 1 + getPercentageFromBlockState(state) : 1;
+            return getPercentageFromBlockState(state) > 0 ? 1 + getPercentageFromBlockState(state)
+                    : 1;
         } else {
             return 0;
         }

@@ -8,7 +8,8 @@
     "ItemStackMixin",
     "MultiPhaseParametersAccessor",
     "MultiPhaseAccessor",
-    "RenderLayerAccessor"
+    "RenderLayerAccessor",
+    "WorldRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

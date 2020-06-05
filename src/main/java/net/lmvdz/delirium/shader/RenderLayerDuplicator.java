@@ -74,6 +74,7 @@ public class RenderLayerDuplicator {
                     ((RenderLayerAccessor) existing).isTranslucent(),
                     copyPhaseParameters((MultiPhaseAccessor) existing, op));
         } catch (IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
             throw new RuntimeException(
                     "Failed to duplicate render layer parameters from " + existing);
         }

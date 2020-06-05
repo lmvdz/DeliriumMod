@@ -3,7 +3,7 @@
 // The main texture
 uniform sampler2D DiffuseSampler;
 // The depth map
-uniform sampler2D DepthSampler;
+// uniform sampler2D DepthSampler;
 
 // Position of the camera
 uniform vec3 CameraPosition;
@@ -13,16 +13,15 @@ uniform vec3 Center;
 uniform float STime;
 
 // The matrix passed by world render
-uniform mat4 ModelView;
+// uniform mat4 ModelView;
 
 // The magic matrix to get world coordinates from pixel ones
-uniform mat4 InverseTransformMatrix;
+// uniform mat4 InverseTransformMatrix;
 // The size of the viewport (typically, [0,0,1080,720])
 uniform ivec4 ViewPort;
 
 varying vec2 texCoord;
 varying vec4 vPosition;
-varying vec4 vColor;
 
 void Vgnette (inout vec3 color) {
     float dist = distance(texCoord.st, vec2(0.5)) * 2;
@@ -40,18 +39,18 @@ vec3 convertToHRD(in vec3 color) {
 }
 
 
-vec4 CalcEyeFromWindow(in float depth)
-{
-  // derived from https://www.khronos.org/opengl/wiki/Compute_eye_space_from_window_space
-  // ndc = Normalized Device Coordinates
-  vec3 ndcPos;
-  ndcPos.xy = ((2.0 * gl_FragCoord.xy) - (2.0 * ViewPort.xy)) / (ViewPort.zw) - 1;
-  ndcPos.z = (2.0 * depth - gl_DepthRange.near - gl_DepthRange.far) / (gl_DepthRange.far - gl_DepthRange.near);
-  vec4 clipPos = vec4(ndcPos, 1.);
-  vec4 homogeneous = InverseTransformMatrix * clipPos;
-  vec4 eyePos = vec4(homogeneous.xyz / homogeneous.w, homogeneous.w);
-  return eyePos;
-}
+// vec4 CalcEyeFromWindow(in float depth)
+// {
+//   // derived from https://www.khronos.org/opengl/wiki/Compute_eye_space_from_window_space
+//   // ndc = Normalized Device Coordinates
+//   vec3 ndcPos;
+//   ndcPos.xy = ((2.0 * gl_FragCoord.xy) - (2.0 * ViewPort.xy)) / (ViewPort.zw) - 1;
+//   ndcPos.z = (2.0 * depth - gl_DepthRange.near - gl_DepthRange.far) / (gl_DepthRange.far - gl_DepthRange.near);
+//   vec4 clipPos = vec4(ndcPos, 1.);
+//   vec4 homogeneous = InverseTransformMatrix * clipPos;
+//   vec4 eyePos = vec4(homogeneous.xyz / homogeneous.w, homogeneous.w);
+//   return eyePos;
+// }
 
 float random (in vec2 _st) {
     return fract(sin(dot(_st.xy,
@@ -101,19 +100,19 @@ void main() {
     vec4 tex = texture2D(DiffuseSampler, texCoord);
 
 
-    vec3 ndc = vPosition.xyz / vPosition.w; //perspective divide/normalize
-    vec2 viewportCoord = ndc.xy * 0.5 + 0.5; //ndc is -1 to 1 in GL. scale for 0 to 1
+    // vec3 ndc = vPosition.xyz / vPosition.w; //perspective divide/normalize
+    // vec2 viewportCoord = ndc.xy * 0.5 + 0.5; //ndc is -1 to 1 in GL. scale for 0 to 1
 
-    float sceneDepth = texture2D(DepthSampler, viewportCoord).x;
-    vec3 pixelPosition = CalcEyeFromWindow(sceneDepth).xyz + CameraPosition;
+    // float sceneDepth = texture2D(DepthSampler, viewportCoord).x;
+    // vec3 pixelPosition = CalcEyeFromWindow(sceneDepth).xyz + CameraPosition;
 
-    float d = distance(pixelPosition, Center);
-    d /= mod(STime, 20);
+    // float d = distance(pixelPosition, Center);
+    // d /= mod(STime, 20);
 
 
-    vec2 st = gl_FragCoord.xy/ViewPort.zw*8.;
+    vec2 st = gl_FragCoord.xy/ViewPort.zw;
     // st += st * abs(sin(STime*0.1)*3.0);
-    vec3 color = vColor.rgb;
+    vec3 color = vec3(1.0);
 
     vec2 q = vec2(0.);
     q.x = fbm( st + 0.00*STime);
@@ -137,11 +136,13 @@ void main() {
                 vec3(0.666667,1,1),
                 clamp(length(r.x),0.0,1.0));
 
-    color = convertToHRD(color);
+    // color = convertToHRD(color);
    
     // Vgnette(color);
 
     color *= vec3(abs(sin(STime * .5f))*.5f);
-   
-    gl_FragColor = vec4(tex.rgb + (f*f*f+.6*f*f+.5*f)*color, .1);
+    color *= (f*f*f+.6*f*f+.5*f);
+    // gl_FragColor = tex * vec4(color, 1.0); -- TO DARK
+    gl_FragColor = tex * vec4(tex.r + 1 - color.r, tex.g + 1 -color.g, tex.b + 1 -color.b, .5);
+    // gl_FragColor = tex * vec4(1.0);
 }
