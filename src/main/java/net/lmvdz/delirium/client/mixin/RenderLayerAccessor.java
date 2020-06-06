@@ -8,7 +8,4 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface RenderLayerAccessor {
     @Accessor
     boolean isTranslucent();
-
-    @Accessor
-    boolean isHasCrumbling();
 }

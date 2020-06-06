@@ -2,6 +2,7 @@ package net.lmvdz.delirium.block.blocks.delinium_crucible;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.lmvdz.delirium.DeliriumMod;
+import net.lmvdz.delirium.client.DeliriumClientMod;
 import net.lmvdz.delirium.model.DynamicModel;
 import net.lmvdz.delirium.modelpart.DynamicModelPart;
 import net.minecraft.client.render.RenderLayer;

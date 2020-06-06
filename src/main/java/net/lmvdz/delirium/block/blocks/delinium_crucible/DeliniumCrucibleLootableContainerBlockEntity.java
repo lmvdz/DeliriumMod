@@ -1,22 +1,27 @@
 package net.lmvdz.delirium.block.blocks.delinium_crucible;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.lmvdz.delirium.DeliriumMod;
+import net.lmvdz.delirium.client.DeliriumClientMod;
 import net.lmvdz.delirium.portal.PlatonicSolidPortal;
 import net.lmvdz.delirium.portal.RotatingPortal;
 import net.lmvdz.delirium.util.FormattingEngine;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
-import net.minecraft.container.Container;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Tickable;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
+
+import static net.minecraft.screen.ScreenHandlerType.GENERIC_9X6;
 
 /**
  * BlockEntity
@@ -39,6 +44,7 @@ public class DeliniumCrucibleLootableContainerBlockEntity extends LootableContai
 
     public DeliniumCrucibleInventory inventory;
 
+    @Environment(EnvType.CLIENT)
     public DeliniumCrucibleLootableContainerBlockEntity() {
         super(DeliniumCrucible.DELINIUM_CRUCIBLE_BLOCK_ENTITY_TYPE);
         this.inventory = new DeliniumCrucibleInventory();
@@ -73,10 +79,9 @@ public class DeliniumCrucibleLootableContainerBlockEntity extends LootableContai
         return tag;
     }
 
-    // Deserialize the BlockEntity
     @Override
-    public void fromTag(final CompoundTag tag) {
-        super.fromTag(tag);
+    public void fromTag(BlockState state, CompoundTag tag) {
+        super.fromTag(state, tag);
         this.rank = tag.getInt("rank");
         this.smeltableStackIndex = tag.getInt("smeltableStackIndex");
         this.ticks = tag.getInt("ticks");
@@ -88,11 +93,6 @@ public class DeliniumCrucibleLootableContainerBlockEntity extends LootableContai
         if (!this.deserializeLootTable(tag)) {
             Inventories.fromTag(tag, inventory.getItems());
         }
-    }
-
-    @Override
-    public int getInvSize() {
-        return inventory.getInvSize();
     }
 
     @Override
@@ -113,21 +113,21 @@ public class DeliniumCrucibleLootableContainerBlockEntity extends LootableContai
     }
 
     @Override
-    public Container createContainer(int i, PlayerInventory playerInventory) {
-        return new DeliniumCrucibleContainer(i, playerInventory, this.inventory);
+    protected ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory) {
+        return new DeliniumCrucibleContainer(GENERIC_9X6, syncId, playerInventory, inventory, 6);
     }
 
 
     public void addToInvOrDrop(ItemStack stack) {
         int[] firstLastDontFit = inventory.firstIndexOrLastIndexAndHowManyDontFit(stack);
         if (firstLastDontFit[0] != -1) {
-            ItemStack invSlot = getInvStack(firstLastDontFit[0]);
+            ItemStack invSlot = getStack(firstLastDontFit[0]);
             stack.setCount(invSlot.getCount() + stack.getCount());
             if (firstLastDontFit[1] != -1) {
                 stack.setCount(stack.getMaxCount());
                 addToInvOrDrop(new ItemStack(stack.getItem(), firstLastDontFit[1]));
             }
-            setInvStack(firstLastDontFit[0], stack);
+            setStack(firstLastDontFit[0], stack);
         } else {
             drop(stack);
         }
@@ -139,10 +139,10 @@ public class DeliniumCrucibleLootableContainerBlockEntity extends LootableContai
     }
 
     public void tryToSmelt(World world) {
-        if (!this.isInvEmpty() && this.smeltableStackIndex == -1) {
+        if (!this.isEmpty() && this.smeltableStackIndex == -1) {
             this.smeltableStackIndex = -2;
-            for (int i = 0; i < this.getInvSize(); i++) {
-                ItemStack stack = this.getInvStack(i);
+            for (int i = 0; i < this.inventory.size(); i++) {
+                ItemStack stack = this.getStack(i);
                 if (!stack.isEmpty() && this.smeltableStackIndex == -2) {
                     DeliniumCrucibleConversion conversion =
                             DeliniumCrucibleConversion.smeltConversions.get(stack.getItem());
@@ -166,8 +166,8 @@ public class DeliniumCrucibleLootableContainerBlockEntity extends LootableContai
     }
 
     public void finishSmelt(BlockState state) {
-        if (this.smeltableStackIndex > -1 && this.smeltableStackIndex < inventory.getInvSize()) {
-            ItemStack smeltableStack = getInvStack(this.smeltableStackIndex);
+        if (this.smeltableStackIndex > -1 && this.smeltableStackIndex < inventory.size()) {
+            ItemStack smeltableStack = getStack(this.smeltableStackIndex);
             DeliniumCrucibleConversion conversion =
             DeliniumCrucibleConversion.smeltConversions.get(smeltableStack.getItem());
             if (smeltableStack != null && conversion != null && rank != 0 && conversion.per != 0) {
@@ -176,10 +176,10 @@ public class DeliniumCrucibleLootableContainerBlockEntity extends LootableContai
                 // create converted delinium stack
                 ItemStack productStack = new ItemStack(conversion.product, numberOfProducts);
                 // remove (conversion / rank) amount of delinium
-                takeInvStack(this.smeltableStackIndex,
+                removeStack(this.smeltableStackIndex,
                         numberOfProducts * (int) (conversion.per / rank));
-                if (getInvStack(this.smeltableStackIndex).isEmpty()
-                        || getInvStack(this.smeltableStackIndex)
+                if (getStack(this.smeltableStackIndex).isEmpty()
+                        || getStack(this.smeltableStackIndex)
                                 .getCount() < (int) (conversion.per / rank)) {
                     this.smeltableStackIndex = -1;
                 }
@@ -193,7 +193,7 @@ public class DeliniumCrucibleLootableContainerBlockEntity extends LootableContai
     @Override
     public void tick() {
         BlockState state = this.world.getBlockState(this.getPos());
-        if (this.world.isChunkLoaded(this.getPos())) {
+        if (this.world.isChunkLoaded(this.getPos().getX(), this.getPos().getZ())) {
             boolean melting = DeliniumCrucible.getMeltingFromBlockState(state);
             boolean primed = DeliniumCrucible.getCanMeltFromBlockState(state);
             // System.out.println(melting + " " + primed);
@@ -219,4 +219,8 @@ public class DeliniumCrucibleLootableContainerBlockEntity extends LootableContai
         }
     }
 
+    @Override
+    public int size() {
+        return 54;
+    }
 }

@@ -1,10 +1,12 @@
 package net.lmvdz.delirium.api.event;
 
-import java.util.function.Consumer;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.client.gl.VertexBuffer;
-import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.util.math.Matrix4f;
+
+import java.util.function.Consumer;
+
 
 @FunctionalInterface
 public interface PreWorldRenderLayerVertexBufferDrawCallback {
@@ -20,5 +22,5 @@ public interface PreWorldRenderLayerVertexBufferDrawCallback {
                     });
 
     void redirectVertexBufferDraw(Matrix4f matrix, int mode, VertexBuffer vertexBuffer,
-            Consumer<Boolean> cancel);
+                                  Consumer<Boolean> cancel);
 }

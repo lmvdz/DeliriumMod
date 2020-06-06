@@ -45,7 +45,7 @@ public class ItemToolMaterial extends DeliriumItem implements ToolMaterial {
     }
 
     @Override
-    public float getMiningSpeed() {
+    public float getMiningSpeedMultiplier() {
         return this.miningSpeed;
     }
 
@@ -93,7 +93,7 @@ public class ItemToolMaterial extends DeliriumItem implements ToolMaterial {
     }
 
     public ItemToolMaterial createHoe() {
-        DeliriumHoeItem.makeOutOf(this, this.getAttackSpeed(), new Item.Settings());
+        DeliriumHoeItem.makeOutOf(this, (int)this.getAttackDamage(), this.getAttackSpeed(), new Item.Settings());
         return this;
     }
     

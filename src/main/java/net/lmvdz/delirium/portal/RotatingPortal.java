@@ -1,14 +1,17 @@
 package net.lmvdz.delirium.portal;
 
-import com.qouteall.immersive_portals.portal.Portal;
+//import com.qouteall.immersive_portals.portal.Portal;
+
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 
 /**
  * RotatingPortal mainly allows for the rotation of the axisW and axisH
@@ -27,41 +30,48 @@ public class RotatingPortal extends Portal {
     public boolean generatePortalShapeFromSides;
 
     // the initial portal horizontal axis
-    protected Vec3d initialAxisW;
+    public Vec3d initialAxisW;
     // the initial portal vertical axis
-    protected Vec3d initialAxisH;
+    public Vec3d initialAxisH;
 
+    public RegistryKey<World> dimensionTo;
+    public RegistryKey<World> dimension;
     
     // number of sides the portal should have
-    protected int sides = 3;
+    public int sides = 3;
     // maximum number of sides allowed for the specialShape
-    private static final int MAX_SIDES = 50;
+    public static final int MAX_SIDES = 50;
     // minimum number of sides allowed for the specialShape
-    private static final int MIN_SIDES = 3;
+    public static final int MIN_SIDES = 3;
 
     // whether or not the portal should increase to the MAX_SIDES and then decrease to the MIN_SIDES going back and forth endlessly
     public boolean enableInterpolateSides;
     // number of maximum sides the portal can have
-    protected int INTERPOLATE_MAX_SIDES = 50;
+    public int INTERPOLATE_MAX_SIDES = 50;
     // number of minimum sides the portal can have
-    protected int INTERPOLATE_MIN_SIDES = 3;
+    public int INTERPOLATE_MIN_SIDES = 3;
     // how many sides to increase/decrease by every frame 
-    protected int SIDE_INCREMENT = 1;
+    public int SIDE_INCREMENT = 1;
 
     // Whether or not the portal is bi-facing
-    protected boolean biFacing;
+    public boolean biFacing;
     // link to the bi-facing portal
-    protected RotatingPortal biFacingPortal;
+    public RotatingPortal biFacingPortal;
 
     // Whether or not the portal is bi-way
-    protected boolean biWay;
+    public boolean biWay;
     // link to the bi-way portal
-    protected RotatingPortal biWayPortal;
+    public RotatingPortal biWayPortal;
 
     // Whether or not the portal is bi-way-bi-facing
-    protected boolean biWayBiFacing;
+    public boolean biWayBiFacing;
     // link to the bi-way-bi-facing
-    protected RotatingPortal biWayBiFacingPortal;
+    public RotatingPortal biWayBiFacingPortal;
+    public Vec3d axisH;
+    public Vec3d axisW;
+    public double height;
+    public Vec3d destination;
+    public double width;
 
     /**
      * Default constructor, enables rotation, disables interactability
@@ -87,7 +97,7 @@ public class RotatingPortal extends Portal {
      * @param enableInterpolateSides
      * @param generatePortalShapeFromSides
      */
-    public RotatingPortal(Vec3d axisH, Vec3d axisW, DimensionType dimensionTo, Vec3d destination, double width, double height, boolean enablePortalRotate, int sides, boolean enableInterpolateSides, boolean generatePortalShapeFromSides) {
+    public RotatingPortal(Vec3d axisH, Vec3d axisW, RegistryKey<World> dimensionTo, Vec3d destination, double width, double height, boolean enablePortalRotate, int sides, boolean enableInterpolateSides, boolean generatePortalShapeFromSides) {
         super(RotatingPortal.entityType, null); 
         this.setInteractable(false); 
         this.setPortal(axisH, axisW, dimensionTo, destination, width, height).setRotatePortalAxis(enablePortalRotate).setSides(sides).setInterpolateSides(enableInterpolateSides).setGeneratePortalShapeFromSides(generatePortalShapeFromSides);
@@ -106,7 +116,7 @@ public class RotatingPortal extends Portal {
     public RotatingPortal attachWorld(World world) {
         this.world = world;
         if (this.world != null) {
-            this.dimension = world.dimension.getType();
+            this.dimension = world.getRegistryKey();
         }
         return this;
     }
@@ -130,7 +140,7 @@ public class RotatingPortal extends Portal {
      * @param enablePortalRotate
      * @param center
      */
-    public RotatingPortal(EntityType<?> entityType, World world, Vec3d axisH, Vec3d axisW, DimensionType dimensionTo, Vec3d destination, double width, double height, boolean enablePortalRotate, Vec3d center, int sides, boolean enableInterpolateSides) {
+    public RotatingPortal(EntityType<?> entityType, World world, Vec3d axisH, Vec3d axisW, RegistryKey<World> dimensionTo, Vec3d destination, double width, double height, boolean enablePortalRotate, Vec3d center, int sides, boolean enableInterpolateSides) {
         super(entityType, world);
         // waiting for newest release 
         // this.setInteractable(false);
@@ -206,7 +216,7 @@ public class RotatingPortal extends Portal {
      */
     public RotatingPortal generateShapeFromSides() {
         if (this.generatePortalShapeFromSides) {
-            PortalManipulation.generatePolygonPortalShape(this, this.sides);
+//            PortalManipulation.generatePolygonPortalShape(this, this.sides);
         }
         return this;
     }
@@ -218,6 +228,7 @@ public class RotatingPortal extends Portal {
      * @param axis Vec3d to rotate
      * @return Rotated Vec3d
      */
+    @Environment(EnvType.CLIENT)
     public Vec3d rotateAxis(Quaternion q, Vec3d axis) {
         Vector3f v = new Vector3f(axis);
         q.copy().conjugate();
@@ -229,22 +240,27 @@ public class RotatingPortal extends Portal {
      * @param q Quaternion
      * @return Rotated Vec3d
      */
+    @Environment(EnvType.CLIENT)
     public Vec3d rotatePortalWidthInitialAxis(Quaternion q) {
-        return rotateAxis(q, this.initialAxisW);
+        final Vec3d vec3d = rotateAxis(q, this.initialAxisW);
+        return vec3d;
     }
     /**
      * Rotate 'initialAxisH' given Quaternion
      * @param q Quaternion
      * @return Rotated Vec3d
      */
+    @Environment(EnvType.CLIENT)
     public Vec3d rotatePortalHeightInitialAxis(Quaternion q) {
-        return rotateAxis(q, this.initialAxisH);
+        final Vec3d vec3d = rotateAxis(q, this.initialAxisH);
+        return vec3d;
     }
     /**
      * Rotate both portal axis' (axisH and axisW)
      * @param qH Height Quaternion
      * @param qW Width Quaternion
      */
+    @Environment(EnvType.CLIENT)
     public void rotatePortalAxis(Quaternion qH, Quaternion qW) {
         // only rotate height axis if quaternion isn't null
         if (qH != null) {
@@ -275,7 +291,7 @@ public class RotatingPortal extends Portal {
      * @param height height, height of the portal
      * @return RotatingPortal instance
      */
-    public RotatingPortal setPortal(Vec3d axisH, Vec3d axisW, DimensionType dimensionTo, Vec3d destination, double width, double height) {
+    public RotatingPortal setPortal(Vec3d axisH, Vec3d axisW, RegistryKey<World> dimensionTo, Vec3d destination, double width, double height) {
         return this.setAxisH(axisH).setAxisW(axisW).setDimensionTo(dimensionTo).setDestination(destination).setWidth(width).setHeight(height);
     }
     
@@ -321,7 +337,7 @@ public class RotatingPortal extends Portal {
      * @param dimensionTo DimensionType
      * @return RotatingPortal instance
      */
-    public RotatingPortal setDimensionTo(DimensionType dimensionTo) {
+    public RotatingPortal setDimensionTo(RegistryKey<World> dimensionTo) {
         this.dimensionTo = dimensionTo;
         return this;
     }
@@ -411,6 +427,7 @@ public class RotatingPortal extends Portal {
      * Used to rotate the portal
      */
     @Override
+    @Environment(EnvType.CLIENT)
     public void tick() {
         if (this.world.isClient) {
             if (this.enableInterpolateSides) {
@@ -459,7 +476,7 @@ public class RotatingPortal extends Portal {
     public RotatingPortal makeBiWay() {
         if (!this.biWay && this.biWayPortal == null) {
             this.biWay = true;
-            this.biWayPortal = PortalManipulation.completeBiWayPortal(this, RotatingPortal.entityType);
+//            this.biWayPortal = PortalManipulation.completeBiWayPortal(this, RotatingPortal.entityType);
         } else {
             System.out.println("This RotatingPortal already has a biWayPortal attached");
         }
@@ -472,7 +489,7 @@ public class RotatingPortal extends Portal {
     public RotatingPortal makeBiFacing() {
         if (!this.biFacing && this.biFacingPortal == null) {
             this.biFacing = true;
-            this.biFacingPortal = PortalManipulation.completeBiFacedPortal(this, RotatingPortal.entityType);
+//            this.biFacingPortal = PortalManipulation.completeBiFacedPortal(this, RotatingPortal.entityType);
         } else {
             System.out.println("This RotatingPortal already has a biFacingPortal attached");
         }
@@ -485,7 +502,7 @@ public class RotatingPortal extends Portal {
     public RotatingPortal makeBiFacingBiWay() {
         if (this.biFacing && this.biFacingPortal != null && !this.biWayBiFacing && this.biWayBiFacingPortal == null) {
             this.biWayBiFacing = true;
-            this.biWayBiFacingPortal = PortalManipulation.completeBiWayPortal(this.biFacingPortal, RotatingPortal.entityType);
+//            this.biWayBiFacingPortal = PortalManipulation.completeBiWayPortal(this.biFacingPortal, RotatingPortal.entityType);
         } else {
             System.out.println("Error: cannot makeBiFacingBiWay() from a null biFacing portal, call rotatingPortal.makeBiFacing() first to create the biFacing portal, then call makeBiFacingBiWay().");
         }

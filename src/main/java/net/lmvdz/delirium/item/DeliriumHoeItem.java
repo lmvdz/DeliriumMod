@@ -22,8 +22,8 @@ public class DeliriumHoeItem extends HoeItem {
 
     private String name = "";
     private Identifier identifier;
-    protected DeliriumHoeItem(ItemToolMaterial material, float attackSpeed, Settings settings) {
-        super(material, attackSpeed, settings.group(DeliriumMod.ITEM_GROUP));
+    protected DeliriumHoeItem(ItemToolMaterial material, int attackDamage, float attackSpeed, Settings settings) {
+        super(material, attackDamage, attackSpeed, settings.group(DeliriumMod.ITEM_GROUP));
         setItemName(this, CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, this.getClass().getSimpleName()));
         setIdentifier(this);
     }
@@ -65,8 +65,8 @@ public class DeliriumHoeItem extends HoeItem {
         return FormattingEngine.replaceColorCodeInTranslatableText(new TranslatableText("item." + DeliriumMod.MODID + "." + this.getTranslationKey()));
     }
 
-    public static DeliriumHoeItem makeOutOf(ItemToolMaterial itemToolMaterial, float attackSpeed, Item.Settings settings) {
-        DeliriumHoeItem dhi = new DeliriumHoeItem(itemToolMaterial, attackSpeed, settings);
+    public static DeliriumHoeItem makeOutOf(ItemToolMaterial itemToolMaterial, int attackDamage, float attackSpeed, Item.Settings settings) {
+        DeliriumHoeItem dhi = new DeliriumHoeItem(itemToolMaterial, attackDamage, attackSpeed, settings);
         DeliriumHoeItem.setItemNameFromIngredient(dhi, CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, itemToolMaterial.getRepairIngredientAsItem().getClass().getSimpleName()));
         DeliriumHoeItem.setIdentifier(dhi);
         return dhi.registerHoeItem();
@@ -77,7 +77,7 @@ public class DeliriumHoeItem extends HoeItem {
     }
 
     public static DeliriumHoeItem makeOutOf(Item i, float attackDamage, int durability, int enchantability, int miningLevel, float miningSpeed, float attackSpeed, Item.Settings settings) {
-        return makeOutOf(new ItemToolMaterial(settings, attackDamage, durability, enchantability, miningLevel, miningSpeed, attackSpeed, i), attackSpeed, settings);
+        return makeOutOf(new ItemToolMaterial(settings, attackDamage, durability, enchantability, miningLevel, miningSpeed, attackSpeed, i), (int)attackDamage, attackSpeed, settings);
     }
 
 }

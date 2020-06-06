@@ -1,36 +1,25 @@
 package net.lmvdz.delirium;
 
-import java.util.HashMap;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.lmvdz.delirium.block.DeliriumBlock;
 import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucible;
 import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucibleLava;
 import net.lmvdz.delirium.blockitem.DeliriumBlockItem;
 import net.lmvdz.delirium.blockitem.blockitems.DeliniumCrucibleBlockItem;
-import net.lmvdz.delirium.item.DeliriumAxeItem;
-import net.lmvdz.delirium.item.DeliriumHoeItem;
-import net.lmvdz.delirium.item.DeliriumItem;
-import net.lmvdz.delirium.item.DeliriumPickaxeItem;
-import net.lmvdz.delirium.item.DeliriumShovelItem;
-import net.lmvdz.delirium.item.DeliriumSwordItem;
-import net.lmvdz.delirium.item.DeliriumToolItem;
+import net.lmvdz.delirium.item.*;
 import net.lmvdz.delirium.item.delinium.items.Delinium;
 import net.lmvdz.delirium.item.delinium.items.DeliniumIngot;
-import net.lmvdz.delirium.portal.RotatingPortal;
 import net.lmvdz.delirium.warp.WarpManager;
-import net.minecraft.entity.EntityCategory;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.HashMap;
 
 // world seed -334447148958399075
 // world spawn point 185, 80, 164
@@ -74,14 +63,14 @@ public class DeliriumMod implements ModInitializer {
 		// new DeliniumCruciblePortalLava();
 		// new DeliniumCruciblePortalCrucible();
 		// new DeliniumCruciblePortalTransparent();
-		
+
 		// -- block items
 		new DeliniumCrucibleBlockItem(); //DeliriumBlockItem
 		
-		RotatingPortal.entityType = Registry.register(
-			Registry.ENTITY_TYPE,
-			new Identifier(MODID, "rotating_portal"),
-			FabricEntityTypeBuilder.create( EntityCategory.MISC, (EntityType<RotatingPortal> type, World world1) -> new RotatingPortal(type, world1)).dimensions(new EntityDimensions(1, 1, true)).fireImmune().build()
-		);
+//		RotatingPortal.entityType = Registry.register(
+//			Registry.ENTITY_TYPE,
+//			new Identifier(MODID, "rotating_portal"),
+//			FabricEntityTypeBuilder.create( SpawnGroup.MISC, (EntityType<RotatingPortal> type, World world1) -> new RotatingPortal(type, world1)).dimensions(new EntityDimensions(1, 1, true)).fireImmune().build()
+//		);
 	}
 }

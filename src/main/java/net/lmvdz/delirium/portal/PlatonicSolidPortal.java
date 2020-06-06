@@ -1,9 +1,10 @@
 package net.lmvdz.delirium.portal;
 
-import java.util.HashMap;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
+
+import java.util.HashMap;
 
 public class PlatonicSolidPortal {
 
@@ -16,17 +17,17 @@ public class PlatonicSolidPortal {
     }
     public static HashMap<Integer, PlatonicSolidPortal> PLATONIC_SOLID_PORTALS = new HashMap<Integer, PlatonicSolidPortal>();
 
-    public static PlatonicSolidPortal TETRAHEDRON = new PlatonicSolidPortal(PlatonicSolidEnum.TETRAHEDRON, DimensionType.THE_NETHER, new Vec3d(0, 120, 0), 1);
-    public static PlatonicSolidPortal CUBE = new PlatonicSolidPortal(PlatonicSolidEnum.CUBE, DimensionType.THE_NETHER, new Vec3d(0, 120, 0), 1);
-    public static PlatonicSolidPortal OCTAHEDRON = new PlatonicSolidPortal(PlatonicSolidEnum.OCTAHEDRON, DimensionType.THE_NETHER, new Vec3d(0, 120, 0), 1);
-    public static PlatonicSolidPortal DODECAHEDRON = new PlatonicSolidPortal(PlatonicSolidEnum.DODECAHEDRON, DimensionType.THE_NETHER, new Vec3d(0, 120, 0), 1);
-    public static PlatonicSolidPortal ICOSAHEDRON = new PlatonicSolidPortal(PlatonicSolidEnum.ICOSAHEDRON, DimensionType.THE_NETHER, new Vec3d(0, 120, 0), 1);
+    public static PlatonicSolidPortal TETRAHEDRON = new PlatonicSolidPortal(PlatonicSolidEnum.TETRAHEDRON, World.NETHER, new Vec3d(0, 120, 0), 1);
+    public static PlatonicSolidPortal CUBE = new PlatonicSolidPortal(PlatonicSolidEnum.CUBE, World.NETHER, new Vec3d(0, 120, 0), 1);
+    public static PlatonicSolidPortal OCTAHEDRON = new PlatonicSolidPortal(PlatonicSolidEnum.OCTAHEDRON, World.NETHER, new Vec3d(0, 120, 0), 1);
+    public static PlatonicSolidPortal DODECAHEDRON = new PlatonicSolidPortal(PlatonicSolidEnum.DODECAHEDRON, World.NETHER, new Vec3d(0, 120, 0), 1);
+    public static PlatonicSolidPortal ICOSAHEDRON = new PlatonicSolidPortal(PlatonicSolidEnum.ICOSAHEDRON, World.NETHER, new Vec3d(0, 120, 0), 1);
 
     public RotatingPortal[] portals;
     public boolean removed;
     public PlatonicSolidEnum psEnum;
 
-    PlatonicSolidPortal(PlatonicSolidEnum psEnum, DimensionType dimensionTo, Vec3d destination, double scale) {
+    PlatonicSolidPortal(PlatonicSolidEnum psEnum, RegistryKey<World> dimensionTo, Vec3d destination, double scale) {
         this.psEnum = psEnum;
         this.generatePortals(dimensionTo, destination, scale);
         PLATONIC_SOLID_PORTALS.put(psEnum.ordinal(), this);
@@ -60,14 +61,14 @@ public class PlatonicSolidPortal {
         return this;
     }
 
-    public PlatonicSolidPortal setDimensionType(DimensionType dimensionTo) {
+    public PlatonicSolidPortal setDimensionType(RegistryKey<World> dimensionTo) {
         for (int x = 0; x < this.portals.length; x++) {
             this.portals[x].dimensionTo = dimensionTo;
         }
         return this;
     }
 
-    public PlatonicSolidPortal setDimensionTypes(DimensionType[] dimensionsTo) {
+    public PlatonicSolidPortal setDimensionTypes(RegistryKey<World>[] dimensionsTo) {
         if (dimensionsTo.length == this.portals.length) {
             for (int x = 0; x < this.portals.length; x++) {
                 this.portals[x].dimensionTo = dimensionsTo[x];
@@ -123,7 +124,7 @@ public class PlatonicSolidPortal {
      * @param scale double, scale of the portal (width & height)
      * @return PlatonicSolidPortal instance
      */
-    public PlatonicSolidPortal generatePortals(DimensionType dimensionTo, Vec3d destination, double scale) {
+    public PlatonicSolidPortal generatePortals(RegistryKey<World> dimensionTo, Vec3d destination, double scale) {
         this.portals = new RotatingPortal[PlatonicSolid.fromEnum(this.psEnum).faces];
         PreFoldedPlatonicSolidShape folded = PreFoldedPlatonicSolidShape.fromEnum(this.psEnum);
         for (int x = 0; x < this.portals.length; x++) {
@@ -160,9 +161,9 @@ public class PlatonicSolidPortal {
     public PlatonicSolidPortal remove() {
         System.out.println("removing " + this.portals.length + " portals");
         for(int x = 0; x < this.portals.length; x++) {
-            PortalManipulation.removeConnectedPortals(RotatingPortal.entityType, this.portals[x], p -> {
-                System.out.println(p + " removed.");
-            });
+//            PortalManipulation.removeConnectedPortals(RotatingPortal.entityType, this.portals[x], p -> {
+//                System.out.println(p + " removed.");
+//            });
         }
         for(int x = 0; x < this.portals.length; x++) {
             if (!this.portals[x].removed) {

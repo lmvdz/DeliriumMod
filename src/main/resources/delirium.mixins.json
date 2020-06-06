@@ -6,7 +6,8 @@
   "mixins": [],
   "client": [
     "QuadInvoker",
-    "TitleScreenMixin"
+    "TitleScreenMixin",
+    "PlayerManagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

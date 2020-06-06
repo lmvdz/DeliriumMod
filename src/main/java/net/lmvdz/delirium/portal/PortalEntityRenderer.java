@@ -1,7 +1,7 @@
 package net.lmvdz.delirium.portal;
 
-import com.qouteall.immersive_portals.CGlobal;
-import com.qouteall.immersive_portals.portal.Portal;
+//import com.qouteall.immersive_portals.CGlobal;
+//import com.qouteall.immersive_portals.portal.Portal;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
@@ -23,7 +23,7 @@ public class PortalEntityRenderer<T extends Portal> extends EntityRenderer<T> {
         int int_1
     ) {
         super.render(portal, float_1, float_2, matrixStack_1, vertexConsumerProvider_1, int_1);
-        CGlobal.renderer.renderPortalInEntityRenderer(portal);
+//        CGlobal.renderer.renderPortalInEntityRenderer(portal);
     }
 
     @Override

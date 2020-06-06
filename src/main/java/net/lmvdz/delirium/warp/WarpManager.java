@@ -1,5 +1,7 @@
 package net.lmvdz.delirium.warp;
 
+import net.minecraft.world.dimension.DimensionType;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
@@ -33,7 +35,7 @@ public class WarpManager {
         return subList;
     }
 
-    public ArrayList<Warp> getWarpsByDimension(int dimension) {
+    public ArrayList<Warp> getWarpsByDimension(DimensionType dimension) {
         ArrayList<Warp> subList = new ArrayList<>();
         warps.values().forEach(warp -> {
             if (warp.getDimension() == dimension) {

@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '0.2.7-SNAPSHOT'
+	id 'fabric-loom' version '0.4-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -34,32 +34,38 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modApi "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+
+	// COTTON CLIENT COMMANDS
 	// modImplementation "io.github.cottonmc:cotton-client-commands:${project.cotton_client_command_version}"
 
 
+	// CARDINAL COMPONENTS
 	// Replace modImplementation with modApi if you expose components in your own API
     // modImplementation "com.github.OnyxStudios.Cardinal-Components-API:Cardinal-Components-API:2.3.4"
 
 
 	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
 	// You may need to force-disable transitiveness on them.
-	// modCompile "com.github.OnyxStudios:FOML:${foml_version}"
-	
+	// modCompile "com.github.OnyxStudios:FOML:${project.foml_version}"
+
+
+	// IMMERSIVE PORTALS
+	//
 	// modImplementation files("libs/immersive-portals-0.27(forMc1.15withFabric).jar")
 	// modImplementation "curse.maven:immersive-portals-mod:2936532"
-	modImplementation 'com.github.qouteall:ImmersivePortalsMod:v0.29-1.15'
-	// optifabric
+	//	modImplementation 'com.github.qouteall:ImmersivePortalsMod:${project.immersiveportal_version}'
+
+	// OPTIFABRIC
 	// modImplementation "com.github.modmuss50:OptiFabric:${project.optifabric_version}"
 	// modCompile "com.github.modmuss50:OptiFabric:${project.optifabric_version}"
     // Deps required for optifabric
     // compile "org.zeroturnaround:zt-zip:1.14"
 
-	// Satin - GLSL
-	modImplementation "io.github.Ladysnake:Satin:${satin_version}"
+	// Satin
+//	modImplementation "io.github.Ladysnake:Satin:${project.satin_version}"
 
 	// modImplementation files("libs/satin-1.4.1-SNAPSHOT.jar")
-
-	// modImplementation 'org.greenrobot:eventbus:3.2.0'
 }
 
 processResources {

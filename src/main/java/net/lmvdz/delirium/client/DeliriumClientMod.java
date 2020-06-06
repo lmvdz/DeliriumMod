@@ -1,37 +1,32 @@
 package net.lmvdz.delirium.client;
 
-import java.util.ArrayList;
-import ladysnake.satin.api.event.PostWorldRenderCallback;
-import ladysnake.satin.api.event.ShaderEffectRenderCallback;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry;
-import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.client.screen.ScreenProviderRegistry;
-import net.fabricmc.fabric.api.event.client.ClientTickCallback;
-import net.lmvdz.delirium.DeliriumMod;
+//import net.lmvdz.delirium.DeliriumMod;
 import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucible;
 import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucibleContainer;
+import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucibleContainerScreen;
 import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucibleLootableContainerBlockEntityRenderer;
-import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucibleScreen;
 import net.lmvdz.delirium.item.DeliriumItemTooltip;
 import net.lmvdz.delirium.item.DeliriumItemTooltipCallback;
-import net.lmvdz.delirium.portal.PortalEntityRenderer;
-import net.lmvdz.delirium.portal.RotatingPortal;
-import net.lmvdz.delirium.shader.ShaderEffectRenderLayer;
-import net.lmvdz.delirium.shader.ShaderProgramRenderLayer;
+//import net.lmvdz.delirium.shader.ShaderEffectRenderLayer;
+//import net.lmvdz.delirium.shader.ShaderProgramRenderLayer;
 import net.lmvdz.delirium.util.FormattingEngine;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+
+import java.util.ArrayList;
 
 /**
  * FabricRPG
  */
 public class DeliriumClientMod implements ClientModInitializer {
 
-
-    public static ShaderEffectRenderLayer ExampleShaderEffectRenderLayer;
-    public static ShaderProgramRenderLayer ExampleShaderProgramRenderLayer;
+    public final static String MODID = "delirium_client";
+//    public static ShaderEffectRenderLayer ExampleShaderEffectRenderLayer;
+//    public static ShaderProgramRenderLayer ExampleShaderProgramRenderLayer;
 
 
     @Override
@@ -57,14 +52,14 @@ public class DeliriumClientMod implements ClientModInitializer {
                 }
             }
         });
-        ExampleShaderEffectRenderLayer =
-                new ShaderEffectRenderLayer(DeliriumMod.MODID, "illusion", effect -> {
-                    System.out.println("Example Shader Effect Render Layer");
-                });
-        ExampleShaderProgramRenderLayer =
-                new ShaderProgramRenderLayer(DeliriumMod.MODID, "rainbow", effect -> {
-                    System.out.println("Example Shader Program Render Layer");
-                });
+//        ExampleShaderEffectRenderLayer =
+//                new ShaderEffectRenderLayer(MODID, "illusion", effect -> {
+//                    System.out.println("Example Shader Effect Render Layer");
+//                });
+//        ExampleShaderProgramRenderLayer =
+//                new ShaderProgramRenderLayer(MODID, "rainbow", effect -> {
+//                    System.out.println("Example Shader Program Render Layer");
+//                });
 
         // Register DeliniumCrucibleBlock Models
         // ModelLoadingRegistry.INSTANCE.registerVariantProvider(manager ->
@@ -74,8 +69,8 @@ public class DeliriumClientMod implements ClientModInitializer {
         // });
         // ModelLoadingRegistry.INSTANCE.registerResourceProvider(manager -> provider);
 
-        EntityRendererRegistry.INSTANCE.register(RotatingPortal.entityType, (entityRenderDispatcher,
-                context) -> new PortalEntityRenderer<RotatingPortal>(entityRenderDispatcher));
+//        EntityRendererRegistry.INSTANCE.register(RotatingPortal.entityType, (entityRenderDispatcher,
+//                context) -> new PortalEntityRenderer<RotatingPortal>(entityRenderDispatcher));
 
         // Register Block Entity Renderer - Delinium Crucible Block Entity Renderer
         BlockEntityRendererRegistry.INSTANCE.register(
@@ -84,12 +79,12 @@ public class DeliriumClientMod implements ClientModInitializer {
         // BlockRenderLayerMap.INSTANCE.putBlock(DeliniumCrucible.DELINIUM_CRUCIBLE_BLOCK,
         // RenderLayer.getCutout());
         // Register Screen Provider - Delinium Crucible Screen
-        ScreenProviderRegistry.INSTANCE.<DeliniumCrucibleContainer>registerFactory(
-                DeliniumCrucible.getIdentifier(DeliniumCrucible.DELINIUM_CRUCIBLE_BLOCK),
-                (container) -> new DeliniumCrucibleScreen(container,
-                        MinecraftClient.getInstance().player,
-                        FormattingEngine.replaceColorCodeInTranslatableText(new TranslatableText(
-                                DeliniumCrucible.DELINIUM_CRUCIBLE_CONTAINER_TRANSLATION_KEY))));
+//        ScreenProviderRegistry.INSTANCE.<DeliniumCrucibleContainer>registerFactory(
+//                DeliniumCrucible.getIdentifier(DeliniumCrucible.DELINIUM_CRUCIBLE_BLOCK),
+//                (DeliniumCrucibleContainer container) -> new DeliniumCrucibleContainerScreen(container,
+//                        MinecraftClient.getInstance().player,
+//                        FormattingEngine.replaceColorCodeInTranslatableText(new TranslatableText(
+//                                DeliniumCrucible.DELINIUM_CRUCIBLE_CONTAINER_TRANSLATION_KEY))));
 
         // ClientSidePacketRegistry.INSTANCE.register(DeliniumCrucibleLootableContainerBlockEntity.SET_CLIENT_IMMERSIVE_PORTAL_PACKET,
         // (packetContext, attachedData) -> {

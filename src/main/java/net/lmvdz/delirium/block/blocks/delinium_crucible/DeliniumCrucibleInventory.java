@@ -1,13 +1,14 @@
 package net.lmvdz.delirium.block.blocks.delinium_crucible;
 
-import java.util.stream.IntStream;
 import net.lmvdz.delirium.item.delinium.items.DeliniumIngot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.DefaultedList;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.Direction;
+
+import java.util.stream.IntStream;
 
 public class DeliniumCrucibleInventory implements SidedInventory {
     private static final int INVENTORY_SIZE = 54; // 9 * 6 = 54
@@ -35,19 +36,21 @@ public class DeliniumCrucibleInventory implements SidedInventory {
     // smelt when inventory is closed.
 
     @Override
-    public void onInvClose(PlayerEntity player) {
-        SidedInventory.super.onInvClose(player);
+    public void onClose(PlayerEntity player) {
+        SidedInventory.super.onClose(player);
     }
 
     @Override
-    public int getInvSize() {
+    public int size() {
         return getItems().size();
     }
 
+
+
     @Override
-    public boolean isInvEmpty() {
-        for (int i = 0; i < getInvSize(); i++) {
-            final ItemStack stack = getInvStack(i);
+    public boolean isEmpty() {
+        for (int i = 0; i < size(); i++) {
+            final ItemStack stack = getStack(i);
             if (!stack.isEmpty()) {
                 return false;
             }
@@ -56,8 +59,8 @@ public class DeliniumCrucibleInventory implements SidedInventory {
     }
     
     public int getFirstEmptySlot() {
-        for (int i = 0; i < getInvSize(); i++) {
-            final ItemStack stack = getInvStack(i);
+        for (int i = 0; i < size(); i++) {
+            final ItemStack stack = getStack(i);
             if (stack.isEmpty()) {
                 return i;
             }
@@ -66,12 +69,12 @@ public class DeliniumCrucibleInventory implements SidedInventory {
     }
     
     @Override
-    public ItemStack getInvStack(final int slot) {
+    public ItemStack getStack(final int slot) {
         return getItems().get(slot);
     }
 
     @Override
-    public ItemStack takeInvStack(final int slot, final int amount) {
+    public ItemStack removeStack(final int slot, final int amount) {
         final ItemStack result = Inventories.splitStack(getItems(), slot, amount);
         if (!result.isEmpty()) {
             markDirty();
@@ -80,14 +83,14 @@ public class DeliniumCrucibleInventory implements SidedInventory {
     }
 
     @Override
-    public ItemStack removeInvStack(final int slot) {
+    public ItemStack removeStack(final int slot) {
         return Inventories.removeStack(getItems(), slot);
     }
 
     public int[] firstIndexOrLastIndexAndHowManyDontFit(final ItemStack stack) {
         int[] firstLastDontFit = {-1, -1};
-        for (int i = 0; i < getInvSize(); i++) {
-            final ItemStack invStk = getInvStack(i);
+        for (int i = 0; i < size(); i++) {
+            final ItemStack invStk = getStack(i);
             if ((invStk.getItem().equals(DeliniumIngot.DELINIUM_INGOT)
                     && invStk.getCount() < stack.getMaxCount()) || invStk.isEmpty()) {
                 if (invStk.getCount() + stack.getCount() <= stack.getMaxCount()) {
@@ -104,16 +107,16 @@ public class DeliniumCrucibleInventory implements SidedInventory {
     }
 
     @Override
-    public void setInvStack(final int slot, final ItemStack stack) {
+    public void setStack(final int slot, final ItemStack stack) {
         getItems().set(slot, stack);
-        if (stack.getCount() > getInvMaxStackAmount()) {
-            stack.setCount(getInvMaxStackAmount());
+        if (stack.getCount() > getMaxCountPerStack()) {
+            stack.setCount(getMaxCountPerStack());
         }
         this.markDirty();
     }
 
     @Override
-    public boolean canPlayerUseInv(final PlayerEntity player) {
+    public boolean canPlayerUse(final PlayerEntity player) {
         return true;
     }
 
@@ -123,19 +126,19 @@ public class DeliniumCrucibleInventory implements SidedInventory {
 
 
     @Override
-    public int[] getInvAvailableSlots(Direction side) {
+    public int[] getAvailableSlots(Direction side) {
         return AVAILABLE_SLOTS;
     }
 
 
     @Override
-    public boolean canInsertInvStack(int slot, ItemStack stack, Direction dir) {
+    public boolean canInsert(int slot, ItemStack stack, Direction dir) {
         return true;
     }
 
 
     @Override
-    public boolean canExtractInvStack(int slot, ItemStack stack, Direction dir) {
+    public boolean canExtract(int slot, ItemStack stack, Direction dir) {
         return true;
     }
 

@@ -1,16 +1,15 @@
 package net.lmvdz.delirium.item;
 
-import java.util.ArrayList;
-
-import java.util.List;
-import java.util.Locale;
 import net.lmvdz.delirium.util.FormattingEngine;
 import net.minecraft.client.MinecraftClient;
-
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class DeliriumItemTooltip {
         public static final int WRAP_WIDTH = 100;
@@ -32,7 +31,7 @@ public class DeliriumItemTooltip {
                 return FormattingEngine.wrapStringToWidth(
                                 FormattingEngine.replaceColorCodeEnumInString(keyTranslatedText.asString()), // string
                                 WRAP_WIDTH, // wrapWidth
-                                (c) -> (int) client.textRenderer.getCharWidth((char) c), // character width function
+                                (c) -> client.textRenderer.getWidth(String.valueOf((char)c)), // character width function
                                 Locale.forLanguageTag(client.getLanguageManager().getLanguage().getCode()), // locale of
                                                                                                             // minecraft
                                                                                                             // client

@@ -1,10 +1,5 @@
 package net.lmvdz.delirium.modelpart;
 
-import java.util.Arrays;
-import java.util.Random;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.fastutil.objects.ObjectListIterator;
@@ -17,13 +12,18 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.SpriteIdentifier;
-import net.minecraft.client.util.math.Matrix3f;
-import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Matrix3f;
+import net.minecraft.util.math.Matrix4f;
+
+import java.util.Arrays;
+import java.util.Random;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Each DynamicModelPart has DynamicCuboid(s) Each DynamicCuboid has a DynamicPart[] (one

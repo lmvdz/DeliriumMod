@@ -1,17 +1,18 @@
 package net.lmvdz.delirium.warp;
-import java.util.HashMap;
-import java.util.UUID;
-
 import net.lmvdz.delirium.DeliriumMod;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.dimension.DimensionType;
+
+import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * Warp
  */
 public class Warp {
 
-    private int dimension;
+    private DimensionType dimension;
     private String name;
     private Vec3d location;
     private float yaw;
@@ -22,10 +23,10 @@ public class Warp {
     private float cost;
 
     public Warp(ServerPlayerEntity player, String name, float cost, HashMap<UUID, Boolean> whitelist) {
-        this.dimension = player.world.getDimension().getType().getRawId();
+        this.dimension = player.world.getDimension();
         this.warpUuid = UUID.randomUUID();
         this.name = name;
-        this.location = player.getPosVector();
+        this.location = player.getPos();
         this.yaw = player.yaw;
         this.pitch = player.pitch;
         this.creator = player.getUuid();
@@ -64,11 +65,11 @@ public class Warp {
         return this.whitelist;
     }
 
-    public int getDimension() {
+    public DimensionType getDimension() {
         return this.dimension;
     }
     
-    public void setDimension(int id) {
+    public void setDimension(DimensionType id) {
         this.dimension = id;
     }
     

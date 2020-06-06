@@ -2,7 +2,7 @@ package net.lmvdz.delirium.api.event;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.util.math.Matrix4f;
 
 @FunctionalInterface
 public interface LoadProjectionMatrixCallback {

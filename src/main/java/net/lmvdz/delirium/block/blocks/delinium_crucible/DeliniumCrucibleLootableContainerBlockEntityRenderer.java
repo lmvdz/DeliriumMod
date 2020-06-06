@@ -1,7 +1,5 @@
 package net.lmvdz.delirium.block.blocks.delinium_crucible;
 
-import java.util.Iterator;
-import java.util.List;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.fabric.api.renderer.v1.Renderer;
@@ -15,14 +13,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.model.BakedQuad;
@@ -40,6 +31,9 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockRenderView;
+
+import java.util.Iterator;
+import java.util.List;
 
 public class DeliniumCrucibleLootableContainerBlockEntityRenderer
         extends BlockEntityRenderer<DeliniumCrucibleLootableContainerBlockEntity> {
@@ -87,15 +81,17 @@ public class DeliniumCrucibleLootableContainerBlockEntityRenderer
         Renderer renderer = RendererAccessImpl.INSTANCE.getRenderer();
         SpriteIdentifier spriteId = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX,
                 new Identifier("block/lava_still"));
-        VertexConsumer vc = spriteId.getVertexConsumer(vertexConsumers, layerFactory -> {
-            return DeliriumClientMod.ExampleShaderEffectRenderLayer
-                    .getRenderLayer(RenderLayer.getTranslucent());
-
+//        VertexConsumer vc = spriteId.getVertexConsumer(vertexConsumers, layerFactory -> {
+//            return DeliriumClientMod.ExampleShaderEffectRenderLayer
+//                    .getRenderLayer(RenderLayer.getTranslucent());
+            VertexConsumer vc = spriteId.getVertexConsumer(vertexConsumers, layerFactory -> {
+                    return RenderLayer.getTranslucent();
+            });
 
             // return
             // ShaderRenderLayer.computeShaderRenderLayerIfAbsent(RenderLayer.getTranslucent(),
             // "delirium:illusion", ShaderRenderLayer.ExampleShaderRenderLayer.shaderTarget);
-        });
+//        });
         // VertexConsumer vc = vertexConsumers.getBuffer(RenderLayer.getSolid());
         MeshBuilder meshBuilder = renderer.meshBuilder();
         QuadEmitter emitter = meshBuilder.getEmitter();
@@ -146,7 +142,7 @@ public class DeliniumCrucibleLootableContainerBlockEntityRenderer
      *                               BlockEntityRenderer.render()
      * @param vertexConsumerProvider -- VertexConsumerProvider, the vertexConsumerProvider from the
      *                               BlockEntityRenderer.render()
-     * @param verticalOffset         -- float, move the text vertically
+     * @param offset         -- float, move the text vertically
      * @param light                  -- integer, light
      */
     public void renderTextAboveBlockEntity(double distanceToCamera, BlockEntity blockEntity,
@@ -169,7 +165,7 @@ public class DeliniumCrucibleLootableContainerBlockEntityRenderer
             // flip y-axis
             matrices.multiply(Vector3f.NEGATIVE_Y.getDegreesQuaternion(180));
             // render text
-            client.textRenderer.draw(text, -client.textRenderer.getStringWidth(text) / 2, 0f,
+            client.textRenderer.draw(text, -client.textRenderer.getWidth(text) / 2, 0f,
                     0xffffff, false, matrices.peek().getModel(), vertexConsumerProvider, false,
                     (int) (client.options.getTextBackgroundOpacity(0.25F) * 255.0F) << 24, light);
             matrices.pop();
@@ -186,7 +182,7 @@ public class DeliniumCrucibleLootableContainerBlockEntityRenderer
 
         while (var4.hasNext()) {
             Text text = var4.next();
-            list2.add(text.asFormattedString());
+            list2.add(text.asString());
         }
         return list2;
     }
@@ -237,7 +233,7 @@ public class DeliniumCrucibleLootableContainerBlockEntityRenderer
 
             while (tooltipIterator.hasNext()) {
                 String string = tooltipIterator.next();
-                int stringWidth = mc.textRenderer.getStringWidth(string);
+                int stringWidth = mc.textRenderer.getWidth(string);
                 if (stringWidth > i) {
                     i = stringWidth;
                 }
@@ -384,8 +380,8 @@ public class DeliniumCrucibleLootableContainerBlockEntityRenderer
             if (melting) {
                 // System.out.println(blockEntity.smeltableStackIndex);
                 if (blockEntity.smeltableStackIndex >= 0
-                        && blockEntity.smeltableStackIndex < blockEntity.inventory.getInvSize()) {
-                    ItemStack stack = blockEntity.getInvStack(blockEntity.smeltableStackIndex);
+                        && blockEntity.smeltableStackIndex < blockEntity.inventory.size()) {
+                    ItemStack stack = blockEntity.getStack(blockEntity.smeltableStackIndex);
                     matrices.push();
                     if (distanceToCamera < 9D) {
                         // System.out.println(distanceToCamera);
