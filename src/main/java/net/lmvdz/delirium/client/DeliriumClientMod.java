@@ -1,23 +1,24 @@
 package net.lmvdz.delirium.client;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry;
-import net.fabricmc.fabric.api.client.screen.ScreenProviderRegistry;
-//import net.lmvdz.delirium.DeliriumMod;
+import net.lmvdz.delirium.api.event.TextRendererDrawLayerClass5348Callback;
+import net.lmvdz.delirium.api.event.TextRendererDrawLayerStringCallback;
+import net.lmvdz.delirium.api.event.TextRendererInitCallback;
 import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucible;
-import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucibleContainer;
-import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucibleContainerScreen;
 import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucibleLootableContainerBlockEntityRenderer;
 import net.lmvdz.delirium.item.DeliriumItemTooltip;
 import net.lmvdz.delirium.item.DeliriumItemTooltipCallback;
-//import net.lmvdz.delirium.shader.ShaderEffectRenderLayer;
-//import net.lmvdz.delirium.shader.ShaderProgramRenderLayer;
-import net.lmvdz.delirium.util.FormattingEngine;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
+
+//import net.lmvdz.delirium.DeliriumMod;
+//import net.lmvdz.delirium.shader.ShaderEffectRenderLayer;
+//import net.lmvdz.delirium.shader.ShaderProgramRenderLayer;
 
 /**
  * FabricRPG
@@ -28,11 +29,18 @@ public class DeliriumClientMod implements ClientModInitializer {
 //    public static ShaderEffectRenderLayer ExampleShaderEffectRenderLayer;
 //    public static ShaderProgramRenderLayer ExampleShaderProgramRenderLayer;
 
+    public static final Identifier fontIdentifier = new Identifier("delirium", "test");
+    public static final Identifier fontIdentifier2 = new Identifier("delirium", "test2");
 
     @Override
+    @Environment(EnvType.CLIENT)
     public void onInitializeClient() {
+//        MinecraftClient client = MinecraftClient.getInstance();
+//        FontManager fontManager = ((MinecraftClientAccess)client).getFontManager();
+//        System.out.println(((FontManagerAccess)fontManager).getFontStorages().size());
         // ReadableDepthFramebuffer.useFeature();
-
+        CustomFontTextRenderer.of(fontIdentifier, false);
+        CustomFontTextRenderer.of(fontIdentifier2, true);
         // PostWorldRenderCallback.EVENT.register(DepthFx.INSTANCE);
         // PostWorldRenderLayerCallback.EVENT.register(ShaderRenderLayerFx.INSTANCE);
         // the render method of the shader will be called after the game

@@ -9,7 +9,11 @@
     "MultiPhaseParametersAccessor",
     "MultiPhaseAccessor",
     "RenderLayerAccessor",
-    "WorldRendererMixin"
+    "WorldRendererMixin",
+    "MinecraftClientAccess",
+    "FontManagerAccess",
+    "TextRendererAccessor",
+    "TextRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
