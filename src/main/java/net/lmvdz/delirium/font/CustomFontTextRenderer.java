@@ -1,4 +1,4 @@
-package net.lmvdz.delirium.client;
+package net.lmvdz.delirium.font;
 
 import com.google.common.collect.Lists;
 
@@ -20,7 +20,6 @@ import net.minecraft.util.math.Matrix4f;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 import java.util.function.BiConsumer;
 
 public class CustomFontTextRenderer implements TextRendererDrawLayerStringCallback, TextRendererDrawLayerClass5348Callback {

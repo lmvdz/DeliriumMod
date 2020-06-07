@@ -1,35 +1,43 @@
 package net.lmvdz.delirium.client;
 
+import ladysnake.satin.api.event.EntitiesPreRenderCallback;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry;
-import net.lmvdz.delirium.api.event.TextRendererDrawLayerClass5348Callback;
-import net.lmvdz.delirium.api.event.TextRendererDrawLayerStringCallback;
-import net.lmvdz.delirium.api.event.TextRendererInitCallback;
+import net.fabricmc.fabric.api.event.client.ClientTickCallback;
+import net.lmvdz.delirium.api.event.LoadProjectionMatrixCallback;
 import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucible;
 import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucibleLootableContainerBlockEntityRenderer;
+import net.lmvdz.delirium.client.mixin.LightmapTextureManagerAccessor;
+import net.lmvdz.delirium.font.CustomFontTextRenderer;
 import net.lmvdz.delirium.item.DeliriumItemTooltip;
 import net.lmvdz.delirium.item.DeliriumItemTooltipCallback;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.texture.AbstractTexture;
+import net.minecraft.client.texture.TextureManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
 
 //import net.lmvdz.delirium.DeliriumMod;
-//import net.lmvdz.delirium.shader.ShaderEffectRenderLayer;
-//import net.lmvdz.delirium.shader.ShaderProgramRenderLayer;
+import net.lmvdz.delirium.shader.ShaderEffectRenderLayer;
+import net.lmvdz.delirium.shader.ShaderProgramRenderLayer;
 
 /**
  * FabricRPG
  */
 public class DeliriumClientMod implements ClientModInitializer {
 
-    public final static String MODID = "delirium_client";
-//    public static ShaderEffectRenderLayer ExampleShaderEffectRenderLayer;
-//    public static ShaderProgramRenderLayer ExampleShaderProgramRenderLayer;
+    public final static String MODID = "delirium";
+    public static ShaderEffectRenderLayer ExampleShaderEffectRenderLayer;
+    public static final ShaderProgramRenderLayer ExampleShaderProgramRenderLayer = new ShaderProgramRenderLayer(MODID, "test", program -> {
+        System.out.println("Example Shader Program Render Layer");
+    });
 
-    public static final Identifier fontIdentifier = new Identifier("delirium", "test");
+
+//    public static final Identifier fontIdentifier = new Identifier("delirium", "test");
     public static final Identifier fontIdentifier2 = new Identifier("delirium", "test2");
 
     @Override
@@ -39,7 +47,7 @@ public class DeliriumClientMod implements ClientModInitializer {
 //        FontManager fontManager = ((MinecraftClientAccess)client).getFontManager();
 //        System.out.println(((FontManagerAccess)fontManager).getFontStorages().size());
         // ReadableDepthFramebuffer.useFeature();
-        CustomFontTextRenderer.of(fontIdentifier, false);
+//        CustomFontTextRenderer.of(fontIdentifier, false);
         CustomFontTextRenderer.of(fontIdentifier2, true);
         // PostWorldRenderCallback.EVENT.register(DepthFx.INSTANCE);
         // PostWorldRenderLayerCallback.EVENT.register(ShaderRenderLayerFx.INSTANCE);
@@ -64,10 +72,7 @@ public class DeliriumClientMod implements ClientModInitializer {
 //                new ShaderEffectRenderLayer(MODID, "illusion", effect -> {
 //                    System.out.println("Example Shader Effect Render Layer");
 //                });
-//        ExampleShaderProgramRenderLayer =
-//                new ShaderProgramRenderLayer(MODID, "rainbow", effect -> {
-//                    System.out.println("Example Shader Program Render Layer");
-//                });
+
 
         // Register DeliniumCrucibleBlock Models
         // ModelLoadingRegistry.INSTANCE.registerVariantProvider(manager ->

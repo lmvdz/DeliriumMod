@@ -2,6 +2,8 @@ package net.lmvdz.delirium;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
+import net.fabricmc.fabric.mixin.object.builder.DefaultAttributeRegistryAccessor;
+import net.fabricmc.fabric.mixin.object.builder.DefaultAttributeRegistryMixin;
 import net.lmvdz.delirium.block.DeliriumBlock;
 import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucible;
 import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucibleLava;
@@ -13,6 +15,7 @@ import net.lmvdz.delirium.item.delinium.items.DeliniumIngot;
 import net.lmvdz.delirium.warp.WarpManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.entity.attribute.DefaultAttributeRegistry;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;

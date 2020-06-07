@@ -7,6 +7,7 @@ import net.lmvdz.delirium.DeliriumMod;
 import net.lmvdz.delirium.client.DeliriumClientMod;
 import net.lmvdz.delirium.model.DynamicModel;
 import net.lmvdz.delirium.modelpart.DynamicModelPart;
+import net.lmvdz.delirium.shader.ShaderProgramRenderLayer;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.SpriteIdentifier;
@@ -124,15 +125,12 @@ public class DeliniumCrucibleLavaModel extends DynamicModel {
 			0.0F, -5.5F, 1.0F, 1.0F, 1.0F, 0.0F};
 
 	public DeliniumCrucibleLavaModel() {
-		super(RenderLayer::getEntityTranslucent);
-//		super((Identifier id) -> DeliriumClientMod.ExampleShaderEffectRenderLayer
-//				.getRenderLayer(RenderLayer.getEntityTranslucent(id))
-		// ShaderProgramRenderLayer.computeShaderRenderLayerIfAbsent(
-		// RenderLayer.getEntityTranslucent(id), "delirium:dclm:illusion",
-		// ShaderRenderLayer.ShaderProgramRenderLayer.shaderTarget)
+//		BASIC
+//		super(RenderLayer::getEntityTranslucent);
 
-//		);
-		// super(RenderLayer::getEntityTranslucent);
+
+//		SATIN
+		super((Identifier id) -> ShaderProgramRenderLayer.getRenderLayer(DeliriumClientMod.ExampleShaderProgramRenderLayer, RenderLayer.getEntityTranslucent(id)));
 		this.withParts(ObjectArrayList.wrap(new DynamicModelPart[] {
 				DynamicModelPart.generateModelPart(this, cuboids.clone(), rotation.clone(), sprite,
 						DynamicModelPart.defaultSeeds(cuboids.length / 9), layerFactory)}));

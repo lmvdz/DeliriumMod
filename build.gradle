@@ -63,7 +63,7 @@ dependencies {
     // compile "org.zeroturnaround:zt-zip:1.14"
 
 	// Satin
-//	modImplementation "io.github.Ladysnake:Satin:${project.satin_version}"
+	modImplementation "io.github.Ladysnake:Satin:${project.satin_version}"
 
 	// modImplementation files("libs/satin-1.4.1-SNAPSHOT.jar")
 }
