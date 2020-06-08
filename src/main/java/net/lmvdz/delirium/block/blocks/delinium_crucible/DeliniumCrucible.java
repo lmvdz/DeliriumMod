@@ -4,6 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.container.ContainerProviderRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
+import net.lmvdz.delirium.DeliriumMod;
 import net.lmvdz.delirium.block.DeliriumBlock;
 import net.lmvdz.delirium.client.DeliriumClientMod;
 import net.lmvdz.delirium.item.delinium.items.Delinium;
@@ -81,8 +82,7 @@ public class DeliniumCrucible extends DeliriumBlock implements BlockEntityProvid
     @Environment(EnvType.CLIENT)
     public DeliniumCrucible() {
         // setup map material and render layer
-        super(FabricBlockSettings.of(Delinium.MAP_MATERIAL).nonOpaque(),
-                RenderLayer.getTranslucent());
+        super(FabricBlockSettings.of(Delinium.MAP_MATERIAL).nonOpaque(), RenderLayer.getTranslucent());
 
         if (DELINIUM_CRUCIBLE_BLOCK == null) {
 
@@ -309,6 +309,7 @@ public class DeliniumCrucible extends DeliriumBlock implements BlockEntityProvid
     //            super.onBlockRemoved(state, world, pos, newState, moved);
     //        }
     //    }
+
 
 
     @Override

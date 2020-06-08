@@ -1,15 +1,15 @@
 #version 120
 
 uniform sampler2D DiffuseSampler;
-uniform sampler2D LightSampler;
+uniform sampler2D LightmapSampler;
 uniform sampler2D EmissiveSampler;
-
 
 uniform float STime;
 
 varying vec2 texCoord;
 varying vec2 lightTexCoord;
 varying vec3 vNormal;
+varying vec4 vPosition;
 
 float random (in vec2 _st) {
     return fract(sin(dot(_st.xy,
@@ -35,7 +35,7 @@ float noise (in vec2 _st) {
     (d - b) * u.x * u.y;
 }
 
-    #define NUM_OCTAVES 6
+    #define NUM_OCTAVES 10
 
 float fbm ( in vec2 _st) {
     float v = 0.0;
@@ -60,47 +60,47 @@ void main() {
 
 //    vec4 diffuse = vec4(max(dot(lDirection, -vNormal), 0) * lColor, 1);
 
-    vec4 diffuse = texture2D(DiffuseSampler, texCoord);
-    //                                        (lightTexCoord + 8) / 256
-    vec4 light = vec4(texture2D(LightSampler, lightTexCoord * 0.00367647 + 0.03125).rgb, 1);
-    vec4 emissive = texture2D(EmissiveSampler, texCoord);
-
-    gl_FragColor = (diffuse * light) + vec4(emissive.rgb * emissive.a, 0);
-
+//    vec4 diffuse = texture2D(DiffuseSampler, texCoord); (lightTexCoord + 8) / 256
+//    vec4 light = vec4(texture2D(LightmapSampler, lightTexCoord * 0.00367647 + 0.03125).rgb, 1);
+//    vec4 emissive = texture2D(EmissiveSampler, texCoord);
+//
+//    gl_FragColor = (diffuse * light) + vec4(emissive.rgb * emissive.a, 0);
 
 
 
-//    vec4 tex = texture2D(DiffuseSampler, texCoord);
-//
-//    vec2 st = gl_FragCoord.xy;
-//
-//    vec3 color = vec3(1.0);
-//
-//    vec2 q = vec2(0.);
-//    q.x = fbm( st + 0.00*STime);
-//    q.y = fbm( st + vec2(1.0));
-//
-//    vec2 r = vec2(0.);
-//    r.x = fbm( st + 1.0*q + vec2(1.7,9.2)+ 0.15*STime );
-//    r.y = fbm( st + 1.0*q + vec2(8.3,2.8)+ 0.126*STime );
-//
-//    float f = fbm(st+r);
-//
-//    color = mix(vec3(0.101961,0.619608,0.666667),
-//    vec3(0.666667,0.666667,0.498039),
-//    clamp((f*f)*4.0,0.0,1.0));
-//
-//    color = mix(color,
-//    vec3(0,0,0.164706),
-//    clamp(length(q),0.0,1.0));
-//
-//    color = mix(color,
-//    vec3(0.666667,1,1),
-//    clamp(length(r.x),0.0,1.0));
-//
-//    color *= vec3(abs(sin(STime * .5f))*.5f);
-//    color *= (f*f*f+.6*f*f+.5*f);
-//
-//    gl_FragColor = tex * (vec4(tex.r + 1 - color.r, tex.g + 1 - color.g, tex.b + 1 - color.b, .5) + mod(vec4(tex.r + 1 - color.r, tex.g + 1 - color.g, tex.b + 1 - color.b, .5), 10)/10);
+
+    vec4 tex = texture2D(DiffuseSampler, texCoord);
+
+    vec2 st = gl_FragCoord.xy/1000.;
+//    st += st * abs(sin(STime*0.1)*3.0);
+
+    vec3 color = vec3(0.);
+
+    vec2 q = vec2(0.);
+    q.x = fbm( (st + 0.00) * STime);
+    q.y = fbm( st + vec2(1.0));
+
+    vec2 r = vec2(0.);
+    r.x = fbm( st + 1.0*q + vec2(1.7,9.2)+ 0.15*STime );
+    r.y = fbm( st + 1.0*q + vec2(8.3,2.8)+ 0.126*STime );
+
+    float f = fbm(st+r);
+
+    color = mix(vec3(0.101961,0.619608,0.666667),
+    vec3(0.666667,0.666667,0.498039),
+    clamp((f*f)*4.0,0.0,1.0));
+
+    color = mix(color,
+    vec3(0,0,0.164706),
+    clamp(length(q),0.0,1.0));
+
+    color = mix(color,
+    vec3(0.666667,1,1),
+    clamp(length(r.x),0.0,1.0));
+
+//    color *= vec3(abs(sin((STime + .5f) * .5f))*.5f);
+    color *= (f*f*f+7.6*f*f+.5*f);
+
+    gl_FragColor = tex * vec4(color.rgb, 1);
 
 }

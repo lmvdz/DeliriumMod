@@ -32,13 +32,13 @@ public class DeliriumClientMod implements ClientModInitializer {
 
     public final static String MODID = "delirium";
     public static ShaderEffectRenderLayer ExampleShaderEffectRenderLayer;
-    public static final ShaderProgramRenderLayer ExampleShaderProgramRenderLayer = new ShaderProgramRenderLayer(MODID, "test", program -> {
-        System.out.println("Example Shader Program Render Layer");
+
+    public static ShaderProgramRenderLayer FBM = new ShaderProgramRenderLayer(MODID, "test", (program) -> {
+        System.out.println("ShaderProgram -- test -- FBM");
     });
 
-
-//    public static final Identifier fontIdentifier = new Identifier("delirium", "test");
-    public static final Identifier fontIdentifier2 = new Identifier("delirium", "test2");
+    public static final Identifier fontIdentifier = new Identifier("delirium", "test");
+//    public static final Identifier fontIdentifier2 = new Identifier("delirium", "test2");
 
     @Override
     @Environment(EnvType.CLIENT)
@@ -47,8 +47,9 @@ public class DeliriumClientMod implements ClientModInitializer {
 //        FontManager fontManager = ((MinecraftClientAccess)client).getFontManager();
 //        System.out.println(((FontManagerAccess)fontManager).getFontStorages().size());
         // ReadableDepthFramebuffer.useFeature();
-//        CustomFontTextRenderer.of(fontIdentifier, false);
-        CustomFontTextRenderer.of(fontIdentifier2, true);
+
+        CustomFontTextRenderer.of(fontIdentifier, true);
+
         // PostWorldRenderCallback.EVENT.register(DepthFx.INSTANCE);
         // PostWorldRenderLayerCallback.EVENT.register(ShaderRenderLayerFx.INSTANCE);
         // the render method of the shader will be called after the game

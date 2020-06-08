@@ -5,11 +5,9 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.satin.api.event.EntitiesPreRenderCallback;
 import ladysnake.satin.api.event.ShaderEffectRenderCallback;
 import ladysnake.satin.api.experimental.ReadableDepthFramebuffer;
-import ladysnake.satin.api.experimental.managed.Uniform1f;
-import ladysnake.satin.api.experimental.managed.Uniform3f;
-import ladysnake.satin.api.experimental.managed.UniformMat4;
 import ladysnake.satin.api.managed.ManagedShaderEffect;
 import ladysnake.satin.api.managed.ShaderEffectManager;
+import ladysnake.satin.api.managed.uniform.*;
 import ladysnake.satin.api.util.GlMatrices;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -150,7 +148,7 @@ public class ShaderEffectRenderLayer implements ShaderEffectRenderCallback, Clie
     }
 
     public static RenderLayer getRenderLayer(ShaderEffectRenderLayer shaderEffect, RenderLayer baseLayer) {
-        return ShaderRenderLayers.computeShaderRenderLayerIfAbsent(baseLayer,
+        return ShaderRenderLayers.getRenderLayer(baseLayer,
                 shaderEffect.shaderDomain + ":" + shaderEffect.shaderName, shaderEffect.shaderEffectTarget);
     }
 

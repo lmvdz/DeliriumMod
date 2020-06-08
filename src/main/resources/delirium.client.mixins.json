@@ -13,7 +13,8 @@
     "MinecraftClientAccess",
     "FontManagerAccess",
     "TextRendererAccessor",
-    "TextRendererMixin"
+    "TextRendererMixin",
+    "LightmapTextureManagerAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

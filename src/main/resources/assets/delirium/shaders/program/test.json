@@ -8,7 +8,9 @@
   "fragment": "delirium:program",
   "attributes": ["Position"],
   "samplers": [{
-    "name": "DiffuseSampler"
+    "name": "DiffuseSampler",
+    "name": "EmissiveSampler",
+    "name": "LightmapSampler"
   }],
   "uniforms": [
     {

@@ -6,60 +6,27 @@ import net.fabricmc.api.Environment;
 import net.lmvdz.delirium.DeliriumMod;
 import net.lmvdz.delirium.client.DeliriumClientMod;
 import net.lmvdz.delirium.model.DynamicModel;
+import net.lmvdz.delirium.model.DynamicShaderModel;
 import net.lmvdz.delirium.modelpart.DynamicModelPart;
+import net.lmvdz.delirium.shader.ManagedUniformType;
 import net.lmvdz.delirium.shader.ShaderProgramRenderLayer;
+import net.lmvdz.delirium.shader.ShaderProgramRenderLayer.EmissiveLightmap;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.SpriteIdentifier;
+import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 
-public class DeliniumCrucibleLavaModel extends DynamicModel {
+import java.util.ArrayList;
+import java.util.List;
+
+public class DeliniumCrucibleLavaModel extends DynamicShaderModel {
 
 	public static final SpriteIdentifier sprite =
 			new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX,
 					new Identifier(DeliriumMod.MODID, "block/delinium_crucible_lava"));
-	// private static final int[] u = new int[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0, 1, 2,
-	// 3, 4, 5, 6, 7, 8, 9, 11, 10, 12, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0, 1, 2, 3, 4, 5,
-	// 6, 7, 8, 9, 10, 11, 12, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0, 1, 2, 3, 4, 5, 6, 7, 8,
-	// 9, 10, 11};
-	// private static final int[] v = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2,
-	// 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-	// 6, 6, 6, 6, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
-	// 10, 10};
-	// private static final float[] x = new float[] {10.5F, 11.5F, 11.5F, 11.5F, 11.5F, 11.5F,
-	// 11.5F, 11.5F, 11.5F, 11.5F, 11.5F, 11.5F, 8.5F, 8.5F, 7.5F, 6.5F, 6.5F, 7.5F, 7.5F, 8.5F,
-	// 6.5F, 6.5F, 7.5F, 8.5F, 8.5F, 8.5F, 7.5F, 6.5F, 6.5F, 7.5F, 3.5F, 3.5F, 3.5F, 3.5F, 3.5F,
-	// 3.5F, 3.5F, 3.5F, 3.5F, 5.5F, 5.5F, 5.5F, 5.5F, 6.5F, 8.5F, 8.5F, 6.5F, 6.5F, 6.5F, 8.5F,
-	// 8.5F, 9.5F, 9.5F, 9.5F, 9.5F, 7.5F, 6.5F, 6.5F, 6.5F, 7.5F, 8.5F, 8.5F, 8.5F, 7.5F, 10.5F,
-	// 4.5F, 4.5F, 3.5F, 3.5F, 3.5F, 3.5F, 4.5F, 4.5F, 10.5F, 10.5F, 11.5F, 11.5F};
-	// private static final float[] y = new float[] {6.0F, 6.0F, 4.0F, 4.0F, 4.0F, 4.0F, 5.0F, 5.0F,
-	// 6.0F, 6.0F, 6.0F, 5.0F, 5.0F, 4.0F, 4.0F, 4.0F, 5.0F, 5.0F, 6.0F, 6.0F, 6.0F, 6.0F, 6.0F,
-	// 5.0F, 6.0F, 4.0F, 4.0F, 4.0F, 5.0F, 5.0F, 5.0F, 4.0F, 4.0F, 4.0F, 5.0F, 6.0F, 6.0F, 5.0F,
-	// 6.0F, 1.0F, 1.0F, -1.0F, -1.0F, -1.0F, -1.0F, 1.0F, 1.0F, 1.0F, -1.0F, -1.0F, 1.0F, 1.0F,
-	// -1.0F, -1.0F, 1.0F, -2.0F, -2.0F, -2.0F, -2.0F, -2.0F, -2.0F, -2.0F, -2.0F, -2.0F, 4.0F,
-	// 4.0F, 6.0F, 6.0F, 4.0F, 4.0F, 6.0F, 6.0F, 4.0F, 4.0F, 6.0F, 6.0F, 4.0F};
-	// private static final float[] z = new float[] {-12.5F, -11.5F, -11.5F, -9.5F, -7.5F, -8.5F,
-	// -8.5F, -9.5F, -9.5F, -8.5F, -7.5F, -7.5F, -4.5F, -4.5F, -4.5F, -4.5F, -4.5F, -4.5F, -4.5F,
-	// -4.5F, -4.5F, -12.5F, -12.5F, -12.5F, -12.5F, -12.5F, -12.5F, -12.5F, -12.5F, -12.5F, -7.5F,
-	// -7.5F, -8.5F, -9.5F, -9.5F, -9.5F, -8.5F, -8.5F, -7.5F, -7.5F, -9.5F, -9.5F, -7.5F, -10.5F,
-	// -10.5F, -10.5F, -10.5F, -6.5F, -6.5F, -6.5F, -6.5F, -7.5F, -7.5F, -9.5F, -9.5F, -9.5F, -9.5F,
-	// -8.5F, -7.5F, -7.5F, -7.5F, -8.5F, -9.5F, -8.5F, -12.5F, -12.5F, -12.5F, -11.5F, -11.5F,
-	// -5.5F, -5.5F, -4.5F, -4.5F, -4.5F, -4.5F, -5.5F, -5.5F};
-	// private static final int[] sizeX = new int[] {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	// 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	// 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-	// private static final int[] sizeY = new int[] {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	// 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	// 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-	// private static final int[] sizeZ = new int[] {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	// 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	// 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-	// private static final float[] extra = new float[] {0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F,
-	// 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F,
-	// 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F,
-	// 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F,
-	// 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F,
-	// 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F};
 	private static final float[] rotation = new float[] {-8.0F, 16.0F, 8.0F};
 
 	private static final float[] cuboids = new float[] {0, 0, 10.5F, 6.0F, -12.5F, 1.0F, 1.0F, 1.0F,
@@ -124,13 +91,25 @@ public class DeliniumCrucibleLavaModel extends DynamicModel {
 			1.0F, 1.0F, 0.0F, 11, 10, 11.5F, 4.0F, -5.5F, 1.0F, 1.0F, 1.0F, 0.0F, 11, 10, 11.5F,
 			0.0F, -5.5F, 1.0F, 1.0F, 1.0F, 0.0F};
 
+	@Environment(EnvType.CLIENT)
 	public DeliniumCrucibleLavaModel() {
 //		BASIC
-//		super(RenderLayer::getEntityTranslucent);
+//		super(new EmissiveLightmap(DeliriumMod.MODID, "test", new Identifier(DeliriumMod.MODID, "block/delinium_crucible_lava"), program -> {
+//			System.out.println("Example -- Emissive/Lightmap Sampler -- Shader Program Render Layer");
+//		}), RenderLayer::getEntityTranslucent);
+		super(DeliriumClientMod.FBM, RenderLayer::getEntityTranslucent);
 
+//		List<Pair<ManagedUniformType, String>> uniforms = new ArrayList<>();
+//		uniforms.add(new Pair<>(ManagedUniformType.vec4, "Viewport"));
+//		program.putUniforms(uniforms);
+//		MinecraftClient client = MinecraftClient.getInstance();
+//		program.managedUniforms.setUniform(ManagedUniformType.vec4, "Viewport", new Vector4f(0, 0, client.getWindow().getFramebufferWidth(), client.getWindow().getFramebufferHeight()));
 
 //		SATIN
-		super((Identifier id) -> ShaderProgramRenderLayer.getRenderLayer(DeliriumClientMod.ExampleShaderProgramRenderLayer, RenderLayer.getEntityTranslucent(id)));
+//		super((Identifier id) -> {
+//
+//			ShaderProgramRenderLayer.getRenderLayer(EMISSIVE_LIGHTMAP_SPRL, RenderLayer.getEntityTranslucent(id));
+//		});
 		this.withParts(ObjectArrayList.wrap(new DynamicModelPart[] {
 				DynamicModelPart.generateModelPart(this, cuboids.clone(), rotation.clone(), sprite,
 						DynamicModelPart.defaultSeeds(cuboids.length / 9), layerFactory)}));

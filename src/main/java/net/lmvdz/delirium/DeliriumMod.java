@@ -4,6 +4,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.mixin.object.builder.DefaultAttributeRegistryAccessor;
 import net.fabricmc.fabric.mixin.object.builder.DefaultAttributeRegistryMixin;
+import net.lmvdz.delirium.api.event.MinecraftServerInitCallback;
 import net.lmvdz.delirium.block.DeliriumBlock;
 import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucible;
 import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucibleLava;
@@ -12,12 +13,14 @@ import net.lmvdz.delirium.blockitem.blockitems.DeliniumCrucibleBlockItem;
 import net.lmvdz.delirium.item.*;
 import net.lmvdz.delirium.item.delinium.items.Delinium;
 import net.lmvdz.delirium.item.delinium.items.DeliniumIngot;
+import net.lmvdz.delirium.shader.ShaderProgramRenderLayer;
 import net.lmvdz.delirium.warp.WarpManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.entity.attribute.DefaultAttributeRegistry;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.Level;
@@ -28,11 +31,12 @@ import java.util.HashMap;
 
 // world seed -334447148958399075
 // world spawn point 185, 80, 164
-public class DeliriumMod implements ModInitializer {
+public class DeliriumMod implements ModInitializer, MinecraftServerInitCallback {
 
 
 
 	public final static String MODID = "delirium";
+	public static MinecraftServer server;
 	public static Logger LOGGER = LogManager.getLogger();
 	public static WarpManager WarpManager = new WarpManager();
 	public final static ItemGroup ITEM_GROUP = FabricItemGroupBuilder.create(new Identifier(MODID, "items")).icon(() -> new ItemStack(Registry.ITEM.get(new Identifier(MODID, "delinium")))).build();
@@ -53,7 +57,6 @@ public class DeliriumMod implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		log(Level.INFO, "Initialization");
-		
 		// .obj model - FOML - nerdhub.foml.obj.OBJLoader
 		// https://github.com/OnyxStudios/FOML
 		// OBJLoader.INSTANCE.registerDomain(MODID); --- is not working
@@ -79,4 +82,10 @@ public class DeliriumMod implements ModInitializer {
 //			FabricEntityTypeBuilder.create( SpawnGroup.MISC, (EntityType<RotatingPortal> type, World world1) -> new RotatingPortal(type, world1)).dimensions(new EntityDimensions(1, 1, true)).fireImmune().build()
 //		);
 	}
+
+	@Override
+	public void onInitMinecraftServer(MinecraftServer server) {
+		DeliriumMod.server = server;
+	}
+
 }

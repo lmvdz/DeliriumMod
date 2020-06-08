@@ -22,6 +22,10 @@ public class ManagedUniforms {
         }).put(uniformName, new ManagedUniform(finder, uniformName, type));
     }
 
+    public Object getUniform(ManagedUniformType type, String uniformName) {
+        return UNIFORMS.getOrDefault(type, new HashMap<>()).get(uniformName).getUniform();
+    }
+
     public UniformFinder finder;
 
     public ManagedUniforms(UniformFinder finder) {

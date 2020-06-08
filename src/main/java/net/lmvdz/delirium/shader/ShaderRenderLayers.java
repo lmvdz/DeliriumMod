@@ -14,8 +14,7 @@ public class ShaderRenderLayers {
     public static final Map<RenderLayer, RenderLayer> shaderRenderLayers = new HashMap<>();
 
     @Environment(EnvType.CLIENT)
-    public static RenderLayer computeShaderRenderLayerIfAbsent(RenderLayer baseLayer,
-            String newName, RenderPhase.Target renderTarget) {
+    public static RenderLayer getRenderLayer(RenderLayer baseLayer, String newName, RenderPhase.Target renderTarget) {
         return shaderRenderLayers.computeIfAbsent(baseLayer, tex -> RenderLayerHelper.copy(baseLayer, newName, builder -> builder.target(renderTarget)));
     }
 }
