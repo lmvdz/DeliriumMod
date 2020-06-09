@@ -1,4 +1,4 @@
-package net.lmvdz.delirium.client.mixin;
+package net.lmvdz.delirium.mixin;
 
 import net.lmvdz.delirium.api.event.ReloadCallback;
 import net.minecraft.client.MinecraftClient;
@@ -16,5 +16,4 @@ public class MinecraftClientMixin {
     public void onReloaded(CallbackInfoReturnable<CompletableFuture<Void>> cir) {
         ReloadCallback.EVENT.invoker().reloaded();
     }
-
 }

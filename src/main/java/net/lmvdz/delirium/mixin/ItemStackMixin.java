@@ -1,4 +1,4 @@
-package net.lmvdz.delirium.client.mixin;
+package net.lmvdz.delirium.mixin;
 
 import java.util.List;
 import org.spongepowered.asm.mixin.Mixin;

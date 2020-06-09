@@ -17,6 +17,7 @@ import net.lmvdz.delirium.shader.ShaderProgramRenderLayer;
 import net.lmvdz.delirium.warp.WarpManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.command.arguments.serialize.ArgumentSerializer;
 import net.minecraft.entity.attribute.DefaultAttributeRegistry;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -28,6 +29,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 // world seed -334447148958399075
 // world spawn point 185, 80, 164
@@ -49,6 +51,7 @@ public class DeliriumMod implements ModInitializer, MinecraftServerInitCallback 
     public static HashMap<Identifier, DeliriumHoeItem> HOES = new HashMap<>();
     public static HashMap<Identifier, DeliriumAxeItem> AXES = new HashMap<>();
 	public static HashMap<Identifier, DeliriumItem> ITEMS = new HashMap<>();
+	public static HashMap<Identifier, DeliriumArmorItem> ARMOR_ITEMS = new HashMap<>();
 
 	public static void log(Level level, String string) {
 		LOGGER.log(level, "[" + MODID + "] " + string);

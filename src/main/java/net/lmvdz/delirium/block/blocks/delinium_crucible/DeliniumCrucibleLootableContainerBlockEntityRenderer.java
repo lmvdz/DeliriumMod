@@ -10,6 +10,7 @@ import net.fabricmc.fabric.api.renderer.v1.model.ModelHelper;
 import net.fabricmc.fabric.impl.renderer.RendererAccessImpl;
 import net.lmvdz.delirium.client.DeliriumClientMod;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.CraftingTableBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
@@ -18,12 +19,16 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.slot.CraftingResultSlot;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -32,11 +37,73 @@ import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockRenderView;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 public class DeliniumCrucibleLootableContainerBlockEntityRenderer
         extends BlockEntityRenderer<DeliniumCrucibleLootableContainerBlockEntity> {
+
+    // Constants
+//    private static final float X = .525731112119133606f;
+//    private static final float Z = .850650808352039932f;
+//    private static final float N = 0.f;
+//
+//    public static List<Vector3f> vertices = new ArrayList<>();
+//    public static List<Vector3f> normals = new ArrayList<>();
+//    public static List<Vector3f> uvs = new ArrayList<>();
+//    public static Vector3f[] points = new Vector3f[]{
+//            new Vector3f(-X, N, Z),
+//            new Vector3f(X, N, Z),
+//            new Vector3f(-X, N, -Z),
+//            new Vector3f(X, N, -Z),
+//
+//            new Vector3f(N, Z, X),
+//            new Vector3f(N, Z, -X),
+//            new Vector3f(N, -Z, X),
+//            new Vector3f(N, -Z, -X),
+//
+//            new Vector3f(Z, X, N),
+//            new Vector3f(-Z, X, N),
+//            new Vector3f(Z, -X, N),
+//            new Vector3f(-Z, -X, N)
+//    };
+//    public static int[][] faces = new int[][]{
+//            {0, 4, 1}, {0, 9, 4}, {9, 5, 4}, {4, 5, 8}, {4, 8, 1},
+//            {8, 10, 1}, {8, 3, 10}, {5, 3, 8}, {5, 2, 3}, {2, 7, 3},
+//            {7, 10, 3}, {7, 6, 10}, {7, 11, 6}, {11, 0, 6}, {0, 1, 6},
+//            {6, 1, 10}, {9, 0, 11}, {9, 11, 2}, {9, 2, 5}, {7, 2, 11}
+//    };
+//
+//    public static void calcVerticesIcoSphere(int sectorCount, int stackCount) {
+//        vertices.clear();
+//        normals.clear();
+//        uvs.clear();
+//
+//        // Creates vertrices for faces
+//        for (int[] triangle : faces) {
+//            for (int i = 0; i < 3; i++) {
+//                vertices.add(points[triangle[i]]);
+//                Vector3f normalized = points[triangle[i]].copy();
+//                normalized.normalize();
+//                normals.add(points[triangle[i]]);
+//                // Get the needed UV.
+//                switch (i) {
+//                    case 0:
+//                        uvs.add(new Vector3f(0, 0, 0));
+//                        break;
+//                    case 1:
+//                        uvs.add(new Vector3f(0, 1, 0));
+//                        break;
+//                    case 2:
+//                        uvs.add(new Vector3f(1, 1, 0));
+//                        break;
+//                }
+//            }
+//        }
+//    }
+
 
     private float tick = 0;
 
@@ -306,7 +373,6 @@ public class DeliniumCrucibleLootableContainerBlockEntityRenderer
         // Sprite sprite =
         // client.getBlockRenderManager().getModel(blockEntity.getCachedState()).getSprite();
 
-
         boolean ticked = this.tick > tickDelta;
         this.tick = tickDelta;
         double offset =
@@ -424,6 +490,68 @@ public class DeliniumCrucibleLootableContainerBlockEntityRenderer
                 }
             }
         }
+
+
+
+//        matrices.push();
+
+//        Vec3d pos = client.gameRenderer.getCamera().getPos();
+//        float relativeX = (float) (blockEntity.getPos().getX() - pos.x);
+//        float relativeY = (float) (blockEntity.getPos().getY() - pos.y);
+//        float relativeZ = (float) (blockEntity.getPos().getZ() - pos.z);
+//        matrices.translate(0, 3, 0);
+//        matrices.scale(0.5f, 0.5f, 0.5f);
+//        matrices.scale(10f, 10f, 10f);
+//        float angle = ((Objects.requireNonNull(blockEntity.getWorld()).getTime()) / 4f) % 360f;
+//        matrices.multiply(Vector3f.NEGATIVE_Y.getDegreesQuaternion(angle));
+//        matrices.multiply(Vector3f.NEGATIVE_X.getDegreesQuaternion(90));
+
+        // Generates vertrices
+//        calcVerticesIcoSphere(20, 10);
+
+//        Renderer renderer = RendererAccessImpl.INSTANCE.getRenderer();
+//        MeshBuilder meshBuilder = renderer.meshBuilder();
+//        QuadEmitter emitter = meshBuilder.getEmitter();
+//        Sprite sprite = DeliniumCrucibleLavaModel.sprite.getSprite();
+//        for (int i = 0; i < vertices.size(); i+=3) {
+//            for (int j = 0; j < 3; j++) {
+//                Vector3f vec = vertices.get(i+j);
+//                Vector3f uv = uvs.get(i+j);
+//                emitter.pos(j, vec.getX(), vec.getY(), vec.getZ())
+//                        .cullFace(Direction.UP)
+//                        .sprite(j, 0, ((sprite.getMaxU() - sprite.getMinU()) * uv.getX()) + sprite.getMinU(), ((sprite.getMaxV() - sprite.getMinV()) * uv.getY()) + sprite.getMinV());
+//            }
+//            Vector3f vec = vertices.get(i);
+//            Vector3f uv = uvs.get(i);
+//            emitter.pos(3, vec.getX(), vec.getY(), vec.getZ())
+//                    .sprite(3, 0, ((sprite.getMaxU() - sprite.getMinU()) * uv.getX()) + sprite.getMinU(), ((sprite.getMaxV() - sprite.getMinV()) * uv.getY()) + sprite.getMinV());
+//            emitter.emit(); // to add the vertexs
+//        }
+//        emitter.pos(0, 0, 0, 0).sprite(0, 0, ((sprite.getMaxU() - sprite.getMinU()) * 0) + sprite.getMinU(), ((sprite.getMaxV() - sprite.getMinV()) * 0) + sprite.getMinV()); // vertex index, xcoord, ycoord, zcoord (index can only be from 0-4)
+//        emitter.pos(1, 1, 0, 0).sprite(0, 0, ((sprite.getMaxU() - sprite.getMinU()) * 0) + sprite.getMinU(), ((sprite.getMaxV() - sprite.getMinV()) * 0) + sprite.getMinV());
+//        emitter.pos(2, 1, 1, 0).sprite(0, 0, ((sprite.getMaxU() - sprite.getMinU()) * 0) + sprite.getMinU(), ((sprite.getMaxV() - sprite.getMinV()) * 0) + sprite.getMinV());
+//        emitter.pos(3, 0, 1, 0).sprite(0, 0, ((sprite.getMaxU() - sprite.getMinU()) * 0) + sprite.getMinU(), ((sprite.getMaxV() - sprite.getMinV()) * 0) + sprite.getMinV());
+//        emitter.pos(0, 0, 0, 0).spriteBake(0, sprite, 0); // vertex index, xcoord, ycoord, zcoord (index can only be from 0-4)
+//        emitter.pos(1, 1, 0, 0).spriteBake(0, sprite, 0);
+//        emitter.pos(2, 1, 1, 0).spriteBake(0, sprite, 0);
+//        emitter.pos(3, 0, 1, 0).spriteBake(0, sprite, 0);
+
+
+//        emitter.emit(); // to add the vertex
+//        Mesh m = meshBuilder.build();
+//        List<BakedQuad>[] quadList = ModelHelper.toQuadLists(m);
+//        VertexConsumer vc = DeliniumCrucibleLavaModel.sprite.getVertexConsumer(vertexConsumers, (id) -> {
+//            RenderLayer r = RenderLayer.getEntityTranslucent(id);
+////            return r;
+//            return DeliriumClientMod.FBM.getRenderLayer(r); // satin render layer
+//        });
+//        for (int x = 0; x < quadList.length; x++) {
+//            for (BakedQuad bq : quadList[x]) {
+//                vc.quad(matrices.peek(), bq, .5f, .5f, .5f, 0x00F000B0, OverlayTexture.DEFAULT_UV); // light = 0x00F000B0 (emissive)
+//            }
+//        }
+//
+//        matrices.pop();
 
         // if ((melting)) {
 

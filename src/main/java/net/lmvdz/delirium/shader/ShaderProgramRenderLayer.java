@@ -7,7 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.event.client.ClientTickCallback;
 import net.lmvdz.delirium.api.event.LoadProjectionMatrixCallback;
-import net.lmvdz.delirium.client.mixin.LightmapTextureManagerAccessor;
+import net.lmvdz.delirium.mixin.LightmapTextureManagerAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Frustum;

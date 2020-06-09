@@ -1,4 +1,4 @@
-package net.lmvdz.delirium.client.mixin;
+package net.lmvdz.delirium.mixin;
 
 import net.minecraft.client.render.RenderLayer;
 import org.spongepowered.asm.mixin.Mixin;

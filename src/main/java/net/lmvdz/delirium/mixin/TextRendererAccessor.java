@@ -1,4 +1,4 @@
-package net.lmvdz.delirium.client.mixin;
+package net.lmvdz.delirium.mixin;
 
 import net.minecraft.client.font.FontStorage;
 import net.minecraft.client.font.GlyphRenderer;

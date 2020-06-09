@@ -6,7 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.lmvdz.delirium.api.event.TextRendererDrawLayerClass5348Callback;
 import net.lmvdz.delirium.api.event.TextRendererDrawLayerStringCallback;
-import net.lmvdz.delirium.client.mixin.TextRendererAccessor;
+import net.lmvdz.delirium.mixin.TextRendererAccessor;
 import net.minecraft.class_5348;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.*;

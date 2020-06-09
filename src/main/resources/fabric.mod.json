@@ -26,11 +26,7 @@
     ]
   },
   "mixins": [
-    "delirium.mixins.json",
-    {
-      "config": "delirium.client.mixins.json",
-      "environment": "client"
-    }
+    "delirium.mixins.json"
   ],
 
   "depends": {

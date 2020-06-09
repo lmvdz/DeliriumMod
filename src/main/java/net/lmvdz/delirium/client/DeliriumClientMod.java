@@ -1,21 +1,14 @@
 package net.lmvdz.delirium.client;
 
-import ladysnake.satin.api.event.EntitiesPreRenderCallback;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry;
-import net.fabricmc.fabric.api.event.client.ClientTickCallback;
-import net.lmvdz.delirium.api.event.LoadProjectionMatrixCallback;
 import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucible;
 import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucibleLootableContainerBlockEntityRenderer;
-import net.lmvdz.delirium.client.mixin.LightmapTextureManagerAccessor;
 import net.lmvdz.delirium.font.CustomFontTextRenderer;
 import net.lmvdz.delirium.item.DeliriumItemTooltip;
 import net.lmvdz.delirium.item.DeliriumItemTooltipCallback;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.AbstractTexture;
-import net.minecraft.client.texture.TextureManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 

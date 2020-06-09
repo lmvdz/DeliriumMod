@@ -99,7 +99,7 @@ void main() {
     clamp(length(r.x),0.0,1.0));
 
 //    color *= vec3(abs(sin((STime + .5f) * .5f))*.5f);
-    color *= (f*f*f+7.6*f*f+.5*f);
+    color *= (f*f*f+7.0*f*f+.5*f);
 
     gl_FragColor = tex * vec4(color.rgb, 1);
 

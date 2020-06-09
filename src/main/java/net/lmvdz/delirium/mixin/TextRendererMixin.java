@@ -1,4 +1,4 @@
-package net.lmvdz.delirium.client.mixin;
+package net.lmvdz.delirium.mixin;
 
 import net.lmvdz.delirium.api.event.TextRendererDrawLayerClass5348Callback;
 import net.lmvdz.delirium.api.event.TextRendererDrawLayerStringCallback;

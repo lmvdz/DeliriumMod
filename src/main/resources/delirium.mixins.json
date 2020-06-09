@@ -8,6 +8,18 @@
     "QuadInvoker",
     "TitleScreenMixin",
     "PlayerManagerMixin",
+    "ItemStackMixin",
+    "MultiPhaseParametersAccessor",
+    "MultiPhaseAccessor",
+    "RenderLayerAccessor",
+    "WorldRendererMixin",
+    "MinecraftClientAccess",
+    "FontManagerAccess",
+    "TextRendererAccessor",
+    "TextRendererMixin",
+    "LightmapTextureManagerAccessor"
+  ],
+  "server": [
     "MinecraftServerMixin"
   ],
   "injectors": {

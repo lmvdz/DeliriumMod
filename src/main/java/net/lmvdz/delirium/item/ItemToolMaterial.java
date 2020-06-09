@@ -78,32 +78,32 @@ public class ItemToolMaterial extends DeliriumItem implements ToolMaterial {
     }
 
     public ItemToolMaterial createSword() {
-        DeliriumSwordItem.makeOutOf(this, (int)this.getAttackDamage(), this.getAttackSpeed(), new Item.Settings());
+        new DeliriumSwordItem(this, (int)this.getAttackDamage(), this.getAttackSpeed(), new Item.Settings());
         return this; 
     }
 
     public ItemToolMaterial createShovel() {
-        DeliriumShovelItem.makeOutOf(this, (int)this.getAttackDamage(), this.getAttackSpeed(), new Item.Settings());
+        new DeliriumShovelItem(this, (int)this.getAttackDamage(), this.getAttackSpeed(), new Item.Settings());
         return this;
     }
 
     public ItemToolMaterial createPickaxe() {
-        DeliriumPickaxeItem.makeOutOf(this, (int)this.getAttackDamage(), this.getAttackSpeed(), new Item.Settings());
+        new DeliriumPickaxeItem(this, (int)this.getAttackDamage(), this.getAttackSpeed(), new Item.Settings());
         return this;
     }
 
     public ItemToolMaterial createHoe() {
-        DeliriumHoeItem.makeOutOf(this, (int)this.getAttackDamage(), this.getAttackSpeed(), new Item.Settings());
+        new DeliriumHoeItem(this, (int)this.getAttackDamage(), this.getAttackSpeed(), new Item.Settings());
         return this;
     }
     
     public ItemToolMaterial createAxe() {
-        DeliriumAxeItem.makeOutOf(this, (int)this.getAttackDamage(), this.getAttackSpeed(), new Item.Settings());
+        new DeliriumAxeItem(this, (int)this.getAttackDamage(), this.getAttackSpeed(), new Item.Settings());
         return this;
     }
 
-    public ItemToolMaterial createTools() {
-        return this.createTool().createSword().createShovel().createPickaxe().createHoe().createAxe();
+    public void createTools() {
+        this.createTool().createSword().createShovel().createPickaxe().createHoe().createAxe();
     }
     
 }
