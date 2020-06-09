@@ -49,22 +49,41 @@ public class DeliriumMod implements ModInitializer, MinecraftServerInitCallback 
 
 		// create delinium items
 		// -- items
-ItemArmorToolMaterial Delinium = ItemArmorToolMaterial.of(
-		// modid and item name for registering
-		MODID, "Delinium",
-		// tool material
-		// attackDamage, durability, enchantability, miningLevel, miningSpeed, attackSpeed
-		2.5f, 1000, 25, 1, 5f, 1f,
-		// armor material
-		// durability map, protection map, enchantability, equipSound, toughness, knockbackResistance
-		new HashMap<EquipmentSlot, Integer>(), new HashMap<EquipmentSlot, Integer>(), 1, SoundEvents.ITEM_ARMOR_EQUIP_GENERIC, 10, 5
-).createArmor().createTools();
 
-		ItemArmorToolMaterial DeliniumIngot = ItemArmorToolMaterial.of(
-				MODID, "DeliniumIngot",
-				5f, 1500, 25, 2, 5f, 2f,
-				new HashMap<>(), new HashMap<>(), 1, SoundEvents.ITEM_ARMOR_EQUIP_GENERIC, 15, 10
-		).createAxe().createSword();
+
+
+		EquipmentMaterial.BUILDER.of(MODID, "Delinium")
+				.attackDamage(2.5f)
+				.durability(1000)
+				.enchantability(25)
+				.miningLevel(1)
+				.miningSpeed(5f)
+				.attackSpeed(1f)
+				.armorDurabilities(1000, 1000, 1000, 1000)
+//				.armorDurability(EquipmentSlot.HEAD, 10000) -- alternative
+				.armorProtectionAmounts(10, 10, 10, 10)
+//				.armorProtectionAmount(EquipmentSlot.FEET, 20) -- alternative
+				.armorEnchantability(1)
+				.equipSound(SoundEvents.ITEM_ARMOR_EQUIP_GENERIC)
+				.toughness(10)
+				.knockbackResistance(5)
+				.build()
+//				.createArmor() -- create all armor
+//				.createArmor(new EquipmentSlot[] {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.FEET}) --- alternative
+//				.createArmor(EquipmentSlot.HEAD) --- alternative
+				.createArmor(true, false, true, false)
+//				.createTools() -- create all tools
+//				.createTools(new EquipmentMaterial.ToolType[] {EquipmentMaterial.ToolType.PICKAXE})  --- alternative
+//				.createTool(EquipmentMaterial.ToolType.PICKAXE) --- alternative
+				.createTools(false, true, false, false, true, false);
+
+
+
+
+
+
+
+
 
 		// -- blocks
 		new DeliniumCrucible(); // DeliriumBlock + BlockEntityProvider

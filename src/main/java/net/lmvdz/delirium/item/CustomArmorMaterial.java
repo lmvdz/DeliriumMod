@@ -11,8 +11,8 @@ import java.util.Map;
 
 public class CustomArmorMaterial implements ArmorMaterial {
 
-    public Map<EquipmentSlot, Integer> armorDurabilities;
-    public Map<EquipmentSlot, Integer> armorProtectionAmounts;
+    public int[] armorDurabilities;
+    public int[] armorProtectionAmounts;
     public int armorEnchantability;
     public SoundEvent equipSound;
     public Item repairIngredientAsItem;
@@ -22,7 +22,7 @@ public class CustomArmorMaterial implements ArmorMaterial {
     public float toughness;
     public float knockbackResistance;
 
-    public CustomArmorMaterial(Map<EquipmentSlot, Integer> armorDurabilities, Map<EquipmentSlot, Integer> armorProtectionAmounts, int armorEnchantability, SoundEvent equipSound, String name, float toughness, float knockbackResistance, String repairIngredientName, Item repairIngredientAsItem) {
+    public CustomArmorMaterial(int[] armorDurabilities, int[] armorProtectionAmounts, int armorEnchantability, SoundEvent equipSound, String name, float toughness, float knockbackResistance, String repairIngredientName, Item repairIngredientAsItem) {
         this.armorDurabilities = armorDurabilities;
         this.armorProtectionAmounts = armorProtectionAmounts;
         this.armorEnchantability = armorEnchantability;
@@ -38,12 +38,34 @@ public class CustomArmorMaterial implements ArmorMaterial {
 
     @Override
     public int getDurability(EquipmentSlot slot) {
-        return armorDurabilities.getOrDefault(slot, 1);
+        switch(slot) {
+            case HEAD:
+                return armorDurabilities[0];
+            case CHEST:
+                return armorDurabilities[1];
+            case LEGS:
+                return armorDurabilities[2];
+            case FEET:
+                return armorDurabilities[3];
+            default:
+                return 1;
+        }
     }
 
     @Override
     public int getProtectionAmount(EquipmentSlot slot) {
-        return armorProtectionAmounts.getOrDefault(slot, 1);
+        switch(slot) {
+            case HEAD:
+                return armorProtectionAmounts[0];
+            case CHEST:
+                return armorProtectionAmounts[1];
+            case LEGS:
+                return armorProtectionAmounts[2];
+            case FEET:
+                return armorProtectionAmounts[3];
+            default:
+                return 1;
+        }
     }
 
     @Override
