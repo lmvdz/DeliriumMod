@@ -5,8 +5,9 @@ Start building your `EquipmentMaterial` by calling the static `EquipmentMaterial
 - Supply your String MODID and ItemName either as two seperate parameters or as an Identifier.
 - If you just want to use the default values for tools and/or armor just call `.build()` on your `EquipmentMaterial.Builder` instance!
 - After building your ToolMaterial and/or ArmorMaterial with the `.build()` or `.buildArmor()` or `.buildTool()`
-  - call `.createArmorAndTools()` or `.createTools()` or `.createArmor()` or supply additional parameters to these methods to choose specifically which armor and which tools you want to create.
-
+  - call `.createArmorAndTools()` or `.createTools()` or `.createTool()` or `.createArmor()` or supply additional parameters to these methods to choose specifically which armor and which tools you want to create.
+- All the values you see passed in the below example are the default values.
+  - example: not calling `.attackDamage(value)` at all, will still have an `attackDamage` value of `2.5f`
 ``` java
 //      EquipmentMaterial.builder(new Identifier(MODID, "Delinium") -- alternative
         EquipmentMaterial.builder(MODID, "Delinium")
@@ -17,9 +18,9 @@ Start building your `EquipmentMaterial` by calling the static `EquipmentMaterial
             .miningSpeed(5f)
             .attackSpeed(1f)
             .armorDurabilities(1000, 1000, 1000, 1000)
-    //	    .armorDurability(EquipmentSlot.HEAD, 10000) -- alternative
+    //	    .armorDurability(EquipmentSlot.HEAD, 10000) -- specify each slot individually
             .armorProtectionAmounts(10, 10, 10, 10)
-    //	    .armorProtectionAmount(EquipmentSlot.FEET, 20) -- alternative
+    //	    .armorProtectionAmount(EquipmentSlot.FEET, 20) -- specify each slot individually
             .armorEnchantability(1)
             .equipSound(SoundEvents.ITEM_ARMOR_EQUIP_GENERIC)
             .toughness(10)
@@ -29,7 +30,9 @@ Start building your `EquipmentMaterial` by calling the static `EquipmentMaterial
             .build()
     //	    .armorMaterial(CustomArmorMaterial customArmorMaterial) --- set the custom armor material -- useful if you only buildToolMaterial() and later on need to create armor
     //	    .toolMaterial(CustomToolMaterial customToolMaterial) --- set the custom tool material -- useful if you only buildArmorMaterial() and later on need to create tools
-    //	    .createArmor() -- create all armor
+    //	    .createArmorAndTools() -- create all armor and all tools
+    //      .createArmorAndTools(true, true, true, true, true, true, true, true, true, true) -- specify tools and armors to create
+    //      .createArmor() -- create all armor
     //	    .createArmor(new EquipmentSlot[] {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.FEET}) --- alternative
     //	    .createArmor(EquipmentSlot.HEAD) --- alternative
             .createArmor(true, false, true, false)
