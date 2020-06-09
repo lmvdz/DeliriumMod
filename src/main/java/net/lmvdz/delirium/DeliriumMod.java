@@ -10,6 +10,7 @@ import net.lmvdz.delirium.blockitem.DeliriumBlockItem;
 import net.lmvdz.delirium.blockitem.blockitems.DeliniumCrucibleBlockItem;
 import net.lmvdz.delirium.item.*;
 import net.lmvdz.delirium.warp.WarpManager;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
@@ -48,11 +49,16 @@ public class DeliriumMod implements ModInitializer, MinecraftServerInitCallback 
 
 		// create delinium items
 		// -- items
-		ItemArmorToolMaterial Delinium = ItemArmorToolMaterial.of(
-				MODID, "Delinium",
-				2.5f, 1000, 25, 1, 5f, 1f,
-				new HashMap<>(), new HashMap<>(), 1, SoundEvents.ITEM_ARMOR_EQUIP_GENERIC, 10, 5
-		).createArmor().createTools();
+ItemArmorToolMaterial Delinium = ItemArmorToolMaterial.of(
+		// modid and item name for registering
+		MODID, "Delinium",
+		// tool material
+		// attackDamage, durability, enchantability, miningLevel, miningSpeed, attackSpeed
+		2.5f, 1000, 25, 1, 5f, 1f,
+		// armor material
+		// durability map, protection map, enchantability, equipSound, toughness, knockbackResistance
+		new HashMap<EquipmentSlot, Integer>(), new HashMap<EquipmentSlot, Integer>(), 1, SoundEvents.ITEM_ARMOR_EQUIP_GENERIC, 10, 5
+).createArmor().createTools();
 
 		ItemArmorToolMaterial DeliniumIngot = ItemArmorToolMaterial.of(
 				MODID, "DeliniumIngot",
