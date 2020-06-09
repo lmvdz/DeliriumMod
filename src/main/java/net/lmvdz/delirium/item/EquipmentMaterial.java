@@ -13,8 +13,6 @@ import java.util.UUID;
 
 public class EquipmentMaterial extends CustomItem {
 
-    public static Builder BUILDER = new Builder();
-
 
     private CustomArmorMaterial armorMaterial;
     private CustomToolMaterial toolMaterial;
@@ -28,6 +26,22 @@ public class EquipmentMaterial extends CustomItem {
     public CustomToolMaterial getToolMaterial() { return toolMaterial; }
     public boolean hasToolMaterial() {return this.toolMaterial != null;}
 
+    public EquipmentMaterial armorMaterial(CustomArmorMaterial customArmorMaterial) {
+        this.armorMaterial = customArmorMaterial;
+        return this;
+    }
+    public EquipmentMaterial toolMaterial(CustomToolMaterial customToolMaterial) {
+        this.toolMaterial = customToolMaterial;
+        return this;
+    }
+
+    public static Builder builder(String modid, String itemName) {
+        return Builder.builder(modid, itemName);
+    }
+
+    public static Builder builder(Identifier identifier) {
+        return builder(identifier.getNamespace(), identifier.getPath());
+    }
     private static EquipmentMaterial of(String modid, String itemName, float attackDamage, int durability, int enchantability, int miningLevel, float miningSpeed, float attackSpeed, int[] armorDurabilities, int[] armorProtectionAmounts, int armorEnchantability, SoundEvent equipSound, float toughness, float knockbackResistance) {
         EquipmentMaterial iATM = new EquipmentMaterial(modid, itemName, attackDamage, durability, enchantability, miningLevel, miningSpeed, attackSpeed, armorDurabilities, armorProtectionAmounts, armorEnchantability, equipSound, toughness, knockbackResistance);
         iATM.registerItem();
@@ -64,15 +78,11 @@ public class EquipmentMaterial extends CustomItem {
 
         private Builder() {}
 
-        public Builder of(String modid, String itemName) {
+        public static Builder builder(String modid, String itemName) {
             Builder b = new Builder();
             b.modid = modid;
             b.itemName = itemName;
             return b;
-        }
-
-        public Builder of(Identifier identifier) {
-            return of(identifier.getNamespace(), identifier.getPath());
         }
 
         public Builder modid(String modid) {
@@ -165,11 +175,11 @@ public class EquipmentMaterial extends CustomItem {
             return EquipmentMaterial.of(this.modid, this.itemName, this.attackDamage, this.durability, this.enchantability, this.miningLevel, this.miningSpeed, this.attackSpeed, this.armorDurabilities, this.armorProtectionAmounts, this.armorEnchantability, this.equipSound, this.toughness, this.knockbackResistance);
         }
 
-        public EquipmentMaterial buildArmorMaterial() {
+        public EquipmentMaterial buildArmor() {
             return EquipmentMaterial.armor(this.modid, this.itemName, this.armorDurabilities, this.armorProtectionAmounts, this.armorEnchantability, this.equipSound, this.toughness, this.knockbackResistance);
         }
 
-        public EquipmentMaterial buildToolMaterial() {
+        public EquipmentMaterial buildTool() {
             return EquipmentMaterial.tool(this.modid, this.itemName, this.attackDamage, this.durability, this.enchantability, this.miningLevel, this.miningSpeed, this.attackSpeed);
         }
     }
