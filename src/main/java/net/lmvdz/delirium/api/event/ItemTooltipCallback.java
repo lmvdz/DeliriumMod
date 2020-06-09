@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.lmvdz.delirium.item;
+package net.lmvdz.delirium.api.event;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
@@ -25,12 +25,12 @@ import net.minecraft.text.Text;
 
 import java.util.List;
 
-public interface DeliriumItemTooltipCallback {
+public interface ItemTooltipCallback {
 
-    /** Fired after thsee game has appended all ba tooltip lines to the list */
-    Event<DeliriumItemTooltipCallback> EVENT = EventFactory.createArrayBacked(DeliriumItemTooltipCallback.class,
+    /** Fired after the game has appended all the tooltip lines to the list */
+    Event<ItemTooltipCallback> EVENT = EventFactory.createArrayBacked(ItemTooltipCallback.class,
             (listeners) -> (stack, playerEntity, tooltipContext, lines) -> {
-                for (DeliriumItemTooltipCallback callback : listeners) {
+                for (ItemTooltipCallback callback : listeners) {
                     callback.getTooltip(stack, playerEntity, tooltipContext, lines);
                 }
             });

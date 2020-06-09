@@ -7,8 +7,8 @@ import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegi
 import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucible;
 import net.lmvdz.delirium.block.blocks.delinium_crucible.DeliniumCrucibleLootableContainerBlockEntityRenderer;
 import net.lmvdz.delirium.font.CustomFontTextRenderer;
-import net.lmvdz.delirium.item.DeliriumItemTooltip;
-import net.lmvdz.delirium.item.DeliriumItemTooltipCallback;
+import net.lmvdz.delirium.item.CustomItemTooltip;
+import net.lmvdz.delirium.api.event.ItemTooltipCallback;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -51,12 +51,12 @@ public class DeliriumClientMod implements ClientModInitializer {
         // ShaderEffectRenderCallback.EVENT.register(TEST::render);
 
         // Delirium Items Tooltip Callback
-        DeliriumItemTooltipCallback.EVENT.register((stack, player, tooltipContext, components) -> {
+        ItemTooltipCallback.EVENT.register((stack, player, tooltipContext, components) -> {
             if (stack != null && tooltipContext != null && components != null) {
                 if (player.world.isChunkLoaded(player.getBlockPos())) {
                     // boolean isDeliriumItem = (stack.getItem() instanceof DeliriumItem);
                     if (stack.getMaxDamage() > 0) {
-                        components.addAll(DeliriumItemTooltip
+                        components.addAll(CustomItemTooltip
                                 .addDurabilityOfItemStackToTooltip(new ArrayList<Text>(), stack));
                     }
                 }

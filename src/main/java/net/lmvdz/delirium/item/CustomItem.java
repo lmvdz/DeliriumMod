@@ -1,8 +1,6 @@
 package net.lmvdz.delirium.item;
 
 import com.google.common.base.CaseFormat;
-import net.lmvdz.delirium.DeliriumMod;
-import net.lmvdz.delirium.util.FormattingEngine;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -15,42 +13,48 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
+import java.util.HashMap;
+
 /**
  * Item
  */
-public class DeliriumItem extends Item {
+public class CustomItem extends Item {
     private String name = "";
+    private String modid;
     private boolean isDamageable = false;
     private Identifier identifier;
-    
+    public static HashMap<Identifier, CustomItem> ITEMS = new HashMap<>();
 
-    public DeliriumItem(Item.Settings settings) {
-        super(settings.group(DeliriumMod.ITEM_GROUP));
+    public CustomItem(String modid, Item.Settings settings) {
+        super(settings);
+        this.modid = modid;
         setItemName(this, CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, this.getClass().getSimpleName()));
         setIdentifier(this);
     }
 
-    public static void setIdentifier(DeliriumItem item) {
-        item.identifier = new Identifier(DeliriumMod.MODID, item.getTranslationKey());
+    public static void setIdentifier(CustomItem item) {
+        item.identifier = new Identifier(item.modid, item.getTranslationKey());
     }
 
-    public static Identifier getIdentifier(DeliriumItem item) {
+    public static Identifier getIdentifier(CustomItem item) {
         return item.identifier;
     }
 
-    public static String getItemName(DeliriumItem item) {
+    public static String getItemName(CustomItem item) {
         return item.name;
     }
     
-    public static void setItemName(DeliriumItem item, String name) {
+    public static void setItemName(CustomItem item, String name) {
         item.name = name;
     }
 
-    protected DeliriumItem registerItem() {
-        DeliriumMod.ITEMS.putIfAbsent(getIdentifier(this), Registry.register(Registry.ITEM, getIdentifier(this), this));
+    protected CustomItem registerItem() {
+        ITEMS.putIfAbsent(getIdentifier(this), Registry.register(Registry.ITEM, getIdentifier(this), this));
         System.out.println("Registered Item: " + this.getTranslationKey());
         return this;
     }
+
+    public String getModid() {return modid;}
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
@@ -64,7 +68,7 @@ public class DeliriumItem extends Item {
 
     @Override
     public Text getName(ItemStack itemStack) {
-        return FormattingEngine.replaceColorCodeInTranslatableText(new TranslatableText("item." + DeliriumMod.MODID + "." + this.getTranslationKey()));
+        return new TranslatableText("item." + modid + "." + this.getTranslationKey());
     }
 
     @Override
@@ -74,5 +78,11 @@ public class DeliriumItem extends Item {
 
     public static Ingredient asIngredient(Item item) {
         return Ingredient.ofItems(item);
+    }
+
+
+    public static CustomItem createRegisterReturn(String modid, Item.Settings settings) {
+        CustomItem item = new CustomItem(modid, settings);
+        return item.registerItem();
     }
 }

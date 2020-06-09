@@ -5,8 +5,6 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.lmvdz.delirium.DeliriumMod;
 import net.lmvdz.delirium.block.DeliriumBlock;
-import net.lmvdz.delirium.client.DeliriumClientMod;
-import net.lmvdz.delirium.item.delinium.items.Delinium;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.SpriteIdentifier;
@@ -18,7 +16,7 @@ public class DeliniumCruciblePortalCrucible extends DeliriumBlock {
 
     @Environment(EnvType.CLIENT)
     public DeliniumCruciblePortalCrucible() {
-        super(FabricBlockSettings.of(Delinium.MAP_MATERIAL).nonOpaque(), RenderLayer.getEntitySolid(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, new Identifier(DeliriumMod.MODID, "block/delinium_crucible")).getTextureId()));
+        super(FabricBlockSettings.of(DeliniumCrucible.MAP_MATERIAL).nonOpaque(), RenderLayer.getEntitySolid(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, new Identifier(DeliriumMod.MODID, "block/delinium_crucible")).getTextureId()));
 
         if (DELINIUM_CRUCIBLE_PORTAL_CRUCIBLE_BLOCK == null) {
             DELINIUM_CRUCIBLE_PORTAL_CRUCIBLE_BLOCK = this;

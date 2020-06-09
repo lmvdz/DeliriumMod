@@ -1,10 +1,12 @@
 package net.lmvdz.delirium.block.blocks.delinium_crucible;
 
-import net.lmvdz.delirium.item.delinium.items.DeliniumIngot;
+import net.lmvdz.delirium.DeliriumMod;
+import net.lmvdz.delirium.item.CustomItem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.Direction;
 
@@ -91,7 +93,7 @@ public class DeliniumCrucibleInventory implements SidedInventory {
         int[] firstLastDontFit = {-1, -1};
         for (int i = 0; i < size(); i++) {
             final ItemStack invStk = getStack(i);
-            if ((invStk.getItem().equals(DeliniumIngot.DELINIUM_INGOT)
+            if ((invStk.getItem().equals(CustomItem.ITEMS.get(new Identifier(DeliriumMod.MODID, "delinium_ingot")))
                     && invStk.getCount() < stack.getMaxCount()) || invStk.isEmpty()) {
                 if (invStk.getCount() + stack.getCount() <= stack.getMaxCount()) {
                     firstLastDontFit[0] = i; // index of non full stack

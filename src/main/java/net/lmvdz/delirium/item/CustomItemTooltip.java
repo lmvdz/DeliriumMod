@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class DeliriumItemTooltip {
+public class CustomItemTooltip {
         public static final int WRAP_WIDTH = 100;
 
         public static List<Text> wrapAndTranslateKeyToTextList(String key, MinecraftClient client) {

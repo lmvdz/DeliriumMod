@@ -4,11 +4,11 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.container.ContainerProviderRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricMaterialBuilder;
 import net.lmvdz.delirium.DeliriumMod;
 import net.lmvdz.delirium.block.DeliriumBlock;
 import net.lmvdz.delirium.client.DeliriumClientMod;
-import net.lmvdz.delirium.item.delinium.items.Delinium;
-import net.lmvdz.delirium.item.delinium.items.DeliniumIngot;
+import net.lmvdz.delirium.item.CustomItem;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -52,7 +52,7 @@ public class DeliniumCrucible extends DeliriumBlock implements BlockEntityProvid
     public static IntProperty PERCENTAGE = IntProperty.of("percentage", 0, 10);
     public static DirectionProperty FACING = Properties.HORIZONTAL_FACING;
 
-
+    public final static Material MAP_MATERIAL = new FabricMaterialBuilder(MaterialColor.GREEN).allowsMovement().build();
 
     // private final HashMap<ModelIdentifier, UnbakedModel> variants = new HashMap<>();
 
@@ -82,7 +82,7 @@ public class DeliniumCrucible extends DeliriumBlock implements BlockEntityProvid
     @Environment(EnvType.CLIENT)
     public DeliniumCrucible() {
         // setup map material and render layer
-        super(FabricBlockSettings.of(Delinium.MAP_MATERIAL).nonOpaque(), RenderLayer.getTranslucent());
+        super(FabricBlockSettings.of(MAP_MATERIAL).nonOpaque(), RenderLayer.getTranslucent());
 
         if (DELINIUM_CRUCIBLE_BLOCK == null) {
 
@@ -91,8 +91,8 @@ public class DeliniumCrucible extends DeliriumBlock implements BlockEntityProvid
             setDefaultState(getStateManager().getDefaultState().with(MELTING, false)
                     .with(PRIMED, false).with(FACING, Direction.NORTH).with(PERCENTAGE, 0));
 
-            DeliniumCrucibleConversion.registerSmeltConversion(Delinium.DELINIUM, 4,
-                    DeliniumIngot.DELINIUM_INGOT, 1);
+            DeliniumCrucibleConversion.registerSmeltConversion(CustomItem.ITEMS.get(new Identifier(DeliriumMod.MODID, "delinium")), 4,
+                    CustomItem.ITEMS.get(new Identifier(DeliriumMod.MODID, "delinium_ingot")), 1);
             DeliniumCrucibleConversion.registerSmeltConversion(Items.IRON_ORE, 1, Items.IRON_INGOT,
                     1);
             DeliniumCrucibleConversion.registerSmeltConversion(Items.GOLD_ORE, 1, Items.GOLD_INGOT,
