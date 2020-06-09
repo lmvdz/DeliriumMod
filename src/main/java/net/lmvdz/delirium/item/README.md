@@ -1,3 +1,12 @@
+## EquipmentMaterial - Automatic Item/Tool/Armor Generation
+
+Start building your `EquipmentMaterial` by calling the static `EquipmentMaterial.builder()` method.
+- `EquipmentMaterial.builder()` will create a new `EquipmentMaterial.Builder` instance.
+- Supply your String MODID and ItemName either as two seperate parameters or as an Identifier.
+- If you just want to use the default values for tools and/or armor just call `.build()` on your `EquipmentMaterial.Builder` instance!
+- After building your ToolMaterial and/or ArmorMaterial with the `.build()` or `.buildArmor()` or `.buildTool()`
+  - call `.createArmorAndTools()` or `.createTools()` or `.createArmor()` or supply additional parameters to these methods to choose specifically which armor and which tools you want to create.
+
 ``` java
 //      EquipmentMaterial.builder(new Identifier(MODID, "Delinium") -- alternative
         EquipmentMaterial.builder(MODID, "Delinium")

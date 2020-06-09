@@ -254,7 +254,7 @@ public class EquipmentMaterial extends CustomItem {
         return this.createArmor().createTools();
     }
 
-    public EquipmentMaterial createSelectedArmorAndTools(boolean head, boolean chest, boolean legs, boolean feet, boolean axe, boolean sword, boolean shovel, boolean hoe, boolean pickaxe, boolean tool) {
+    public EquipmentMaterial createArmorAndTools(boolean head, boolean chest, boolean legs, boolean feet, boolean axe, boolean sword, boolean shovel, boolean hoe, boolean pickaxe, boolean tool) {
         return this.createArmor(head, chest, legs, feet).createTools(axe, sword, shovel, hoe, pickaxe, tool);
     }
 
