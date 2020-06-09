@@ -9,7 +9,7 @@ Start building your `EquipmentMaterial` by calling the static `EquipmentMaterial
 - All the values you see passed in the below example are the default values.
   - example: not calling `.attackDamage(value)` at all, will still have an `attackDamage` value of `2.5f`
 ``` java
-//      EquipmentMaterial.builder(new Identifier(MODID, "Delinium") -- alternative
+//      EquipmentMaterial.builder(new Identifier(MODID, "Delinium")) -- alternative
         EquipmentMaterial.builder(MODID, "Delinium")
             .attackDamage(2.5f)
             .durability(1000)
