@@ -35,10 +35,6 @@ public class DeliriumMod implements ModInitializer, MinecraftServerInitCallback 
 	public final static ItemGroup ITEM_GROUP = FabricItemGroupBuilder.create(new Identifier(MODID, "items")).icon(() -> new ItemStack(Registry.ITEM.get(new Identifier(MODID, "delinium")))).build();
 	public static HashMap<Identifier, DeliriumBlock> BLOCKS = new HashMap<>();
 	public static HashMap<Identifier, DeliriumBlockItem> BLOCK_ITEMS = new HashMap<>();
-
-
-
-
 	public static void log(Level level, String string) {
 		LOGGER.log(level, "[" + MODID + "] " + string);
 	}
@@ -52,9 +48,18 @@ public class DeliriumMod implements ModInitializer, MinecraftServerInitCallback 
 
 		// create delinium items
 		// -- items
-		ItemArmorToolMaterial.build(MODID, "Delinium", 2.5f, 1000, 25, 1, 5f, 1f, new HashMap<>(), new HashMap<>(), 1, SoundEvents.ITEM_ARMOR_EQUIP_GENERIC, 10, 5);
-		ItemArmorToolMaterial.build(MODID, "DeliniumIngot", 5f, 1500, 25, 2, 5f, 2f, new HashMap<>(), new HashMap<>(), 1, SoundEvents.ITEM_ARMOR_EQUIP_GENERIC, 15, 10);
-		
+		ItemArmorToolMaterial Delinium = ItemArmorToolMaterial.of(
+				MODID, "Delinium",
+				2.5f, 1000, 25, 1, 5f, 1f,
+				new HashMap<>(), new HashMap<>(), 1, SoundEvents.ITEM_ARMOR_EQUIP_GENERIC, 10, 5
+		).createArmor().createTools();
+
+		ItemArmorToolMaterial DeliniumIngot = ItemArmorToolMaterial.of(
+				MODID, "DeliniumIngot",
+				5f, 1500, 25, 2, 5f, 2f,
+				new HashMap<>(), new HashMap<>(), 1, SoundEvents.ITEM_ARMOR_EQUIP_GENERIC, 15, 10
+		).createAxe().createSword();
+
 		// -- blocks
 		new DeliniumCrucible(); // DeliriumBlock + BlockEntityProvider
 		new DeliniumCrucibleLava(); // Needs to be registered to be able to render a DeliniumCrucibleLavaModel
