@@ -1,5 +1,6 @@
 package net.lmvdz.delirium;
 
+import com.swordglowsblue.artifice.api.Artifice;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.lmvdz.delirium.api.event.MinecraftServerInitCallback;
@@ -12,9 +13,11 @@ import net.lmvdz.delirium.blockitem.blockitems.DeliniumCrucibleBlockItem;
 import net.lmvdz.delirium.item.*;
 import net.lmvdz.delirium.ppag.ProceduralPixelArtGenerator;
 import net.lmvdz.delirium.warp.WarpManager;
+import net.minecraft.client.render.Camera;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.SpriteIdentifier;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
@@ -65,33 +68,16 @@ public class DeliriumMod implements ModInitializer, MinecraftServerInitCallback 
 				.miningSpeed(5f)
 				.attackSpeed(1f)
 				.armorDurabilities(1000, 1000, 1000, 1000)
-//				.armorDurability(EquipmentSlot.HEAD, 10000) -- alternative
 				.armorProtectionAmounts(10, 10, 10, 10)
-//				.armorProtectionAmount(EquipmentSlot.FEET, 20) -- alternative
 				.armorEnchantability(1)
 				.equipSound(SoundEvents.ITEM_ARMOR_EQUIP_GENERIC)
 				.toughness(10)
 				.knockbackResistance(5)
-//				.buildArmor() -- only create the Armor Material --- won't be able to create tools
-//				.buildTool() -- only create the Tool Material --- wont't be able to create armor
-				.build()
-//				.armorMaterial(CustomArmorMaterial customArmorMaterial) --- set the custom armor material -- useful if you only buildToolMaterial() and later on need to create armor
-//				.toolMaterial(CustomToolMaterial customToolMaterial) --- set the custom tool material -- useful if you only buildArmorMaterial() and later on need to create tools
-//				.createArmor() -- create all armor
-//				.createArmor(new EquipmentSlot[] {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.FEET}) --- alternative
-//				.createArmor(EquipmentSlot.HEAD) --- alternative
-				.createArmor(true, false, true, false)
-//				.createTools() -- create all tools
-//				.createTools(new EquipmentMaterial.ToolType[] {EquipmentMaterial.ToolType.PICKAXE})  --- alternative
-//				.createTool(EquipmentMaterial.ToolType.PICKAXE) --- alternative
-				.createTools(false, true, false, false, true, false);
+				.build().createArmorAndTools();
 
-
-		ProceduralPixelArtGenerator ppag = new ProceduralPixelArtGenerator(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX,
-				new Identifier(DeliriumMod.MODID, "item/delinium_sword")));
-
-
-
+		Identifier deliniumSword = new Identifier(MODID, "item/delinium_sword");
+		CustomSwordItem swordItem = CustomSwordItem.SWORDS.get(new Identifier(MODID, "delinium_sword"));
+		ProceduralPixelArtGenerator ppag = new ProceduralPixelArtGenerator(swordItem, new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, deliniumSword));
 
 
 

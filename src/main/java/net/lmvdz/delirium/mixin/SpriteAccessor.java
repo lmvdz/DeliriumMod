@@ -10,4 +10,7 @@ public interface SpriteAccessor {
     @Accessor
     NativeImage[] getImages();
 
+    @Accessor
+    void setImages(NativeImage[] images);
+
 }

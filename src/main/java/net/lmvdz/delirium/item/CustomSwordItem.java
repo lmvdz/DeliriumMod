@@ -50,8 +50,7 @@ public class CustomSwordItem extends SwordItem {
     }
 
     protected CustomSwordItem registerSwordItem() {
-        SWORDS.put(getIdentifier(this),
-                Registry.register(Registry.ITEM, getIdentifier(this), this));
+        SWORDS.put(getIdentifier(this), Registry.register(Registry.ITEM, getIdentifier(this), this));
         System.out.println("Registered SwordItem: " + this.getTranslationKey());
         return this;
     }

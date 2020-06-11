@@ -66,6 +66,9 @@ dependencies {
 	modImplementation "io.github.Ladysnake:Satin:${project.satin_version}"
 
 	// modImplementation files("libs/satin-1.4.1-SNAPSHOT.jar")
+	modImplementation "io.github.lmvdz:artifice:${project.artifice_version}"
+	include "io.github.lmvdz:artifice:${project.artifice_version}"
+
 }
 
 processResources {

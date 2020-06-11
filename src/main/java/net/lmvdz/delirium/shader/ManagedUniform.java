@@ -1,7 +1,7 @@
 package net.lmvdz.delirium.shader;
 
 import ladysnake.satin.api.managed.uniform.*;
-import net.lmvdz.delirium.api.event.ReloadCallback;
+import net.lmvdz.delirium.api.event.AfterReloadCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.texture.AbstractTexture;
@@ -18,7 +18,7 @@ import net.minecraft.util.profiler.Profiler;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-public class ManagedUniform implements ReloadCallback {
+public class ManagedUniform implements AfterReloadCallback {
 
 
     UniformFinder finder;
@@ -31,7 +31,7 @@ public class ManagedUniform implements ReloadCallback {
         this.uniformName = uniformName;
         this.type = type;
         this.uniform = getUniform();
-        ReloadCallback.EVENT.register(this);
+        AfterReloadCallback.AFTER.register(this);
     }
 
     public Object getUniform() {

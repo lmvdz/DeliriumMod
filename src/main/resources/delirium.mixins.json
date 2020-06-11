@@ -17,7 +17,9 @@
     "FontManagerAccess",
     "TextRendererAccessor",
     "TextRendererMixin",
-    "LightmapTextureManagerAccessor"
+    "LightmapTextureManagerAccessor",
+    "SpriteAccessor",
+    "MinecraftClientMixin"
   ],
   "server": [
     "MinecraftServerMixin"
