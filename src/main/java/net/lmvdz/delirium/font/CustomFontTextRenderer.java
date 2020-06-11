@@ -4,10 +4,10 @@ import com.google.common.collect.Lists;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.lmvdz.delirium.api.event.TextRendererDrawLayerClass5348Callback;
 import net.lmvdz.delirium.api.event.TextRendererDrawLayerStringCallback;
+import net.lmvdz.delirium.api.event.TextRendererDrawLayerStringRenderableCallback;
 import net.lmvdz.delirium.mixin.TextRendererAccessor;
-import net.minecraft.class_5348;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.*;
 import net.minecraft.client.render.VertexConsumer;
@@ -22,7 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-public class CustomFontTextRenderer implements TextRendererDrawLayerStringCallback, TextRendererDrawLayerClass5348Callback {
+public class CustomFontTextRenderer implements TextRendererDrawLayerStringCallback, TextRendererDrawLayerStringRenderableCallback {
     private Identifier fontId;
 
 
@@ -34,7 +34,7 @@ public class CustomFontTextRenderer implements TextRendererDrawLayerStringCallba
     CustomFontTextRenderer(Identifier fontId) {
         this.fontId = fontId;
         TextRendererDrawLayerStringCallback.EVENT.register(this);
-        TextRendererDrawLayerClass5348Callback.EVENT.register(this);
+        TextRendererDrawLayerStringRenderableCallback.EVENT.register(this);
     }
 
 
@@ -60,9 +60,9 @@ public class CustomFontTextRenderer implements TextRendererDrawLayerStringCallba
     }
 
     @Environment(EnvType.CLIENT)
-    private float drawLayer(class_5348 arg, float x, float y, int color, boolean shadow, Matrix4f matrix, VertexConsumerProvider vertexConsumerProvider, boolean seeThrough, int underlineColor, int light) {
+    private float drawLayer(StringRenderable arg, float x, float y, int color, boolean shadow, Matrix4f matrix, VertexConsumerProvider vertexConsumerProvider, boolean seeThrough, int underlineColor, int light) {
         CustomShadowDrawer shadowDrawer = new CustomShadowDrawer(vertexConsumerProvider, x, y, color, shadow, matrix, seeThrough, light);
-        TextVisitFactory.visitFormatted((class_5348)arg, Style.EMPTY.withFont(this.fontId), shadowDrawer);
+        TextVisitFactory.visitFormatted(arg, Style.EMPTY.withFont(this.fontId), shadowDrawer);
         return shadowDrawer.drawLayer(this.fontId, underlineColor, x);
     }
 
@@ -79,7 +79,7 @@ public class CustomFontTextRenderer implements TextRendererDrawLayerStringCallba
     // class 5348 callback
     @Override
     @Environment(EnvType.CLIENT)
-    public void onDrawLayer(class_5348 text, float x, float y, int color, boolean shadow, Matrix4f matrix, VertexConsumerProvider vertexConsumerProvider, boolean seeThrough, int underlineColor, int light, BiConsumer<Boolean, Float> cancelAndReturn) {
+    public void onDrawLayer(StringRenderable text, float x, float y, int color, boolean shadow, Matrix4f matrix, VertexConsumerProvider vertexConsumerProvider, boolean seeThrough, int underlineColor, int light, BiConsumer<Boolean, Float> cancelAndReturn) {
         if (activeFont == this.fontId) {
             cancelAndReturn.accept(true, this.drawLayer(text, x, y, color, shadow, matrix, vertexConsumerProvider, seeThrough, underlineColor, light));
         }

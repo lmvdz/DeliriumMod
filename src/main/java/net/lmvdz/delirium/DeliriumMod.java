@@ -12,9 +12,9 @@ import net.lmvdz.delirium.blockitem.blockitems.DeliniumCrucibleBlockItem;
 import net.lmvdz.delirium.item.*;
 import net.lmvdz.delirium.ppag.ProceduralPixelArtGenerator;
 import net.lmvdz.delirium.warp.WarpManager;
+import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.SpriteIdentifier;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
@@ -86,13 +86,9 @@ public class DeliriumMod implements ModInitializer, MinecraftServerInitCallback 
 //				.createTool(EquipmentMaterial.ToolType.PICKAXE) --- alternative
 				.createTools(false, true, false, false, true, false);
 
-		ProceduralPixelArtGenerator ppag = new ProceduralPixelArtGenerator(
-				Arrays.asList(
-						DeliniumCrucibleLavaModel.sprite,
-						new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, new Identifier(DeliriumMod.MODID, "block/delinium_crucible")),
-						new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, new Identifier(DeliriumMod.MODID, "item/delinium_sword"))
-				)
-		);
+
+		ProceduralPixelArtGenerator ppag = new ProceduralPixelArtGenerator(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX,
+				new Identifier(DeliriumMod.MODID, "item/delinium_sword")));
 
 
 
